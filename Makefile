@@ -6,14 +6,14 @@
 #    By: ppaglier <ppaglier@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/04 16:05:44 by ppaglier          #+#    #+#              #
-#    Updated: 2022/02/06 17:19:13 by ppaglier         ###   ########.fr        #
+#    Updated: 2022/02/07 00:42:28 by ppaglier         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 
 NAME			=	ft_transcendence
 
-COMPOSE_DIR		=	./srcs
+COMPOSE_DIR		=	./
 COMPOSE_FILE	=	${COMPOSE_DIR}/docker-compose.yml
 
 COMPOSE_CMD		=	-f ${COMPOSE_FILE}
