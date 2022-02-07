@@ -18,7 +18,7 @@ services:
             - "${DOMAIN_NAME}:${DOMAIN_TARGET}"
             - "www.${DOMAIN_NAME}:${DOMAIN_TARGET}"
         volumes:
-            - "./backend/app:/root/app"
+            - "frontend-dev-data:/root/app"
 
     backend:
         container_name: backend
@@ -38,7 +38,7 @@ services:
         ports:
             - "3000:3000"
         volumes:
-            - "./frontend/app:/root/app"
+            - "backend-dev-data:/root/app"
 
     postgres:
         container_name: postgres
@@ -66,4 +66,16 @@ networks:
 
 volumes:
     postgres-dev-data:
+    frontend-dev-data:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: "./frontend/app"
+    backend-dev-data:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: "./backend/app"
 

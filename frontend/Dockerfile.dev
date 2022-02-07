@@ -6,7 +6,7 @@
 #    By: ppaglier <ppaglier@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/02 14:50:00 by ppaglier          #+#    #+#              #
-#    Updated: 2022/02/07 21:59:05 by ppaglier         ###   ########.fr        #
+#    Updated: 2022/02/07 22:16:35 by ppaglier         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,6 +22,7 @@ RUN apk update --no-cache && apk upgrade --no-cache
 WORKDIR /root/
 
 # VueJS Setup
+RUN mkdir /root/app
 WORKDIR /root/app/
 RUN npm install
 
