@@ -6,7 +6,7 @@
 #    By: ppaglier <ppaglier@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/02 14:50:00 by ppaglier          #+#    #+#              #
-#    Updated: 2022/02/07 19:35:21 by ppaglier         ###   ########.fr        #
+#    Updated: 2022/02/07 21:16:48 by ppaglier         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,10 +26,12 @@ WORKDIR /root/
 # NestJS Setup
 COPY ./app/ app/
 WORKDIR /root/app/
-RUN npm install
+# RUN npm install
+RUN npm install --production
 
 # Redirect port
 EXPOSE 3000
 
 # Start
-ENTRYPOINT ["npm", "run", "start:dev"]
+# ENTRYPOINT ["npm", "run", "start:dev"]
+ENTRYPOINT ["npm", "run", "start:prod"]
