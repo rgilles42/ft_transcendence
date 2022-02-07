@@ -1,28 +1,32 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    Dockerfile                                         :+:      :+:    :+:    #
+#    Dockerfile.dev                                     :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: ppaglier <ppaglier@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2021/09/07 16:57:22 by ppaglier          #+#    #+#              #
-#    Updated: 2022/02/07 21:46:45 by ppaglier         ###   ########.fr        #
+#    Created: 2020/12/02 14:50:00 by ppaglier          #+#    #+#              #
+#    Updated: 2022/02/07 21:59:05 by ppaglier         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-FROM postgres:14.1-alpine
+FROM node:16-alpine as build-stage
 USER root
 
-ARG POSTGRES_USER=XXXX
-ENV POSTGRES_USER $POSTGRES_USER
-
-ARG POSTGRES_PASSWORD=XXXX
-ENV POSTGRES_PASSWORD $POSTGRES_PASSWORD
+ARG DOMAIN_NAME=XXXX
+ENV DOMAIN_NAME $DOMAIN_NAME
 
 # Init
 RUN apk update --no-cache && apk upgrade --no-cache
 
-USER postgres
+WORKDIR /root/
+
+# VueJS Setup
+WORKDIR /root/app/
+RUN npm install
 
 # Redirect port
-EXPOSE 5432
+# EXPOSE 8080
+
+# Start
+ENTRYPOINT ["npm", "run", "serve"]
