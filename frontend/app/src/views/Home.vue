@@ -14,8 +14,11 @@ export default defineComponent({
   components: {
     HelloWorld,
   },
-  setup() {
-    this.axios.get('/users').then(())
-  }
+  created() {
+    console.log('je suis setpy!');
+    this.axios.get('/users').then((req: any) => {
+      console.log(req.data);
+    });
+  },
 });
 </script>

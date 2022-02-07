@@ -27,6 +27,3 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
-
-npm: 8.1.2
-Node.JS: stable v16.13.2
