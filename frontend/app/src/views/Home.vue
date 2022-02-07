@@ -14,5 +14,8 @@ export default defineComponent({
   components: {
     HelloWorld,
   },
+  setup() {
+    this.axios.get('/users').then(())
+  }
 });
 </script>

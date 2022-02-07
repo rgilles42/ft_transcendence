@@ -13,10 +13,8 @@
     "baseUrl": ".",
     "types": [
       "webpack-env",
-      
-      "@wdio/mocha-framework",
-      "@wdio/sync",
-      "jest"
+      "mocha",
+      "chai"
     ],
     "paths": {
       "@/*": [
