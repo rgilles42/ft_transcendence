@@ -6,7 +6,7 @@
 #    By: ppaglier <ppaglier@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/04 16:05:44 by ppaglier          #+#    #+#              #
-#    Updated: 2022/02/07 18:16:07 by ppaglier         ###   ########.fr        #
+#    Updated: 2022/02/07 19:52:19 by ppaglier         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,7 +38,6 @@ DOMAIN_TARGET	?=	127.0.0.1
 
 VOLUMES_DIR		?=	/home/${LOGIN}/data
 
-POSTGRES_ROOT_PASSWORD	?=	superPassword123
 POSTGRES_USER			?=	user123
 POSTGRES_PASSWORD		?=	password123
 
@@ -107,7 +106,6 @@ initEnv: ## Create the .env and fill default fields (Warning: this will overwrit
 	@sed -i 's|£DOMAIN_TARGET|${DOMAIN_TARGET}|g' ${ENV_FILE}
 	@sed -i 's|£VOLUMES_DIR|${VOLUMES_DIR}|g' ${ENV_FILE}
 
-	@sed -i 's|£POSTGRES_ROOT_PASSWORD|${POSTGRES_ROOT_PASSWORD}|g' ${ENV_FILE}
 	@sed -i 's|£POSTGRES_USER|${POSTGRES_USER}|g' ${ENV_FILE}
 	@sed -i 's|£POSTGRES_PASSWORD|${POSTGRES_PASSWORD}|g' ${ENV_FILE}
 

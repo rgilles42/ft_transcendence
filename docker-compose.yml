@@ -36,20 +36,23 @@ services:
             - "${DOMAIN_NAME}:${DOMAIN_TARGET}"
             - "www.${DOMAIN_NAME}:${DOMAIN_TARGET}"
 
-    # postgres:
-    #     container_name: postgres
-    #     image: postgres
-    #     restart: on-failure
-    #     environment:
-    #         - POSTGRES_ROOT_PASSWORD
-    #         - POSTGRES_USER
-    #         - POSTGRES_PASSWORD
-    #     networks:
-    #         - ft_transcendence_network
-    #     ports:
-    #         - "5432:5432"
-    #     volumes:
-    #         - "postgres-data:/var/lib/postgresql"
+    postgres:
+        container_name: postgres
+        build:
+            context: ./postgres
+            dockerfile: Dockerfile
+            args:
+                - POSTGRES_USER
+                - POSTGRES_PASSWORD
+        image: ft_transcendence_postgres:v1.0.0
+        restart: on-failure
+        environment:
+            - POSTGRES_USER
+            - POSTGRES_PASSWORD
+        networks:
+            - ft_transcendence_network
+        ports:
+            - "5432:5432"
 
 networks:
     ft_transcendence_network:

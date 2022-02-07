@@ -6,7 +6,7 @@
 #    By: ppaglier <ppaglier@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/02 14:50:00 by ppaglier          #+#    #+#              #
-#    Updated: 2022/02/07 19:29:55 by ppaglier         ###   ########.fr        #
+#    Updated: 2022/02/07 19:35:21 by ppaglier         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,7 @@ ENV DOMAIN_NAME $DOMAIN_NAME
 # Init for node:16-alpine
 RUN apk update --no-cache && apk upgrade --no-cache
 # Init & Clean for node:16-buster
-RUN apt-get -y update && apt-get -y upgrade && apt-get -y clean
+# RUN apt-get -y update && apt-get -y upgrade && apt-get -y clean
 
 WORKDIR /root/
 
