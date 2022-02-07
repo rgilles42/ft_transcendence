@@ -6,7 +6,7 @@
 #    By: ppaglier <ppaglier@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/04 16:05:44 by ppaglier          #+#    #+#              #
-#    Updated: 2022/02/07 00:42:28 by ppaglier         ###   ########.fr        #
+#    Updated: 2022/02/07 18:16:07 by ppaglier         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,8 +20,7 @@ COMPOSE_CMD		=	-f ${COMPOSE_FILE}
 
 ENV_FILE		=	${COMPOSE_DIR}/.env
 
-VOLUMES_FILES	=	${VOLUMES_DIR}/backend-data \
-					${VOLUMES_DIR}/postgresql-data
+VOLUMES_FILES	=	${VOLUMES_DIR}/postgresql-data
 
 ifneq (,$(wildcard ${ENV_FILE}))
  include ${ENV_FILE}

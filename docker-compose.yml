@@ -1,24 +1,24 @@
 version: "3.3"
 
 services:
-    # frontend:
-    #     container_name: frontend
-    #     build:
-    #         context: ./requirements/frontend
-    #         dockerfile: Dockerfile
-    #     image: ft_transcendence_frontend:v1.0.0
-    #     restart: on-failure
-    #     depends_on:
-    #         - backend
-    #     networks:
-    #         - ft_transcendence_network
-    #     ports:
-    #         - "9000:9000"
+    frontend:
+        container_name: frontend
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
+        image: ft_transcendence_frontend:v1.0.0
+        restart: on-failure
+        depends_on:
+            - backend
+        networks:
+            - ft_transcendence_network
+        ports:
+            - "8080:8080"
 
     backend:
         container_name: backend
         build:
-            context: ./requirements/backend
+            context: ./backend
             dockerfile: Dockerfile
             args:
                 - POSTGRES_USER
@@ -35,8 +35,6 @@ services:
         extra_hosts:
             - "${DOMAIN_NAME}:${DOMAIN_TARGET}"
             - "www.${DOMAIN_NAME}:${DOMAIN_TARGET}"
-        volumes:
-            - "backend-data:/var/www/backend"
 
     # postgres:
     #     container_name: postgres
@@ -58,12 +56,6 @@ networks:
         driver: bridge
 
 volumes:
-    backend-data:
-        driver: local
-        driver_opts:
-            type: none
-            o: bind
-            device: "${VOLUMES_DIR}/backend-data"
     postgres-data:
         driver: local
         driver_opts:
