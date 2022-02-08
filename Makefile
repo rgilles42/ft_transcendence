@@ -6,7 +6,7 @@
 #    By: ppaglier <ppaglier@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/04 16:05:44 by ppaglier          #+#    #+#              #
-#    Updated: 2022/02/07 19:52:19 by ppaglier         ###   ########.fr        #
+#    Updated: 2022/02/08 14:45:08 by ppaglier         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -132,10 +132,10 @@ clean: destroy ## Clean docker
 	@docker system prune --force
 
 fclean: clean ## Full clean docker & volumes
+	@docker system prune --force --all
 	@for volume in ${VOLUMES_FILES} ; do \
 		sudo rm -fR $$volume ; \
 	done
-	@docker system prune --force --all
 
 build: ## Build or rebuild services (only use it to debug, this will not be used in correction)
 	@docker-compose ${COMPOSE_CMD} --project-directory ${COMPOSE_DIR} build
