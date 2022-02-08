@@ -6,7 +6,7 @@
 #    By: ppaglier <ppaglier@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/02 14:50:00 by ppaglier          #+#    #+#              #
-#    Updated: 2022/02/07 21:46:35 by ppaglier         ###   ########.fr        #
+#    Updated: 2022/02/08 14:32:55 by ppaglier         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,7 @@ WORKDIR /root/
 COPY ./app/ app/
 WORKDIR /root/app/
 RUN npm install
-RUN npm install --production
+RUN npm run build
 
 FROM nginx:alpine as production-stage
 USER root

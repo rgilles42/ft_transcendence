@@ -13,8 +13,8 @@ services:
         networks:
             - project_network
         ports:
-            - "80:80"
-            - "443:443"
+            - "8080:80"
+            - "4443:443"
         extra_hosts:
             - "${DOMAIN_NAME}:${DOMAIN_TARGET}"
             - "www.${DOMAIN_NAME}:${DOMAIN_TARGET}"
