@@ -6,7 +6,7 @@
 #    By: ppaglier <ppaglier@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/04 16:05:44 by ppaglier          #+#    #+#              #
-#    Updated: 2022/02/08 14:45:08 by ppaglier         ###   ########.fr        #
+#    Updated: 2022/02/12 20:07:39 by ppaglier         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,8 +19,6 @@ COMPOSE_FILE	=	${COMPOSE_DIR}/docker-compose.yml
 COMPOSE_CMD		=	-f ${COMPOSE_FILE}
 
 ENV_FILE		=	${COMPOSE_DIR}/.env
-
-VOLUMES_FILES	=	${VOLUMES_DIR}/postgresql-data
 
 ifneq (,$(wildcard ${ENV_FILE}))
  include ${ENV_FILE}
@@ -35,8 +33,6 @@ BONUS				 ?=	false
 
 DOMAIN_NAME		?=	${LOGIN}.42.fr
 DOMAIN_TARGET	?=	127.0.0.1
-
-VOLUMES_DIR		?=	/home/${LOGIN}/data
 
 POSTGRES_USER			?=	user123
 POSTGRES_PASSWORD		?=	password123
@@ -80,11 +76,10 @@ install: ## Install all things that the 42 VM has by default
 	@curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 	@echo "${_BLUE}[Install VM done!]${_END}"
 
-setup: initEnv fclean initServices initHost initVolumes ## Setup project (full clean & full init)
+setup: initEnv fclean initServices initHost ## Setup project (full clean & full init)
 	@echo "${_BLUE}[Setup done!]${_END}"
 
 teardown: fclean ## Teardown project (full clean & remove hosts modifcations)
-	@sudo rm -fR ${VOLUMES_DIR}
 	@if grep "${DOMAIN_TARGET}	${DOMAIN_NAME}" /etc/hosts; then \
 		sudo sed -i "/${DOMAIN_TARGET}	${DOMAIN_NAME}/d" /etc/hosts; \
 		sudo sed -i "/${DOMAIN_TARGET}	www.${DOMAIN_NAME}/d" /etc/hosts; \
@@ -104,7 +99,6 @@ initEnv: ## Create the .env and fill default fields (Warning: this will overwrit
 	@sed -i 's|£BONUS|${BONUS}|g' ${ENV_FILE}
 	@sed -i 's|£DOMAIN_NAME|${DOMAIN_NAME}|g' ${ENV_FILE}
 	@sed -i 's|£DOMAIN_TARGET|${DOMAIN_TARGET}|g' ${ENV_FILE}
-	@sed -i 's|£VOLUMES_DIR|${VOLUMES_DIR}|g' ${ENV_FILE}
 
 	@sed -i 's|£POSTGRES_USER|${POSTGRES_USER}|g' ${ENV_FILE}
 	@sed -i 's|£POSTGRES_PASSWORD|${POSTGRES_PASSWORD}|g' ${ENV_FILE}
@@ -121,21 +115,11 @@ initHost: ## Add domain to host
 	@echo "${_CYAN}Don't forget to run 'make teardown' after for removing hosts modifcations${_END}"
 	@echo "${_BLUE}[Update hosts file done!]${_END}"
 
-initVolumes: ## Create required folders for the volumes
-	@echo "${_BLUE}[Create required volumes folders..]${_END}"
-	@for volume in ${VOLUMES_FILES} ; do \
-		sudo mkdir -p $$volume ; \
-	done
-	@echo "${_BLUE}[Create required volumes folders done!]${_END}"
-
 clean: destroy ## Clean docker
 	@docker system prune --force
 
 fclean: clean ## Full clean docker & volumes
 	@docker system prune --force --all
-	@for volume in ${VOLUMES_FILES} ; do \
-		sudo rm -fR $$volume ; \
-	done
 
 build: ## Build or rebuild services (only use it to debug, this will not be used in correction)
 	@docker-compose ${COMPOSE_CMD} --project-directory ${COMPOSE_DIR} build
@@ -165,4 +149,4 @@ logs: ## View output from containers
 ps: ## List containers
 	@docker-compose ${COMPOSE_CMD} --project-directory ${COMPOSE_DIR} ps
 
-.PHONY: help install setup initServices initEnv initVolumes clean fclean build up start stop restart down destroy logs ps
+.PHONY: help install setup initServices initEnv clean fclean build up start stop restart down destroy logs ps
