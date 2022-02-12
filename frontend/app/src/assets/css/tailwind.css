@@ -1,0 +1,111 @@
+/* ./assets/css/tailwind.css */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: 'Century Gothic' 400;
+    font-weight: 400;
+    src: url('/fonts/Century_Gothic.ttf') format("ttf");
+  }
+
+  html, body {
+    @apply bg-black;
+    @apply text-white;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+    @apply text-xl;
+  }
+
+  a {
+    @apply text-indigo-300;
+    @apply hover:underline
+  }
+
+  input {
+    @apply rounded-sm px-4 py-2 mt-3 focus:ring-2 focus:ring-orange-light bg-gray-700 w-full;
+  }
+  textarea {
+    @apply rounded-sm px-4 py-2 mt-3 focus:ring-2 focus:ring-orange-light bg-gray-700 w-full;
+  }
+  select {
+    @apply rounded-sm px-4 py-2 mt-3 bg-gray-700 w-full;
+  }
+  ::-webkit-resizer {
+    display: none;
+  }
+}
+
+@layer components {
+  .nav-link {
+    @apply text-white hover:text-gray-200 mx-2 text-sm leading-7 hover:no-underline;
+  }
+
+  .btn {
+    @apply text-white p-4 hover:no-underline;
+  }
+}
+
+h1, h2, h3, h4, h5, h6, a.btn {
+  font-family: 'Century Gothic', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+}
+
+.text-century {
+  font-family: 'Century Gothic', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji' !important;
+}
+
+.margin-navbar {
+  margin-top: 75px;
+}
+
+@media (max-width: 639px) {
+  .container {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 100%, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.fadeInUp {
+  animation-name: fadeInUp;
+  animation-duration: 1.75s;
+}
+
+.text-shadow {
+  text-shadow: 2px 2px 3px black;
+}
+
+::-webkit-scrollbar {
+  width: 10px
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #333
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555
+}

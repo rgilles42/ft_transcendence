@@ -6,7 +6,7 @@
 #    By: ppaglier <ppaglier@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/02 14:50:00 by ppaglier          #+#    #+#              #
-#    Updated: 2022/02/12 18:18:04 by ppaglier         ###   ########.fr        #
+#    Updated: 2022/02/12 22:47:10 by ppaglier         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,8 +18,11 @@ RUN apk update --no-cache && apk upgrade --no-cache
 
 WORKDIR /home/node
 
+RUN npm install @vue/cli -g
+
 # Redirect port
 EXPOSE 8080
+EXPOSE 8000
 
 # Start
 COPY ./tools/ ./tools/

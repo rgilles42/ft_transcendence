@@ -8,14 +8,13 @@ services:
             dockerfile: Dockerfile.dev
         image: ft_transcendence_frontend:v1.0.0-dev
         restart: on-failure
-        depends_on:
-            - backend
         networks:
             - project_network-dev
         environment:
             - NODE_ENV=development
         ports:
             - "8080:8080"
+            - "8000:8000"
         volumes:
             - ./frontend/app:/home/node/app
         extra_hosts:
