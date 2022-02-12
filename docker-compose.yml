@@ -12,6 +12,8 @@ services:
             - backend
         networks:
             - project_network
+        environment:
+            - NODE_ENV=production
         ports:
             - "8080:80"
             - "4443:443"
@@ -24,16 +26,16 @@ services:
         build:
             context: ./backend
             dockerfile: Dockerfile
-            args:
-                - POSTGRES_USER
-                - POSTGRES_PASSWORD
         image: ft_transcendence_backend:v1.0.0
         restart: on-failure
-        environment:
-            - POSTGRES_USER
-            - POSTGRES_PASSWORD
+        depends_on:
+            - postgres
         networks:
             - project_network
+        environment:
+            - NODE_ENV=production
+            - POSTGRES_USER
+            - POSTGRES_PASSWORD
         ports:
             - "3000:3000"
 

@@ -9,7 +9,10 @@ export class UsersService {
   }
 
   findAll() {
-    return `This action returns all users`;
+    const users:Array<number> = [];
+    users.push(1);
+    users.push(5);
+    return users;
   }
 
   findOne(id: number) {

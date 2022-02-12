@@ -6,24 +6,21 @@
 #    By: ppaglier <ppaglier@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/02 14:50:00 by ppaglier          #+#    #+#              #
-#    Updated: 2022/02/08 14:38:08 by ppaglier         ###   ########.fr        #
+#    Updated: 2022/02/12 19:20:54 by ppaglier         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 FROM node:16-alpine
 USER root
 
-ARG DOMAIN_NAME=XXXX
-ENV DOMAIN_NAME $DOMAIN_NAME
-
 # Init
 RUN apk update --no-cache && apk upgrade --no-cache
 
-WORKDIR /root/
+WORKDIR /home/node
 
 # NestJS Setup
 COPY ./app/ app/
-WORKDIR /root/app/
+WORKDIR /home/node/app/
 RUN npm install
 
 # Redirect port

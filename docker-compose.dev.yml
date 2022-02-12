@@ -12,33 +12,35 @@ services:
             - backend
         networks:
             - project_network-dev
+        environment:
+            - NODE_ENV=development
         ports:
             - "8080:8080"
+        volumes:
+            - ./frontend/app:/home/node/app
         extra_hosts:
             - "${DOMAIN_NAME}:${DOMAIN_TARGET}"
             - "www.${DOMAIN_NAME}:${DOMAIN_TARGET}"
-        volumes:
-            - "frontend-dev-data:/root/app"
 
     backend:
         container_name: backend
         build:
             context: ./backend
             dockerfile: Dockerfile.dev
-            args:
-                - POSTGRES_USER
-                - POSTGRES_PASSWORD
         image: ft_transcendence_backend:v1.0.0-dev
         restart: on-failure
-        environment:
-            - POSTGRES_USER
-            - POSTGRES_PASSWORD
+        depends_on:
+            - postgres
         networks:
             - project_network-dev
+        environment:
+            - NODE_ENV=development
+            - POSTGRES_USER
+            - POSTGRES_PASSWORD
         ports:
             - "3000:3000"
         volumes:
-            - "backend-dev-data:/root/app"
+            - ./backend/app:/home/node/app
 
     postgres:
         container_name: postgres
@@ -66,16 +68,4 @@ networks:
 
 volumes:
     postgres-dev-data:
-    frontend-dev-data:
-        driver: local
-        driver_opts:
-            type: none
-            o: bind
-            device: "./frontend/app"
-    backend-dev-data:
-        driver: local
-        driver_opts:
-            type: none
-            o: bind
-            device: "./backend/app"
 

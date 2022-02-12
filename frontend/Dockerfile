@@ -6,7 +6,7 @@
 #    By: ppaglier <ppaglier@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/02 14:50:00 by ppaglier          #+#    #+#              #
-#    Updated: 2022/02/08 14:32:55 by ppaglier         ###   ########.fr        #
+#    Updated: 2022/02/12 19:51:56 by ppaglier         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,11 +19,11 @@ ENV DOMAIN_NAME $DOMAIN_NAME
 # Init
 RUN apk update --no-cache && apk upgrade --no-cache
 
-WORKDIR /root/
+WORKDIR /home/node
 
 # VueJS Setup
 COPY ./app/ app/
-WORKDIR /root/app/
+WORKDIR /home/node/app/
 RUN npm install
 RUN npm run build
 
@@ -40,5 +40,5 @@ WORKDIR /root/
 
 # NGINX Config
 
-COPY --from=build-stage /root/app/dist /var/www/frontend
+COPY --from=build-stage /home/node/app/dist /var/www/frontend
 COPY ./config/nginx.conf /etc/nginx/nginx.conf
