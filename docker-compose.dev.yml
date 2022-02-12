@@ -19,8 +19,8 @@ services:
         volumes:
             - ./frontend/app:/home/node/app
         extra_hosts:
-            - "${DOMAIN_NAME}:${DOMAIN_TARGET}"
-            - "www.${DOMAIN_NAME}:${DOMAIN_TARGET}"
+            - ${DOMAIN_NAME}:${DOMAIN_TARGET}
+            - www.${DOMAIN_NAME}:${DOMAIN_TARGET}
 
     backend:
         container_name: backend
@@ -38,7 +38,7 @@ services:
             - POSTGRES_USER
             - POSTGRES_PASSWORD
         ports:
-            - "3000:3000"
+            - 3000:3000
         volumes:
             - ./backend/app:/home/node/app
 
@@ -55,12 +55,30 @@ services:
         environment:
             - POSTGRES_USER
             - POSTGRES_PASSWORD
+            - PGDATA=/var/lib/postgresql/data
         networks:
             - project_network-dev
         ports:
-            - "5432:5432"
+            - 5432:5432
         volumes:
-            - "postgres-dev-data:/var/lib/postgresql/data"
+            - postgres-dev-data:/var/lib/postgresql/data
+
+    pgadmin:
+        container_name: pgadmin
+        image: dpage/pgadmin4
+        restart: on-failure
+        depends_on:
+            - postgres
+        environment:
+            - PGADMIN_DEFAULT_EMAIL=ppaglier@student.42.fr
+            - PGADMIN_DEFAULT_PASSWORD=secret
+            - PGADMIN_LISTEN_PORT=80
+        networks:
+            - project_network-dev
+        ports:
+            - 8081:80
+        volumes:
+            - pgadmin-dev-data:/var/lib/pgadmin
 
 networks:
     project_network-dev:
@@ -68,4 +86,5 @@ networks:
 
 volumes:
     postgres-dev-data:
+    pgadmin-dev-data:
 
