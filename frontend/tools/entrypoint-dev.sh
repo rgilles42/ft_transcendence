@@ -8,4 +8,6 @@ if [ $? != 0 ]; then
 	npm install
 fi
 
+# Change to what you want, using vue UI (beta) or auto compilation but need to restart container
+# vue ui -H 0.0.0.0
 npm run serve

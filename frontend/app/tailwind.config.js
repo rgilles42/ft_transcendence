@@ -1,11 +1,16 @@
 const colors = require('tailwindcss/colors');
 
 module.exports = {
-  content: [
-    "./index.html",
-    "./src/**/*.{vue,js,ts,jsx,tsx}",
+  purge: [
+    './public/**/*.html',
+    './src/**/*.{vue,js,ts,jsx,tsx}',
+
+    './components/**/*.{vue,js}',
+    './layouts/**/*.vue',
+    './pages/**/*.vue',
+    './plugins/**/*.{js,ts}',
   ],
-  darkMode: false, // or 'media' or 'class'
+  darkMode: 'media', // or 'media' or 'class'
   theme: {
     fontFamily: {
       sans: ['Montserrat', 'sans-serif'],
@@ -14,11 +19,7 @@ module.exports = {
       transparent: 'transparent',
       current: 'currentColor',
       black: '#070707',
-      orange: {
-        light: '#F78F51',
-        DEFAULT: '#ff6200',
-        dark: '#ae4300',
-      },
+      orange: colors.orange,
       white: colors.white,
       gray: colors.gray,
       indigo: colors.indigo,
@@ -36,7 +37,15 @@ module.exports = {
       '2': '2 2 0%',
       '33': '1 1 33%',
     },
-    extend: {},
+    extend: {
+      colors: {
+        orange: {
+          light: '#F78F51',
+          DEFAULT: '#ff6200',
+          dark: '#ae4300',
+        },
+      }
+    },
   },
   variants: {
     extend: {

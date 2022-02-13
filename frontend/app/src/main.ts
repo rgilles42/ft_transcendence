@@ -3,6 +3,7 @@ import axios from 'axios';
 import VueAxios from 'vue-axios';
 import App from './App.vue';
 import router from './router';
+import './assets/css/tailwind.css';
 
 const app = createApp(App).use(router);
 const api = axios.create({
