@@ -31,10 +31,4 @@ module.exports = {
       },
     },
   ],
-
-  'extends': [
-    'plugin:vue/strongly-recommended',
-    '@vue/airbnb',
-    '@vue/typescript/recommended'
-  ]
 };
