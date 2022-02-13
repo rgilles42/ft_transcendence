@@ -34,7 +34,8 @@ BONUS				 ?=	false
 DOMAIN_NAME		?=	${LOGIN}.42.fr
 DOMAIN_TARGET	?=	127.0.0.1
 
-POSTGRES_USER			?=	user123
+POSTGRES_DB				?=	ft_transcendence
+POSTGRES_USER			?=	postgres
 POSTGRES_PASSWORD		?=	password123
 
 _END=\e[0m
@@ -100,6 +101,7 @@ initEnv: ## Create the .env and fill default fields (Warning: this will overwrit
 	@sed -i 's|£DOMAIN_NAME|${DOMAIN_NAME}|g' ${ENV_FILE}
 	@sed -i 's|£DOMAIN_TARGET|${DOMAIN_TARGET}|g' ${ENV_FILE}
 
+	@sed -i 's|£POSTGRES_DB|${POSTGRES_DB}|g' ${ENV_FILE}
 	@sed -i 's|£POSTGRES_USER|${POSTGRES_USER}|g' ${ENV_FILE}
 	@sed -i 's|£POSTGRES_PASSWORD|${POSTGRES_PASSWORD}|g' ${ENV_FILE}
 
