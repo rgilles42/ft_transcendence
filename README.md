@@ -8,26 +8,26 @@ Pour start en mode dev vous avez 2 possibilités
 
 Pour lancer sur full docker:
 
-`bash
+`
 docker-compose -f docker-compose.dev.yml up (-d pour detach du shell) --build (service particulier ou vide pour tout lancer)
 `
 
 Pour lancer independament
 
-`bash
-Front:
+`
+Front (frontend/app):
 npm install
 npm run serve
 
-Back:
+Back (backend/app):
 npm install
 (migrations à venir)
 npm run start:dev
 
-DB:
+DB (racine):
 docker-compose -f docker-compose.dev.yml up --build postgres
 
-PGadmin (optionnel, perso j'utilise heidiSQL sur windows)
+PGadmin (racine | optionnel, perso j'utilise heidiSQL sur windows)
 docker-compose -f docker-compose.dev.yml up --build pgadmin
 `
 
