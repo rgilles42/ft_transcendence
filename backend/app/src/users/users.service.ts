@@ -9,7 +9,7 @@ export class UsersService {
   }
 
   findAll() {
-    const users:Array<number> = [];
+    const users: number[] = [];
     users.push(1);
     users.push(5);
     return users;
