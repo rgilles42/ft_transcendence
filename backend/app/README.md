@@ -74,3 +74,7 @@ Nest is [MIT licensed](LICENSE).
 
 npm: 8.1.2
 Node.JS: stable v16.13.2
+
+ppaglier to anyone 14/02/2022:
+READ THIS !
+This backend is not completly setup, the table users is only a test
