@@ -1,38 +1,66 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserModel } from 'src/entities/user.entity';
+import { UserEntity } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { createUserDto } from './dto/createUserDto';
+import { updateUserDto } from './dto/updateUserDto';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(UserModel) private usersRepository: Repository<UserModel>,
+    @InjectRepository(UserEntity)
+    private usersRepository: Repository<UserEntity>,
   ) {}
 
-  findAll(): Promise<UserModel[]> {
+  findAll(): Promise<UserEntity[]> {
     return this.usersRepository.find();
   }
 
-  async findOne(id: number): Promise<UserModel> {
+  async findOne(id: number): Promise<UserEntity> {
     try {
       const user = await this.usersRepository.findOneOrFail(id);
       return user;
     } catch (err) {
-      //OOPSIE
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
     }
   }
 
-  // create(createUserDto: CreateUserDto): Promise<UserModel> {
-  //   const newUser = this.usersRepository.create()
-  // }
+  async create(createUserData: createUserDto): Promise<UserEntity> {
+    const newUser = this.usersRepository.create({
+      email: createUserData.email,
+      login: createUserData.login,
+      firstName: createUserData.firstName,
+      lastName: createUserData.lastName,
+    });
+    console.log(newUser.id);
+    await this.usersRepository.save(newUser);
+    console.log(newUser.id);
+    return newUser;
+  }
 
-  // update(id: number, updateUserDto: UpdateUserDto) {
-  //   return `This action updates a #${id} user`;
-  // }
+  async update(id: number, updateUserData: updateUserDto): Promise<UserEntity> {
+    try {
+      let user = await this.usersRepository.findOneOrFail(id);
+      await this.usersRepository.update(id, {
+        email: updateUserData.email,
+        login: updateUserData.login,
+        firstName: updateUserData.firstName,
+        lastName: updateUserData.lastName,
+      });
+      user = await this.usersRepository.findOne(id);
+      return user;
+    } catch (err) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
+  }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} user`;
-  // }
+  async remove(id: number): Promise<UserEntity> {
+    try {
+      const user = await this.usersRepository.findOneOrFail(id);
+      this.usersRepository.delete(id);
+      return user;
+    } catch (err) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
+  }
 }

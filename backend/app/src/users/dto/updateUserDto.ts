@@ -1,5 +1,5 @@
-export default interface User {
-  id: string;
+export class updateUserDto {
+  id: number;
   email: string;
   login: string;
   firstName: string;
