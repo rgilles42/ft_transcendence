@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-extra-semi */
+/* eslint-disable semi */
 export default interface User {
-	id: string;
-	email: string;
-	firstName: string;
-	lastName: string;
-}
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+};

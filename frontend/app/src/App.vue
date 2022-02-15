@@ -1,30 +1,34 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <div id="app" class="flex flex-col min-h-screen">
+    <Navbar />
+    <router-view class="flex-grow" style="padding-top: 50px;" />
+    <Footer />
   </div>
-  <router-view/>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useStore } from '@/store';
+import Navbar from './components/Navbar.vue';
+import Footer from './components/Footer.vue';
 
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
-</style>
+export default defineComponent({
+  components: { Navbar, Footer },
+  setup() {
+    const store = useStore();
+    const { user } = storeToRefs(store);
+    // const users = ref<User[]>();
+    // const getUsers = () => {
+    //   api.users.getUsers()
+    //     .then((response) => {
+    //       users.value = response.data;
+    //     });
+    // };
+    // getUsers();
+    return {
+      currentUser: user,
+    };
+  },
+});
+</script>

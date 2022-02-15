@@ -10,7 +10,7 @@ module.exports = {
     './pages/**/*.vue',
     './plugins/**/*.{js,ts}',
   ],
-  darkMode: 'media', // or 'media' or 'class'
+  darkMode: false, // or 'media' or 'class'
   theme: {
     fontFamily: {
       sans: ['Montserrat', 'sans-serif'],
@@ -29,13 +29,13 @@ module.exports = {
       green: colors.emerald,
     },
     flex: {
-      '1': '1 1 0%',
+      1: '1 1 0%',
       auto: '1 1 auto',
       initial: '0 1 auto',
       inherit: 'inherit',
       none: 'none',
-      '2': '2 2 0%',
-      '33': '1 1 33%',
+      2: '2 2 0%',
+      33: '1 1 33%',
     },
     extend: {
       colors: {
@@ -44,7 +44,7 @@ module.exports = {
           DEFAULT: '#ff6200',
           dark: '#ae4300',
         },
-      }
+      },
     },
   },
   variants: {
@@ -55,4 +55,4 @@ module.exports = {
     },
   },
   plugins: [],
-}
+};

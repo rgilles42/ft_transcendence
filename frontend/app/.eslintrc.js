@@ -18,6 +18,7 @@ module.exports = {
   rules: {
     'no-console': 'off',
     'no-debugger': 'off',
+    'max-len': 'warn',
   },
 
   overrides: [
