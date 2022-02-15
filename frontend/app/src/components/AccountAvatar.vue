@@ -17,10 +17,9 @@ export default defineComponent({
   },
   computed: {
     avatarUrl() {
-      return 'https://eu.ui-avatars.com/api/?name=John+Doe&background=random';
-      // if (!this.user) return 'https://eu.ui-avatars.com/api/?name=John+Doe&background=random';
-      // if (!this.user.avatar_urls || !this.user.avatar_urls.m) return `https://eu.ui-avatars.com/api/?name=${this.user.username}&background=random`;
-      // return this.user.avatar_urls.m;
+      if (!this.user) return 'https://eu.ui-avatars.com/api/?name=John+Doe&background=random';
+      if (!this.user.imageUrl) return `https://eu.ui-avatars.com/api/?name=${this.user.firstName}+${this.user.lastName}&background=random`;
+      return (this.user.imageUrl);
     },
   },
 });
