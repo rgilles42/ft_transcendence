@@ -49,6 +49,7 @@ class ConfigService {
       },
 
       ssl: this.isProduction(),
+      synchronize: !this.isProduction(),
     };
   }
 }
