@@ -44,17 +44,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { storeToRefs } from 'pinia';
+import { defineComponent, computed } from 'vue';
 import { useStore } from '@/store';
 
 export default defineComponent({
   name: 'Footer',
   setup() {
     const store = useStore();
-    const { user } = storeToRefs(store);
     return {
-      currentUser: user,
+      currentUser: computed(() => store.getUser),
     };
   },
 });

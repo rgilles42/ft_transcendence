@@ -13,13 +13,14 @@ import User from '@/types/User';
 export default defineComponent({
   name: 'AccountAvatar',
   props: {
-    user: User,
+    user: Object as () => User,
   },
   computed: {
     avatarUrl() {
-      if (!this.user) return 'https://eu.ui-avatars.com/api/?name=John+Doe&background=random';
-      if (!this.user.avatar_urls || !this.user.avatar_urls.m) return `https://eu.ui-avatars.com/api/?name=${this.user.username}&background=random`;
-      return this.user.avatar_urls.m;
+      return 'https://eu.ui-avatars.com/api/?name=John+Doe&background=random';
+      // if (!this.user) return 'https://eu.ui-avatars.com/api/?name=John+Doe&background=random';
+      // if (!this.user.avatar_urls || !this.user.avatar_urls.m) return `https://eu.ui-avatars.com/api/?name=${this.user.username}&background=random`;
+      // return this.user.avatar_urls.m;
     },
   },
 });

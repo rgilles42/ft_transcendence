@@ -34,8 +34,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { storeToRefs } from 'pinia';
+import { defineComponent, computed } from 'vue';
 import { useStore } from '@/store';
 import NavbarDropdownUser from './NavbarDropdownUser.vue';
 
@@ -44,9 +43,8 @@ export default defineComponent({
   components: { NavbarDropdownUser },
   setup() {
     const store = useStore();
-    const { user } = storeToRefs(store);
     return {
-      currentUser: user,
+      currentUser: computed(() => store.getUser),
     };
   },
 });
