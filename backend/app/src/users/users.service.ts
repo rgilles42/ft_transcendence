@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { NotFoundException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -21,7 +21,7 @@ export class UsersService {
       const user = await this.usersRepository.findOneOrFail(id);
       return user;
     } catch (err) {
-      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+      throw new NotFoundException();
     }
   }
 
@@ -50,7 +50,7 @@ export class UsersService {
       user = await this.usersRepository.findOne(id);
       return user;
     } catch (err) {
-      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+      throw new NotFoundException();
     }
   }
 
@@ -60,7 +60,7 @@ export class UsersService {
       this.usersRepository.delete(id);
       return user;
     } catch (err) {
-      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+      throw new NotFoundException();
     }
   }
 }
