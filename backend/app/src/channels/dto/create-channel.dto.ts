@@ -2,12 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class createChannelDto {
   @ApiProperty()
-  owner: number;
+  type: boolean;
 
   @ApiProperty({ required: false })
   password?: string;
 
   @ApiProperty()
-  type: boolean;
-
+  owner: number;
 }

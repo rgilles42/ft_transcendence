@@ -9,41 +9,39 @@ import {
 
 @Entity({ name: 'channel' })
 export class ChannelEntity {
+  @ApiProperty()
+  @PrimaryGeneratedColumn()
+  id: number;
 
-	@ApiProperty()
-	@PrimaryGeneratedColumn()
-	id: number;
+  @ApiProperty()
+  @Column()
+  type: boolean;
 
-	@ApiProperty()
-	@Column()
-	owner: number;
+  @ApiProperty()
+  @Column({ nullable: true })
+  password: string;
 
-	@ApiProperty()
-	@Column( { nullable: true })
-	password: string;
+  @ApiProperty()
+  @Column()
+  owner: number;
 
-	@ApiProperty()
-	@Column()
-	type: boolean;
+  //	@ApiProperty()
+  //	@Column()
+  //	members: array[channels_members];
 
-//	@ApiProperty()
-//	@Column()
-//	members: array[channels_members];
+  //	@ApiProperty()
+  //	@Column()
+  //	restricted: array[channels_restrictions];
 
-//	@ApiProperty()
-//	@Column()
-//	restricted: array[channels_restrictions];
+  //	@ApiProperty()
+  //	@Column()
+  //	messages: array[channels_messages];
 
-//	@ApiProperty()
-//	@Column()
-//	messages: array[channels_messages];
+  @ApiProperty()
+  @CreateDateColumn()
+  createdAt: Date;
 
-	@ApiProperty()
-	@CreateDateColumn()
-	createdAt: Date;
-  
-	@ApiProperty()
-	@UpdateDateColumn()
-	updatedAt: Date;
-
+  @ApiProperty()
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
