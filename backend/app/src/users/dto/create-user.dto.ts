@@ -10,6 +10,6 @@ export class createUserDto {
   @ApiProperty()
   email: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   imageUrl?: string;
 }
