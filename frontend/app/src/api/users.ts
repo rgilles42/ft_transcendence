@@ -1,4 +1,6 @@
 import User from '@/types/User';
+import UserBlock from '@/types/UserBlock';
+import UserFriend from '@/types/UserFriend';
 import { AxiosInstance } from 'axios';
 
 const USERS_BASE = '/users';
@@ -14,57 +16,57 @@ export default ($axios: AxiosInstance) => ({
     return $axios.post(`${USERS_BASE}`, { userData });
   },
 
-  getUserByUsername(username: string) {
+  getUserByUsername(username: User['username']) {
     return $axios.get(`${USERS_BASE}/${username}`);
   },
 
-  getUserById(userId: number) {
+  getUserById(userId: User['id']) {
     return $axios.get(`${USERS_BASE}/${userId}`);
   },
 
-  getUserFriends(user: User) {
-    return $axios.get(`${USERS_BASE}/${user.id}/friends`);
+  getUserFriends(userId: User['id']) {
+    return $axios.get(`${USERS_BASE}/${userId}/friends`);
   },
 
-  getUserBlocked(user: User) {
-    return $axios.get(`${USERS_BASE}/${user.id}/blocked`);
+  getUserBlocked(userId: User['id']) {
+    return $axios.get(`${USERS_BASE}/${userId}/blocked`);
   },
 
-  getUserChannels(user: User) {
-    return $axios.get(`${USERS_BASE}/${user.id}/channels`);
+  getUserChannels(userId: User['id']) {
+    return $axios.get(`${USERS_BASE}/${userId}/channels`);
   },
 
-  getUserGamesHistory(user: User) {
-    return $axios.get(`${USERS_BASE}/${user.id}/games_history`);
+  getUserGamesHistory(userId: User['id']) {
+    return $axios.get(`${USERS_BASE}/${userId}/games_history`);
   },
 
-  editUser(user: User, data: any) {
-    return $axios.patch(`${USERS_BASE}/${user.id}`, data);
+  editUser(userId: User['id'], userData: User) {
+    return $axios.patch(`${USERS_BASE}/${userId}`, { userData });
   },
 
-  deleteUser(user: User) {
-    return $axios.delete(`${USERS_BASE}/${user.id}`);
+  deleteUser(userId: User['id']) {
+    return $axios.delete(`${USERS_BASE}/${userId}`);
   },
 
   // User's friends routes
-  addUserFriend(user: User, userFriendId: number) {
-    return $axios.post(`${USERS_BASE}/${user.id}/friends`, { userFriendId });
+  addUserFriend(userId: User['id'], userFriendId: User['id']) {
+    return $axios.post(`${USERS_BASE}/${userId}/friends`, { userFriendId });
   },
 
-  updateUserFriend(user: User, friendId: number, data: any) {
-    return $axios.patch(`${USERS_BASE}/friends/${friendId}`, data);
+  updateUserFriend(friendId: UserFriend['id'], userFriendDate: UserFriend) {
+    return $axios.patch(`${USERS_BASE}/friends/${friendId}`, { userFriendDate });
   },
 
-  deleteUserFriend(user: User, friendId: number) {
+  deleteUserFriend(friendId: UserFriend['id']) {
     return $axios.delete(`${USERS_BASE}/friends/${friendId}`);
   },
 
   // User's blocked routes
-  addUserBlocked(user: User, userBlockedId: number) {
-    return $axios.post(`${USERS_BASE}/${user.id}/blocked`, { userBlockedId });
+  addUserBlocked(userId: User['id'], userBlockedId: User['id']) {
+    return $axios.post(`${USERS_BASE}/${userId}/blocked`, { userBlockedId });
   },
 
-  deleteUserBlocked(user: User, blockedId: number) {
+  deleteUserBlocked(blockedId: UserBlock['id']) {
     return $axios.delete(`${USERS_BASE}/blocked/${blockedId}`);
   },
 

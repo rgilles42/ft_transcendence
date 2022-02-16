@@ -1,3 +1,7 @@
+import Channel from '@/types/Channel';
+import ChannelMember from '@/types/ChannelMember';
+import ChannelMessage from '@/types/ChannelMessage';
+import ChannelRestriction from '@/types/ChannelRestriction';
 import { AxiosInstance } from 'axios';
 
 const AUTH_BASE = '/channels';
@@ -9,70 +13,70 @@ export default ($axios: AxiosInstance) => ({
     return $axios.get(`${AUTH_BASE}`);
   },
 
-  createChannel(channelData: any) {
+  createChannel(channelData: Channel) {
     return $axios.post(`${AUTH_BASE}`, { channelData });
   },
 
-  getChannelById(channelId: number) {
+  getChannelById(channelId: Channel['id']) {
     return $axios.get(`${AUTH_BASE}/${channelId}`);
   },
 
-  getChannelMembersById(channelId: number) {
+  getChannelMembersById(channelId: Channel['id']) {
     return $axios.get(`${AUTH_BASE}/${channelId}/members`);
   },
 
-  getChannelMessagesById(channelId: number) {
+  getChannelMessagesById(channelId: Channel['id']) {
     return $axios.get(`${AUTH_BASE}/${channelId}/messages`);
   },
 
-  getChannelRestrictionsById(channelId: number) {
+  getChannelRestrictionsById(channelId: Channel['id']) {
     return $axios.get(`${AUTH_BASE}/${channelId}/restrictions`);
   },
 
-  editChannelById(channelId: number, channel: any) {
-    return $axios.patch(`${AUTH_BASE}/${channelId}`, { channel });
+  editChannelById(channelId: Channel['id'], channelData: Channel) {
+    return $axios.patch(`${AUTH_BASE}/${channelId}`, { channelData });
   },
 
-  deleteChannelById(channelId: number) {
+  deleteChannelById(channelId: Channel['id']) {
     return $axios.delete(`${AUTH_BASE}/${channelId}`);
   },
 
   // Channel's members routes
-  addChannelMembers(channelId: number, memberData: any) {
+  addChannelMembers(channelId: Channel['id'], memberData: ChannelMember) {
     return $axios.post(`${AUTH_BASE}/${channelId}/members`, { memberData });
   },
 
-  editChannelMembers(memberId: number, memberData: any) {
+  editChannelMembers(memberId: ChannelMember['id'], memberData: ChannelMember) {
     return $axios.patch(`${AUTH_BASE}/members/${memberId}`, { memberData });
   },
 
-  deleteChannelMembersById(memberId: number) {
+  deleteChannelMembersById(memberId: ChannelMember['id']) {
     return $axios.delete(`${AUTH_BASE}/members/${memberId}`);
   },
 
   // Channel's messages routes
-  addChannelMessages(channelId: number, messageData: any) {
+  addChannelMessages(channelId: Channel['id'], messageData: ChannelMessage) {
     return $axios.post(`${AUTH_BASE}/${channelId}/messages`, { messageData });
   },
 
-  editChannelMessages(messageId: number, messageData: any) {
+  editChannelMessages(messageId: ChannelMessage['id'], messageData: ChannelMessage) {
     return $axios.patch(`${AUTH_BASE}/messages/${messageId}`, { messageData });
   },
 
-  deleteChannelMessagesById(messageId: number) {
+  deleteChannelMessagesById(messageId: ChannelMessage['id']) {
     return $axios.delete(`${AUTH_BASE}/messages/${messageId}`);
   },
 
   // Channel's restrictions routes
-  addChannelRestrictions(channelId: number, restrictionData: any) {
+  addChannelRestrictions(channelId: Channel['id'], restrictionData: ChannelRestriction) {
     return $axios.post(`${AUTH_BASE}/${channelId}/restrictions`, { restrictionData });
   },
 
-  editChannelRestrictions(restrictionId: number, restrictionData: any) {
+  editChannelRestrictions(restrictionId: ChannelRestriction['id'], restrictionData: ChannelRestriction) {
     return $axios.patch(`${AUTH_BASE}/restrictions/${restrictionId}`, { restrictionData });
   },
 
-  deleteChannelRestrictionsById(restrictionId: number) {
+  deleteChannelRestrictionsById(restrictionId: ChannelRestriction['id']) {
     return $axios.delete(`${AUTH_BASE}/restrictions/${restrictionId}`);
   },
 
