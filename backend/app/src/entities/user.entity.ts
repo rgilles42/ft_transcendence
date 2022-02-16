@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -8,18 +14,42 @@ export class UserEntity {
   id: number;
 
   @ApiProperty()
-  @Column()
-  email: string;
-
-  @ApiProperty()
-  @Column()
+  @Column({ unique: true })
   login: string;
 
   @ApiProperty()
-  @Column()
-  firstName: string;
+  @Column({ unique: true })
+  username: string;
 
   @ApiProperty()
-  @Column()
-  lastName: string;
+  @Column({ unique: true })
+  email: string;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  imageUrl: string;
+
+  @ApiProperty()
+  @Column({ nullable: true })
+  status: string;
+
+  // @ApiProperty()
+  // @Column()
+  // 2fa: ???;
+
+  // @ApiProperty()
+  // @Column()
+  // blocked: string;
+
+  // @ApiProperty()
+  // @Column()
+  // friends: string;
+
+  @ApiProperty()
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @ApiProperty()
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

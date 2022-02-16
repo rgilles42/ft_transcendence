@@ -8,9 +8,9 @@ import {
   Delete,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { createUserDto } from './dto/createUserDto';
 import { UserEntity } from 'src/entities/user.entity';
-import { updateUserDto } from './dto/updateUserDto';
+import { createUserDto } from './dto/create-user.dto';
+import { updateUserDto } from './dto/update-user.dto';
 import {
   ApiCreatedResponse,
   ApiNotFoundResponse,
