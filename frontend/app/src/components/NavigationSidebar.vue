@@ -9,29 +9,29 @@
 
           </div> -->
 
-              <!-- Links -->
-              <div>
+          <!-- Links -->
+          <div>
 
-                <ul class="mt-3">
+            <ul class="mt-3">
 
-                  <li class="py-1 rounded-sm mb-0.5 last:mb-0">
-                    <router-link
-                      to="/"
-                      class="nav-link m-0 block px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:bg-gray-700"
-                      role="menuitem"
-                    >
-                      <div class="flex flex-grow">
-                        <span class="flex-shrink-0 h-6 w-6 mr-3">
-                          <i class="fas fa-undo ml-1"></i>
-                        </span>
-                        <span class="text-sm font-medium">Accueil</span>
-                      </div>
-                    </router-link >
-                  </li>
+              <li class="py-1 rounded-sm mb-0.5 last:mb-0">
+                <router-link
+                  to="/"
+                  class="nav-link m-0 block px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:bg-gray-700"
+                  role="menuitem"
+                >
+                  <div class="flex flex-grow">
+                    <span class="flex-shrink-0 h-6 w-6 mr-3">
+                      <i class="fas fa-undo ml-1"></i>
+                    </span>
+                    <span class="text-sm font-medium">Accueil</span>
+                  </div>
+                </router-link >
+              </li>
 
-                </ul>
+            </ul>
 
-              </div>
+          </div>
 
         </div>
       </header>
@@ -45,7 +45,7 @@
 import { defineComponent, ref, computed } from 'vue';
 
 export default defineComponent({
-  name: 'Sidebar',
+  name: 'NavigationSidebar',
   props: {
     modelValue: Boolean,
   },

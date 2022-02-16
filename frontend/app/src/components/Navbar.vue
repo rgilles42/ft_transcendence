@@ -49,7 +49,7 @@
 
   </header>
 
-  <Sidebar v-model="sidebarOpen" style="padding-top: 50px;" />
+  <NavigationSidebar v-model="sidebarOpen" style="padding-top: 50px;" />
 
 </div>
 </template>
@@ -58,11 +58,11 @@
 import { defineComponent, ref, computed } from 'vue';
 import { useStore } from '@/store';
 import NavbarDropdownUser from './NavbarDropdownUser.vue';
-import Sidebar from './Sidebar.vue';
+import NavigationSidebar from './NavigationSidebar.vue';
 
 export default defineComponent({
   name: 'Navbar',
-  components: { NavbarDropdownUser, Sidebar },
+  components: { NavbarDropdownUser, NavigationSidebar },
   setup() {
     const store = useStore();
     return {
