@@ -1,7 +1,9 @@
 import axios from 'axios';
 
-import Users from './users';
 import Auth from './auth';
+import Users from './users';
+import Channels from './channels';
+import Games from './games';
 
 const $axios = axios.create({
   baseURL: process.env.VUE_APP_API_URL,
@@ -9,12 +11,14 @@ const $axios = axios.create({
     Accept: 'application/json',
     'Content-Type': 'application/json',
   },
-  // withCredentials: true,
+  withCredentials: ['production', 'prod'].includes(process.env.NODE_ENV),
 });
 
 const repositories = {
   auth: Auth($axios),
   users: Users($axios),
+  channels: Channels($axios),
+  games: Games($axios),
 };
 
 export default repositories;
