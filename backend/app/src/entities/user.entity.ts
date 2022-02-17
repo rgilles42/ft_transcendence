@@ -5,7 +5,10 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { BlockshipEntity } from './blockship.entity';
+import { FriendshipEntity } from './friendship.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -33,17 +36,15 @@ export class UserEntity {
   @Column({ nullable: true })
   status: string;
 
+  @OneToMany(() => FriendshipEntity, (friendship) => friendship.friend)
+  friends: FriendshipEntity[];
+
+  @OneToMany(() => BlockshipEntity, (blockship) => blockship.blocked_user)
+  blocked_users: BlockshipEntity[];
+
   // @ApiProperty()
   // @Column()
   // 2fa: ???;
-
-  // @ApiProperty()
-  // @Column()
-  // blocked: string;
-
-  // @ApiProperty()
-  // @Column()
-  // friends: string;
 
   @ApiProperty()
   @CreateDateColumn()
