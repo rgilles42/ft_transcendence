@@ -5,7 +5,7 @@ import Users from './users';
 import Channels from './channels';
 import Games from './games';
 
-const $axios = axios.create({
+export const $axios = axios.create({
   baseURL: process.env.VUE_APP_API_URL,
   headers: {
     Accept: 'application/json',

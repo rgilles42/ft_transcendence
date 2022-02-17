@@ -13,4 +13,8 @@ export default ($axios: AxiosInstance) => ({
     return $axios.post(`${AUTH_BASE}/logout`);
   },
 
+  refreshToken(refreshToken : string | null) {
+    return $axios.post(`${AUTH_BASE}/refreshToken`, { refreshToken });
+  },
+
 });
