@@ -1,8 +1,6 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faComment } from '@fortawesome/free-solid-svg-icons';
 import App from './App.vue';
 import router from './router';
 import './assets/css/tailwind.css';
@@ -14,5 +12,3 @@ app.use(router);
 app.use(pinia);
 app.component('font-awesome-icon', FontAwesomeIcon);
 app.mount('#app');
-
-library.add(faComment);

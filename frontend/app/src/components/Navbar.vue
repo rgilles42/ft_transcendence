@@ -54,6 +54,8 @@
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
 import { useStore } from '@/store';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faComment } from '@fortawesome/free-solid-svg-icons';
 import NavbarDropdownUser from './NavbarDropdownUser.vue';
 import NavigationSidebar from './NavigationSidebar.vue';
 import MessagesPopover from './MessagesPopover.vue';
@@ -66,6 +68,9 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+
+    library.add(faComment);
+
     return {
       currentUser: computed(() => store.getUser),
       sidebarOpen: ref(false),
