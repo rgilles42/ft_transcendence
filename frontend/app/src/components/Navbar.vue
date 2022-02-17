@@ -45,7 +45,8 @@
 
   </header>
 
-  <NavigationSidebar v-model="sidebarOpen" style="padding-top: 50px;" />
+  <NavigationSidebar v-model="sidebarOpen" style="margin-top: 50px;" />
+  <FriendSlideOver />
 
 </div>
 </template>
@@ -56,10 +57,13 @@ import { useStore } from '@/store';
 import NavbarDropdownUser from './NavbarDropdownUser.vue';
 import NavigationSidebar from './NavigationSidebar.vue';
 import MessagesPopover from './MessagesPopover.vue';
+import FriendSlideOver from './FriendSlideOver.vue';
 
 export default defineComponent({
   name: 'Navbar',
-  components: { NavbarDropdownUser, NavigationSidebar, MessagesPopover },
+  components: {
+    NavbarDropdownUser, NavigationSidebar, MessagesPopover, FriendSlideOver,
+  },
   setup() {
     const store = useStore();
     return {
