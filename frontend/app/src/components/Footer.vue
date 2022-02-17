@@ -28,9 +28,11 @@
             </template>
             <template v-else>
               <li class="mb-1">
-               <!-- <router-link :to="{ name: 'accounts-id', params: { id: 'me' } }">Profil</router-link> -->
+                <router-link to="/profile">Profil</router-link>
               </li>
-              <li class="mb-1"><router-link to="/logout">Déconnexion</router-link></li>
+              <li class="mb-1">
+                <router-link to="/logout">Déconnexion</router-link>
+              </li>
             </template>
           </ul>
         </div>

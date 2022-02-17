@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import Home from '../views/Home.vue';
 import Login from '../views/Login.vue';
 import Logout from '../views/Logout.vue';
+import Profile from '../views/Profile.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -18,6 +19,12 @@ const routes: Array<RouteRecordRaw> = [
     path: '/logout',
     name: 'Logout',
     component: Logout,
+  },
+  {
+    path: '/profile/:requestUserId?',
+    name: 'Profile',
+    props: true,
+    component: Profile,
   },
   // {
   //   path: '/about',

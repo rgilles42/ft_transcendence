@@ -24,6 +24,17 @@ export default ($axios: AxiosInstance) => ({
     return $axios.get(`${USERS_BASE}/${userId}`);
   },
 
+  getUserByComplex(userComplex: User['id'] | User['username']) {
+    if (!Number.isNaN(+userComplex)) {
+      return $axios.get(`${USERS_BASE}/${+userComplex}`);
+    }
+    return $axios.get(`${USERS_BASE}/${userComplex}`);
+  },
+
+  getMyUser() {
+    return $axios.get(`${USERS_BASE}/me`);
+  },
+
   getUserFriends(userId: User['id']) {
     return $axios.get(`${USERS_BASE}/${userId}/friends`);
   },

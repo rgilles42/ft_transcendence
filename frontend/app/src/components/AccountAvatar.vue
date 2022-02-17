@@ -17,8 +17,12 @@ export default defineComponent({
   },
   computed: {
     avatarUrl() {
-      if (!this.user) return 'https://eu.ui-avatars.com/api/?name=John+Doe&background=random';
-      if (!this.user.imageUrl) return `https://eu.ui-avatars.com/api/?name=${this.user.firstName}+${this.user.lastName}&background=random`;
+      if (!this.user) {
+        return 'https://eu.ui-avatars.com/api/?name=John+Doe&background=random';
+      }
+      if (!this.user.imageUrl) {
+        return `https://eu.ui-avatars.com/api/?name=${this.user.username}&background=random`;
+      }
       return (this.user.imageUrl);
     },
   },
