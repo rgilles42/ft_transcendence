@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ChannelMemberEntity } from './channel-member.entity'
+import { ChannelMemberEntity } from './channel-member.entity';
 import {
   Entity,
   Column,
@@ -28,7 +28,7 @@ export class ChannelEntity {
   owner: number;
 
   @ApiProperty()
-  @OneToMany(() => ChannelMemberEntity, member => member.channel)
+  @OneToMany(() => ChannelMemberEntity, (member) => member.channel)
   members: ChannelMemberEntity[];
 
   //	@ApiProperty()
