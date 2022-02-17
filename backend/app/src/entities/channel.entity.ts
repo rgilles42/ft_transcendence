@@ -1,8 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ChannelMemberEntity } from './channel-member.entity'
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
+  OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -25,9 +27,9 @@ export class ChannelEntity {
   @Column()
   owner: number;
 
-  //	@ApiProperty()
-  //	@Column()
-  //	members: array[channels_members];
+  @ApiProperty()
+  @OneToMany(() => ChannelMemberEntity, member => member.channel)
+  members: ChannelMemberEntity[];
 
   //	@ApiProperty()
   //	@Column()
