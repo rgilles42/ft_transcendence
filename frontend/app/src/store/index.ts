@@ -1,12 +1,18 @@
 import { defineStore } from 'pinia';
+import { useStorage } from '@vueuse/core';
 import User from '@/types/User';
 
 export const useStore = defineStore('main', {
   state: () => ({
-    user: null as User | null,
+    user: useStorage<User | null>('user', null, undefined, {
+      serializer: {
+        read: (v) => (v ? JSON.parse(v) : null),
+        write: (v) => JSON.stringify(v),
+      },
+    }),
     tokens: {
-      accesToken: null as string | null,
-      refreshToken: null as string | null,
+      accessToken: useStorage<string | null>('access-token', null),
+      refreshToken: useStorage<string | null>('refresh-token', null),
     },
   }),
   getters: {
@@ -14,7 +20,7 @@ export const useStore = defineStore('main', {
       return this.user;
     },
     getAccesToken(): string | null {
-      return this.tokens.accesToken;
+      return this.tokens.accessToken;
     },
     getRefreshToken(): string | null {
       return this.tokens.refreshToken;
@@ -24,8 +30,8 @@ export const useStore = defineStore('main', {
     setUser(user: User | null) {
       this.user = user;
     },
-    setTokens(accesToken: string | null, refreshToken: string | null) {
-      this.tokens.accesToken = accesToken;
+    setTokens(accessToken: string | null, refreshToken: string | null) {
+      this.tokens.accessToken = accessToken;
       this.tokens.refreshToken = refreshToken;
     },
   },
