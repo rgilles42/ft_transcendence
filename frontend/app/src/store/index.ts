@@ -19,7 +19,7 @@ export const useStore = defineStore('main', {
     getUser(): User | null {
       return this.user;
     },
-    getAccesToken(): string | null {
+    getAccessToken(): string | null {
       return this.tokens.accessToken;
     },
     getRefreshToken(): string | null {
