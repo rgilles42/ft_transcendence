@@ -36,10 +36,12 @@ export class UserEntity {
   @Column({ nullable: true })
   status: string;
 
-  @OneToMany(() => FriendshipEntity, (friendship) => friendship.friend)
+  //@ApiProperty({ type: () => [FriendshipEntity] })
+  @OneToMany(() => FriendshipEntity, (friendship) => friendship.user)
   friends: FriendshipEntity[];
 
-  @OneToMany(() => BlockshipEntity, (blockship) => blockship.blocked_user)
+  //@ApiProperty({ type: () => [BlockshipEntity] })
+  @OneToMany(() => BlockshipEntity, (blockship) => blockship.user)
   blocked_users: BlockshipEntity[];
 
   // @ApiProperty()

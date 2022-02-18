@@ -1,9 +1,15 @@
-import { NotFoundException, Injectable } from '@nestjs/common';
+import {
+  NotFoundException,
+  Injectable,
+  ImATeapotException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { BlockshipEntity } from 'src/entities/blockship.entity';
+import { FriendshipEntity } from 'src/entities/friendship.entity';
 import { UserEntity } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
-import { createUserDto } from './dto/create-user.dto';
-import { updateUserDto } from './dto/update-user.dto';
+import { createUserDto } from './_dto/create-user.dto';
+import { updateUserDto } from './_dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -16,12 +22,22 @@ export class UsersService {
     return this.usersRepository.find();
   }
 
-  async findOne(id: number): Promise<UserEntity> {
+  async findOne(id: string): Promise<UserEntity> {
     try {
-      const user = await this.usersRepository.findOneOrFail(id);
+      if (isNaN(Number(id))) {
+        throw new ImATeapotException();
+      }
+      const user = await this.usersRepository.findOneOrFail(Number(id));
       return user;
     } catch (err) {
-      throw new NotFoundException();
+      try {
+        const user = await this.usersRepository.findOneOrFail({
+          where: { username: id },
+        });
+        return user;
+      } catch (err) {
+        throw new NotFoundException();
+      }
     }
   }
 
@@ -47,6 +63,24 @@ export class UsersService {
       const user = await this.usersRepository.findOneOrFail(id);
       this.usersRepository.delete(id);
       return user;
+    } catch (err) {
+      throw new NotFoundException();
+    }
+  }
+
+  async get_blockeds(id: number): Promise<BlockshipEntity[]> {
+    try {
+      const user = await this.usersRepository.findOneOrFail(id, {relations: ['blocked_users']});
+      return user.blocked_users;
+    } catch (err) {
+      throw new NotFoundException();
+    }
+  }
+
+  async get_friends(id: number): Promise<FriendshipEntity[]> {
+    try {
+      const user = await this.usersRepository.findOneOrFail(id, {relations: ['friends']});
+      return user.friends;
     } catch (err) {
       throw new NotFoundException();
     }

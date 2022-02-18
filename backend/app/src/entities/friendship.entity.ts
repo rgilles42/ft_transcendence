@@ -3,9 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
@@ -21,17 +19,19 @@ export class FriendshipEntity {
   @PrimaryGeneratedColumn()
   friendship_id: number;
 
+  @ApiProperty({ type: () => UserEntity })
   @ManyToOne(() => UserEntity, (user) => user.friends, { onDelete: 'CASCADE' })
   user: UserEntity;
 
-  @OneToOne(() => UserEntity, { eager: true })
-  @JoinColumn()
+  @ApiProperty({ type: () => UserEntity })
+  @ManyToOne(() => UserEntity, { eager: true, onDelete: 'CASCADE' })
   friend: UserEntity;
 
   @ApiProperty()
   @CreateDateColumn()
   createdAt: Date;
 
+  @ApiProperty()
   @Column({
     type: 'enum',
     enum: friendshipStatus,

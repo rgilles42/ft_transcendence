@@ -2,9 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
@@ -15,11 +13,14 @@ export class BlockshipEntity {
   @PrimaryGeneratedColumn()
   blockship_id: number;
 
-  @ManyToOne(() => UserEntity, (user) => user.friends, { onDelete: 'CASCADE' })
+  @ApiProperty({ type: () => UserEntity })
+  @ManyToOne(() => UserEntity, (user) => user.blocked_users, {
+    onDelete: 'CASCADE',
+  })
   user: UserEntity;
 
-  @OneToOne(() => UserEntity, { eager: true })
-  @JoinColumn()
+  @ApiProperty({ type: () => UserEntity })
+  @ManyToOne(() => UserEntity, { eager: true, onDelete: 'CASCADE' })
   blocked_user: UserEntity;
 
   @ApiProperty()
