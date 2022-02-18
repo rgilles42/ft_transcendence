@@ -4,9 +4,9 @@ import {
   ImATeapotException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BlockshipEntity } from 'src/entities/blockship.entity';
-import { FriendshipEntity } from 'src/entities/friendship.entity';
-import { UserEntity } from 'src/entities/user.entity';
+import { BlockshipEntity } from 'src/_entities/blockship.entity';
+import { FriendshipEntity } from 'src/_entities/friendship.entity';
+import { UserEntity } from 'src/_entities/user.entity';
 import { Repository } from 'typeorm';
 import { createUserDto } from './_dto/create-user.dto';
 import { sendIdDto } from './_dto/send-id.dto';
@@ -89,7 +89,7 @@ export class UsersService {
       const newBlockship = new BlockshipEntity();
       newBlockship.user = await this.usersRepository.findOneOrFail(id);
       newBlockship.blocked_user = await this.usersRepository.findOneOrFail(
-        blockData.id,
+        blockData.target_user_id,
       );
       await this.blockshipsRepository.save(newBlockship);
       return newBlockship;
@@ -117,7 +117,7 @@ export class UsersService {
       const newFriendship = new FriendshipEntity();
       newFriendship.user = await this.usersRepository.findOneOrFail(id);
       newFriendship.friend = await this.usersRepository.findOneOrFail(
-        frienshipData.id,
+        frienshipData.target_user_id,
       );
       await this.friendshipsRepository.save(newFriendship);
       return newFriendship;

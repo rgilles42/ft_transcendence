@@ -8,7 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UserEntity } from 'src/entities/user.entity';
+import { UserEntity } from 'src/_entities/user.entity';
 import { createUserDto } from './_dto/create-user.dto';
 import { updateUserDto } from './_dto/update-user.dto';
 import {
@@ -17,8 +17,8 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { FriendshipEntity } from 'src/entities/friendship.entity';
-import { BlockshipEntity } from 'src/entities/blockship.entity';
+import { FriendshipEntity } from 'src/_entities/friendship.entity';
+import { BlockshipEntity } from 'src/_entities/blockship.entity';
 import { sendIdDto } from './_dto/send-id.dto';
 
 @ApiTags('users')

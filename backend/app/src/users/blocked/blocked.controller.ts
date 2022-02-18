@@ -1,6 +1,6 @@
 import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { BlockshipEntity } from 'src/entities/blockship.entity';
+import { BlockshipEntity } from 'src/_entities/blockship.entity';
 import { BlockedService } from './blocked.service';
 
 @ApiTags('blocked')

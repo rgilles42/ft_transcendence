@@ -4,13 +4,14 @@ import { configService } from '../config/config.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChannelsService } from './channels.service';
 import { ChannelsController } from './channels.controller';
-import { ChannelEntity } from 'src/entities/channel.entity';
+import { ChannelEntity } from 'src/_entities/channel.entity';
+import { UserEntity } from 'src/_entities/user.entity';
 
 @Module({
   imports: [
     ConfigModule,
     TypeOrmModule.forRoot(configService.getTypeOrmConfig()),
-    TypeOrmModule.forFeature([ChannelEntity]),
+    TypeOrmModule.forFeature([ChannelEntity, UserEntity]),
   ],
   controllers: [ChannelsController],
   providers: [ChannelsService],

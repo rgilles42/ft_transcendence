@@ -8,7 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { ChannelsService } from './channels.service';
-import { ChannelEntity } from 'src/entities/channel.entity';
+import { ChannelEntity } from 'src/_entities/channel.entity';
 import { createChannelDto } from './dto/create-channel.dto';
 import { updateChannelDto } from './dto/update-channel.dto';
 import {
@@ -29,17 +29,17 @@ export class ChannelsController {
     return this.channelsService.findAll();
   }
 
+  @ApiCreatedResponse({ type: ChannelEntity })
+  @Post()
+  create(@Body() createChannelData: createChannelDto): Promise<ChannelEntity> {
+    return this.channelsService.create(createChannelData);
+  }
+
   @ApiOkResponse({ type: ChannelEntity })
   @ApiNotFoundResponse()
   @Get(':id')
   findOne(@Param('id') id: string): Promise<ChannelEntity> {
     return this.channelsService.findOne(+id);
-  }
-
-  @ApiCreatedResponse({ type: ChannelEntity })
-  @Post()
-  create(@Body() createChannelData: createChannelDto): Promise<ChannelEntity> {
-    return this.channelsService.create(createChannelData);
   }
 
   @ApiOkResponse({ type: ChannelEntity })
@@ -49,6 +49,7 @@ export class ChannelsController {
     @Param('id') id: string,
     @Body() updateChannelDto: updateChannelDto,
   ): Promise<ChannelEntity> {
+    //TODO MAKE LOGIC FOR ADDING USERS TO MEMBERS & ADMINS ARRAYS
     return this.channelsService.update(+id, updateChannelDto);
   }
 

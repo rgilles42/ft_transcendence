@@ -6,4 +6,10 @@ export class updateChannelDto {
 
   @ApiProperty({ required: false })
   password?: string;
+
+  @ApiProperty({ required: false })
+  userid?: number;
+
+  @ApiProperty({ required: false })
+  isAdmin?: boolean;
 }

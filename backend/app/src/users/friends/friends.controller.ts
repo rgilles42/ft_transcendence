@@ -1,6 +1,6 @@
 import { Controller, Delete, Get, Param, Patch } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { FriendshipEntity } from 'src/entities/friendship.entity';
+import { FriendshipEntity } from 'src/_entities/friendship.entity';
 import { FriendsService } from './friends.service';
 
 @ApiTags('friends')
