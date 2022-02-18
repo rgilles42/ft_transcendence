@@ -14,6 +14,7 @@
         <template v-else>
           <NavbarDropdownUser :user="currentUser" />
           <MessagesPopover :user="currentUser" class="nav-link" />
+          <button @click="toggleSlide">amis</button>
         </template>
       </div>
     </div>
@@ -25,9 +26,9 @@
         <button class="text-white relative ml-10 mr-10 w-6 focus:outline-none" @click="toggleSidebar()">
           <span class="sr-only">Open main menu</span>
           <div class="block w-5 absolute left-1/2 top-1/2   transform  -translate-x-1/2 -translate-y-1/2">
-            <span aria-hidden="true" class="block absolute h-0.5 w-5 bg-current transform transition duration-500 ease-in-out" :class="{'rotate-45': sidebarOpen,' -translate-y-1.5': !sidebarOpen }"></span>
-            <span aria-hidden="true" class="block absolute  h-0.5 w-5 bg-current transform transition duration-500 ease-in-out" :class="{'opacity-0': sidebarOpen } "></span>
-            <span aria-hidden="true" class="block absolute  h-0.5 w-5 bg-current transform  transition duration-500 ease-in-out" :class="{'-rotate-45': sidebarOpen, ' translate-y-1.5': !sidebarOpen}"></span>
+            <span aria-hidden="true" class="block absolute h-0.5 w-5 bg-current transform transition duration-500 ease-in-out" :class="{'rotate-45': isSidebarOpen,' -translate-y-1.5': !isSidebarOpen }"></span>
+            <span aria-hidden="true" class="block absolute  h-0.5 w-5 bg-current transform transition duration-500 ease-in-out" :class="{'opacity-0': isSidebarOpen } "></span>
+            <span aria-hidden="true" class="block absolute  h-0.5 w-5 bg-current transform  transition duration-500 ease-in-out" :class="{'-rotate-45': isSidebarOpen, ' translate-y-1.5': !isSidebarOpen}"></span>
           </div>
         </button>
       </div>
@@ -39,14 +40,15 @@
         <template v-else>
           <NavbarDropdownUser :user="currentUser" />
           <MessagesPopover :user="currentUser" class="nav-link" />
+          <button @click="toggleSlide">amis</button>
         </template>
       </div>
     </div>
 
   </header>
 
-  <NavigationSidebar v-model="sidebarOpen" style="margin-top: 50px;" />
-  <FriendSlideOver />
+  <NavigationSidebar v-model="isSidebarOpen" style="margin-top: 50px;" />
+  <FriendSlideOver v-model="isSlideOpen" style="margin-top: 50px;" />
 
 </div>
 </template>
@@ -73,12 +75,16 @@ export default defineComponent({
 
     return {
       currentUser: computed(() => store.getUser),
-      sidebarOpen: ref(false),
+      isSidebarOpen: ref(false),
+      isSlideOpen: ref(false),
     };
   },
   methods: {
     toggleSidebar() {
-      this.sidebarOpen = !this.sidebarOpen;
+      this.isSidebarOpen = !this.isSidebarOpen;
+    },
+    toggleSlide() {
+      this.isSlideOpen = !this.isSlideOpen;
     },
   },
 });

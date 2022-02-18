@@ -1,64 +1,141 @@
-<!-- This example requires Tailwind CSS v2.0+ -->
 <template>
-  <TransitionRoot as="template" :show="open">
-    <Dialog as="div" class="fixed inset-0 overflow-hidden" style="z-index: 9999999999;" @close="open = false">
-      <div class="absolute inset-0 overflow-hidden">
-        <TransitionChild as="template" enter="ease-in-out duration-500" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in-out duration-500" leave-from="opacity-100" leave-to="opacity-0">
-          <DialogOverlay class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-        </TransitionChild>
-        <div class="fixed inset-y-0 right-0 pl-10 max-w-full flex">
-          <TransitionChild as="template" enter="transform transition ease-in-out duration-500 sm:duration-700" enter-from="translate-x-full" enter-to="translate-x-0" leave="transform transition ease-in-out duration-500 sm:duration-700" leave-from="translate-x-0" leave-to="translate-x-full">
-            <div class="relative w-screen max-w-md">
-              <TransitionChild as="template" enter="ease-in-out duration-500" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in-out duration-500" leave-from="opacity-100" leave-to="opacity-0">
-                <div class="absolute top-0 left-0 -ml-8 pt-4 pr-2 flex sm:-ml-10 sm:pr-4">
-                  <button type="button" class="rounded-md text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white" @click="open = false">
-                    <span class="sr-only">Close panel</span>
-                    <XIcon class="h-6 w-6" aria-hidden="true" />
-                  </button>
-                </div>
-              </TransitionChild>
-              <div class="h-full flex flex-col py-6 bg-white shadow-xl overflow-y-scroll">
-                <div class="px-4 sm:px-6">
-                  <DialogTitle class="text-lg font-medium text-gray-900"> Panel title </DialogTitle>
-                </div>
-                <div class="mt-6 relative flex-1 px-4 sm:px-6">
-                  <!-- Replace with your content -->
-                  <div class="absolute inset-0 px-4 sm:px-6">
-                    <div class="h-full border-2 border-dashed border-gray-200" aria-hidden="true" />
+  <div>
+    <header class="fixed h-full right-0 transform transition-transform duration-200 ease-in-out" :class="[(isSlideOpen ? 'translate-x-0' : 'translate-x-full')]">
+
+      <!-- slider -->
+      <div id="slider" ref="slider" :class="[(isSlideOpen ? 'translate-x-0' : 'translate-x-full')]" class="transform transition-transform absolute z-40 right-0 top-0 static top-auto h-screen overflow-y-auto overflow-y-auto no-scrollbar w-72 flex-shrink-0 bg-gray-800 pt-4 pb-24">
+        <!-- slider Header -->
+
+        <!-- Links -->
+        <div class="text-sm flex-none px-3 py-3 overflow-y-auto">
+
+          <template v-for="(group, groupIndex) in groupedFriends" :key="groupIndex">
+            <h3 class="uppercase tracking-wide font-semibold text-xs text-gray-500">{{ translateGroupIndex(group[0]) }} — {{ group[1].length }}</h3>
+
+            <ul class="mb-3 truncate">
+              <li v-for="(friend, friendIndex) in group[1]" :key="friendIndex" class="py-1 rounded-sm mb-0.5 last:mb-0">
+                <a href="#" class="nav-link m-0 block px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:bg-gray-700">
+                  <div class="flex items-center">
+                    <span class="flex-none"><AccountAvatar :user="friend" alt="avatar" class="w-8 h-8 mr-2 rounded-full" /></span>
+                    <div class="ml-2">
+                      <div>{{ friend.username }}</div>
+                      <div v-if="friend.activity" class="text-xxs text-gray-600">{{ friend.activity }}</div>
+                    </div>
                   </div>
-                  <!-- /End replace -->
-                </div>
-              </div>
-            </div>
-          </TransitionChild>
+                </a>
+              </li>
+            </ul>
+          </template>
+
         </div>
+
       </div>
-    </Dialog>
-  </TransitionRoot>
+    </header>
+    <transition name="fade">
+      <div v-if="isSlideOpen" id="slider-overlay" @click="isSlideOpen = false" class="fixed inset-0"></div>
+    </transition>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-import {
-  Dialog, DialogOverlay, DialogTitle, TransitionChild, TransitionRoot,
-} from '@headlessui/vue';
-import { XIcon } from '@heroicons/vue/outline';
+import { defineComponent, ref, computed } from 'vue';
+import AccountAvatar from './AccountAvatar.vue';
 
 export default defineComponent({
-  components: {
-    Dialog,
-    DialogOverlay,
-    DialogTitle,
-    TransitionChild,
-    TransitionRoot,
-    XIcon,
+  name: 'FriendSlideOver',
+  props: {
+    modelValue: Boolean,
   },
-  setup() {
-    const open = ref(false);
-
+  setup(props, { emit }) {
+    const slideStatus = ref(props.modelValue);
+    const isSlideOpen = computed({
+      get: () => slideStatus.value,
+      set: (value) => {
+        emit('update:modelValue', value);
+        slideStatus.value = value;
+      },
+    });
+    const friends = [
+      {
+        id: 10,
+        username: 'ppaglier',
+        imageUrl: 'https://cdn.intra.42.fr/users/ppaglier.jpg',
+        status: 0,
+        activity: 'Mange des bananes',
+      },
+      {
+        id: 11,
+        username: 'frossiny',
+        status: 0,
+      },
+      {
+        id: 12,
+        username: 'pkevin',
+        status: 1,
+      },
+      {
+        id: 13,
+        username: 'rgilles',
+        status: 2,
+      },
+    ];
+    function groupBy<T>(list: T[], keyGetter: (x: T) => unknown) {
+      const map = new Map();
+      list.forEach((item) => {
+        const key = keyGetter(item);
+        const collection = map.get(key);
+        if (!collection) {
+          map.set(key, [item]);
+        } else {
+          collection.push(item);
+        }
+      });
+      return map;
+    }
+    const groupedFriends = groupBy(friends, (friend) => friend.status);
     return {
-      open,
+      isSlideOpen,
+      friends,
+      groupedFriends,
     };
   },
+  methods: {
+    toggleSlide() {
+      this.isSlideOpen = !this.isSlideOpen;
+    },
+    translateGroupIndex(index: number) {
+      const indexes: string[] = [
+        'En jeu',
+        'En ligne',
+        'Hors ligne',
+      ];
+      return indexes[index];
+    },
+  },
+  watch: {
+    modelValue: {
+      handler() {
+        this.isSlideOpen = this.modelValue;
+      },
+    },
+  },
+  components: { AccountAvatar },
 });
 </script>
+
+<style scoped>
+  header {
+    z-index: 999998;
+  }
+  #slider-overlay {
+    z-index: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .2s;
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
+  }
+
+</style>
