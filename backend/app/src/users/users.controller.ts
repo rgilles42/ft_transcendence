@@ -19,6 +19,7 @@ import {
 } from '@nestjs/swagger';
 import { FriendshipEntity } from 'src/entities/friendship.entity';
 import { BlockshipEntity } from 'src/entities/blockship.entity';
+import { sendIdDto } from './_dto/send-id.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -68,10 +69,30 @@ export class UsersController {
     return this.usersService.get_blockeds(+id);
   }
 
+  @ApiCreatedResponse({ type: BlockshipEntity })
+  @ApiNotFoundResponse()
+  @Post(':id/blocked')
+  block(
+    @Param('id') id: string,
+    @Body() blockData: sendIdDto,
+  ): Promise<BlockshipEntity> {
+    return this.usersService.block(+id, blockData);
+  }
+
   @ApiOkResponse({ type: [FriendshipEntity] })
   @ApiNotFoundResponse()
   @Get(':id/friends')
   get_friends(@Param('id') id: string): Promise<FriendshipEntity[]> {
     return this.usersService.get_friends(+id);
+  }
+
+  @ApiCreatedResponse({ type: FriendshipEntity })
+  @ApiNotFoundResponse()
+  @Post(':id/friends')
+  request_friendship(
+    @Param('id') id: string,
+    @Body() friendshipData: sendIdDto,
+  ): Promise<FriendshipEntity> {
+    return this.usersService.request_friendship(+id, friendshipData);
   }
 }

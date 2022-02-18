@@ -25,7 +25,13 @@ export class FriendsService {
         relations: ['user'],
       });
       friendship.status = friendshipStatus.ACCEPTED;
-      this.friendshipsRepository.save(friendship);
+      await this.friendshipsRepository.save(friendship);
+
+      const friendship2 = new FriendshipEntity();
+      friendship2.user = friendship.friend;
+      friendship2.friend = friendship.user;
+      friendship2.status = friendshipStatus.ACCEPTED;
+      await this.friendshipsRepository.save(friendship2);
       return friendship;
     } catch (err) {
       throw new NotFoundException();
@@ -37,7 +43,16 @@ export class FriendsService {
       const friendship = await this.friendshipsRepository.findOneOrFail(id, {
         relations: ['user'],
       });
-      this.friendshipsRepository.delete(id);
+      const matching_friendship = await this.friendshipsRepository.findOne({
+        relations: ['user'],
+        where: { user: friendship.friend, friend: friendship.user },
+      });
+      await this.friendshipsRepository.delete(id);
+      if (matching_friendship !== undefined) {
+        await this.friendshipsRepository.delete(
+          matching_friendship.friendship_id,
+        );
+      }
       return friendship;
     } catch (err) {
       throw new NotFoundException();

@@ -9,6 +9,7 @@ import { FriendshipEntity } from 'src/entities/friendship.entity';
 import { UserEntity } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { createUserDto } from './_dto/create-user.dto';
+import { sendIdDto } from './_dto/send-id.dto';
 import { updateUserDto } from './_dto/update-user.dto';
 
 @Injectable()
@@ -16,6 +17,10 @@ export class UsersService {
   constructor(
     @InjectRepository(UserEntity)
     private usersRepository: Repository<UserEntity>,
+    @InjectRepository(FriendshipEntity)
+    private friendshipsRepository: Repository<FriendshipEntity>,
+    @InjectRepository(BlockshipEntity)
+    private blockshipsRepository: Repository<BlockshipEntity>,
   ) {}
 
   findAll(): Promise<UserEntity[]> {
@@ -70,8 +75,24 @@ export class UsersService {
 
   async get_blockeds(id: number): Promise<BlockshipEntity[]> {
     try {
-      const user = await this.usersRepository.findOneOrFail(id, {relations: ['blocked_users']});
+      const user = await this.usersRepository.findOneOrFail(id, {
+        relations: ['blocked_users'],
+      });
       return user.blocked_users;
+    } catch (err) {
+      throw new NotFoundException();
+    }
+  }
+
+  async block(id: number, blockData: sendIdDto): Promise<BlockshipEntity> {
+    try {
+      const newBlockship = new BlockshipEntity();
+      newBlockship.user = await this.usersRepository.findOneOrFail(id);
+      newBlockship.blocked_user = await this.usersRepository.findOneOrFail(
+        blockData.id,
+      );
+      await this.blockshipsRepository.save(newBlockship);
+      return newBlockship;
     } catch (err) {
       throw new NotFoundException();
     }
@@ -79,8 +100,27 @@ export class UsersService {
 
   async get_friends(id: number): Promise<FriendshipEntity[]> {
     try {
-      const user = await this.usersRepository.findOneOrFail(id, {relations: ['friends']});
+      const user = await this.usersRepository.findOneOrFail(id, {
+        relations: ['friends'],
+      });
       return user.friends;
+    } catch (err) {
+      throw new NotFoundException();
+    }
+  }
+
+  async request_friendship(
+    id: number,
+    frienshipData: sendIdDto,
+  ): Promise<FriendshipEntity> {
+    try {
+      const newFriendship = new FriendshipEntity();
+      newFriendship.user = await this.usersRepository.findOneOrFail(id);
+      newFriendship.friend = await this.usersRepository.findOneOrFail(
+        frienshipData.id,
+      );
+      await this.friendshipsRepository.save(newFriendship);
+      return newFriendship;
     } catch (err) {
       throw new NotFoundException();
     }
