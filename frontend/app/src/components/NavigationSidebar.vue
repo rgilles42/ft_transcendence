@@ -3,7 +3,7 @@
     <header class="fixed h-full transform transition-transform duration-200 ease-in-out" :class="[(isSidebarOpen ? 'translate-x-0' : '-translate-x-full')]">
 
       <!-- Sidebar -->
-      <div id="slider" ref="slider" :class="[(isSidebarOpen ? 'translate-x-0' : '-translate-x-full')]" class="transform transition-transform absolute z-40 left-auto top-0 static top-auto h-screen overflow-y-auto overflow-y-auto no-scrollbar w-72 flex-shrink-0 bg-gray-800 pt-4 pb-24">
+      <div id="slider" ref="slider" :class="[(isSidebarOpen ? 'translate-x-0' : '-translate-x-full')]" class="transform transition-transform absolute z-40 left-auto top-0 static top-auto h-screen overflow-y-auto no-scrollbar w-72 flex-shrink-0 bg-gray-800 pt-4 pb-24">
         <!-- Sidebar Header -->
         <!-- <div class="flex justify-center pr-3 sm:px-2">
 

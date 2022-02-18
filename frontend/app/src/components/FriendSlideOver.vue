@@ -3,17 +3,18 @@
     <header class="fixed h-full right-0 transform transition-transform duration-200 ease-in-out" :class="[(isSlideOpen ? 'translate-x-0' : 'translate-x-full')]">
 
       <!-- slider -->
-      <div id="slider" ref="slider" :class="[(isSlideOpen ? 'translate-x-0' : 'translate-x-full')]" class="transform transition-transform absolute z-40 right-0 top-0 static top-auto h-screen overflow-y-auto overflow-y-auto no-scrollbar w-72 flex-shrink-0 bg-gray-800 pt-4 pb-24">
+      <div id="slider" ref="slider" :class="[(isSlideOpen ? 'translate-x-0' : 'translate-x-full')]" class="transform transition-transform absolute z-40 right-0 top-0 static top-auto h-screen overflow-y-auto no-scrollbar w-72 flex-shrink-0 bg-gray-800 pt-4 pb-24">
         <!-- slider Header -->
 
         <!-- Links -->
-        <div class="text-sm flex-none px-3 py-3 overflow-y-auto">
+        <div class="text-sm flex-none px-3 py-3">
 
           <template v-for="(group, groupIndex) in groupedFriends" :key="groupIndex">
             <h3 class="uppercase tracking-wide font-semibold text-xs text-gray-500">{{ translateGroupIndex(group[0]) }} — {{ group[1].length }}</h3>
 
             <ul class="mb-3 truncate">
-              <li v-for="(friend, friendIndex) in group[1]" :key="friendIndex" class="py-1 rounded-sm mb-0.5 last:mb-0">
+              <li v-for="(friend, friendIndex) in group[1]" :key="friendIndex" class="py-1 rounded-sm mb-0.5 last:mb-0 group relative">
+                <ProfileQuickView :user="friend" class="" />
                 <router-link :to="{ name: 'Profile', params: { requestUserId: friend.username }}" class="nav-link m-0 block px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:bg-gray-700">
                   <div class="flex items-center">
                     <span class="flex-none"><AccountAvatar :user="friend" alt="avatar" class="w-8 h-8 mr-2 rounded-full" /></span>
@@ -40,6 +41,7 @@
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
 import AccountAvatar from './AccountAvatar.vue';
+import ProfileQuickView from './ProfileQuickView.vue';
 
 export default defineComponent({
   name: 'FriendSlideOver',
@@ -119,7 +121,7 @@ export default defineComponent({
       },
     },
   },
-  components: { AccountAvatar },
+  components: { AccountAvatar, ProfileQuickView },
 });
 </script>
 
