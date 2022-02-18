@@ -54,21 +54,20 @@ export default defineComponent({
   setup(props) {
     const router = useRouter();
     const store = useStore();
-    const { requestUserId } = toRefs(props);
 
     const user = ref<User | null>(null);
 
-    const fetchData = () => new Promise<User | null>((resolve) => {
+    const fetchData = (userId: string) => new Promise<User | null>((resolve) => {
       const apiMethod = ref<(() => Promise<AxiosResponse>) | ((userComplex: User['id'] | User['username']) => Promise<AxiosResponse>)>(api.users.getMyUser);
 
-      if (requestUserId.value) {
+      if (userId) {
         apiMethod.value = api.users.getUserByComplex;
       } else if (!store.getUser) { // TODO: when guard is on, remove this
         resolve(null);
         return;
       }
 
-      apiMethod.value(requestUserId.value)
+      apiMethod.value(userId)
         .then((response: { data: User | null; }) => resolve(response.data))
         .catch(() => resolve(null));
     });
@@ -76,7 +75,7 @@ export default defineComponent({
     watch(
       () => props.requestUserId,
       () => {
-        fetchData()
+        fetchData(props.requestUserId)
           .then((fetchUser) => {
             user.value = fetchUser;
           })
