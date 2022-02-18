@@ -4,7 +4,7 @@
 
       <PopoverButton class="flex items-center px-1 text-sm transition duration-150 ease-in-out bg-gray-800 border-2 border-gray-700 rounded-full hover:bg-gray-700 focus:outline-none focus:shadow-solid">
         <div class="w-6 h-6 rounded-full flex items-center justify-center">
-          <font-awesome-icon icon="comment" size="lg" />
+          <i class="fa-solid fa-comment fa-lg"></i>
         </div>
       </PopoverButton>
 
