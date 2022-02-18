@@ -28,7 +28,7 @@
             </template>
             <template v-else>
               <li class="mb-1">
-                <router-link to="/profile">Profil</router-link>
+                <router-link to="/profile/me">Profil</router-link>
               </li>
               <li class="mb-1">
                 <router-link to="/logout">Déconnexion</router-link>

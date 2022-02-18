@@ -14,7 +14,13 @@
         <template v-else>
           <NavbarDropdownUser :user="currentUser" />
           <MessagesPopover :user="currentUser" class="nav-link" />
-          <button @click="toggleSlide">amis</button>
+
+          <button @click="toggleSlide" class="flex items-center px-1 text-sm transition duration-150 ease-in-out bg-gray-800 border-2 border-gray-700 rounded-full hover:bg-gray-700 focus:outline-none focus:shadow-solid">
+            <div class="w-6 h-6 rounded-full flex items-center justify-center">
+                <i class="fa-solid fa-users"></i>
+            </div>
+          </button>
+
         </template>
       </div>
     </div>
@@ -40,7 +46,13 @@
         <template v-else>
           <NavbarDropdownUser :user="currentUser" />
           <MessagesPopover :user="currentUser" class="nav-link" />
-          <button @click="toggleSlide">amis</button>
+
+          <button @click="toggleSlide" class="flex items-center px-1 text-sm transition duration-150 ease-in-out bg-gray-800 border-2 border-gray-700 rounded-full hover:bg-gray-700 focus:outline-none focus:shadow-solid">
+            <div class="w-6 h-6 rounded-full flex items-center justify-center">
+                <i class="fa-solid fa-users"></i>
+            </div>
+          </button>
+
         </template>
       </div>
     </div>

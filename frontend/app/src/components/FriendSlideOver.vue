@@ -14,15 +14,15 @@
 
             <ul class="mb-3 truncate">
               <li v-for="(friend, friendIndex) in group[1]" :key="friendIndex" class="py-1 rounded-sm mb-0.5 last:mb-0">
-                <a href="#" class="nav-link m-0 block px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:bg-gray-700">
+                <router-link :to="{ name: 'Profile', params: { requestUserId: friend.username }}" class="nav-link m-0 block px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:bg-gray-700">
                   <div class="flex items-center">
                     <span class="flex-none"><AccountAvatar :user="friend" alt="avatar" class="w-8 h-8 mr-2 rounded-full" /></span>
                     <div class="ml-2">
                       <div>{{ friend.username }}</div>
-                      <div v-if="friend.activity" class="text-xxs text-gray-600">{{ friend.activity }}</div>
+                      <div v-if="friend.activity" class="text-xxs text-gray-500">{{ friend.activity }}</div>
                     </div>
                   </div>
-                </a>
+                </router-link>
               </li>
             </ul>
           </template>

@@ -19,7 +19,7 @@
       >
         <MenuItems class="py-1 rounded-md shadow-xs bg-gray-800">
           <MenuItem>
-            <router-link to="/profile" class="nav-link block px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:bg-gray-700">Profil</router-link>
+            <router-link to="/profile/me" class="nav-link block px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:bg-gray-700">Profil</router-link>
           </MenuItem>
           <MenuItem>
             <router-link to="/logout" class="nav-link block px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:bg-gray-700">Déconnexion</router-link>

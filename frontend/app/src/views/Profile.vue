@@ -13,7 +13,7 @@
       </div>
 
       <div class="mt-8 flex flex-row">
-        <section class="flex-grow mr-8">
+        <section class="flex-grow mx-4">
           <div class="rounded-md bg-gray-900 text-sm">
             <div class="p-4 bg-white bg-opacity-5 border-b border-gray-800">
               <h4 class="text-xl">Détails du compte</h4>
@@ -33,7 +33,7 @@
 
 <script lang="ts">
 import {
-  defineComponent, toRefs, ref, computed,
+  defineComponent, toRefs, ref, computed, watch,
 } from 'vue';
 import { useStore } from '@/store';
 import { useRouter } from 'vue-router';
@@ -56,30 +56,40 @@ export default defineComponent({
     const store = useStore();
     const { requestUserId } = toRefs(props);
 
-    const apiMethod = ref<(() => Promise<AxiosResponse>) | ((userComplex: User['id'] | User['username']) => Promise<AxiosResponse>)>(api.users.getMyUser);
-
-    if (requestUserId.value) {
-      apiMethod.value = api.users.getUserByComplex;
-    } else if (!store.getUser) { // TODO: when guard is on, remove this
-      router.replace('/');
-      return {
-        user: null,
-      };
-    }
-
     const user = ref<User | null>(null);
 
-    apiMethod.value(requestUserId.value)
-      .then((response: {
-            data: User | null;
-        }) => {
-        user.value = response.data;
-      })
-      .finally(() => {
-        if (!user.value) {
-          router.replace('/');
-        }
-      });
+    const fetchData = () => new Promise<User | null>((resolve) => {
+      const apiMethod = ref<(() => Promise<AxiosResponse>) | ((userComplex: User['id'] | User['username']) => Promise<AxiosResponse>)>(api.users.getMyUser);
+
+      if (requestUserId.value) {
+        apiMethod.value = api.users.getUserByComplex;
+      } else if (!store.getUser) { // TODO: when guard is on, remove this
+        resolve(null);
+        return;
+      }
+
+      apiMethod.value(requestUserId.value)
+        .then((response: { data: User | null; }) => resolve(response.data))
+        .catch(() => resolve(null));
+    });
+
+    watch(
+      () => props.requestUserId,
+      () => {
+        fetchData()
+          .then((fetchUser) => {
+            user.value = fetchUser;
+          })
+          .finally(() => {
+            if (!user.value) {
+              router.replace('/');
+            }
+          });
+      },
+      // fetch the data when the view is created and the data is
+      // already being observed
+      { immediate: true },
+    );
 
     return {
       user,
