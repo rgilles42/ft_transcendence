@@ -3,6 +3,7 @@ import Home from '../views/Home.vue';
 import Login from '../views/Login.vue';
 import Logout from '../views/Logout.vue';
 import Profile from '../views/Profile.vue';
+import Chat from '../views/Chat.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -19,6 +20,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/logout',
     name: 'Logout',
     component: Logout,
+  },
+  {
+    path: '/chat',
+    name: 'Chat',
+    component: Chat,
   },
   {
     path: '/profile/:requestUserId?',
