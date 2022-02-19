@@ -11,8 +11,8 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
-import { ChannelRestrictionEntity } from './channel-restriction.entity';
-import { ChannelMessageEntity } from './channel-message.entity';
+import { RestrictionEntity as RestrictionEntity } from './channel-restriction.entity';
+import { MessageEntity } from './channel-message.entity';
 
 @Entity({ name: 'channel' })
 export class ChannelEntity {
@@ -43,16 +43,13 @@ export class ChannelEntity {
   @JoinTable()
   admins: UserEntity[];
 
-  @ApiProperty({ type: () => [ChannelRestrictionEntity] })
-  @OneToMany(
-    () => ChannelRestrictionEntity,
-    (restrictions) => restrictions.channel,
-  )
-  restrictions: ChannelRestrictionEntity[];
+  @ApiProperty({ type: () => [RestrictionEntity] })
+  @OneToMany(() => RestrictionEntity, (restrictions) => restrictions.channel)
+  restrictions: RestrictionEntity[];
 
-  @ApiProperty({ type: () => [ChannelMessageEntity] })
-  @OneToMany(() => ChannelMessageEntity, (message) => message.channel)
-  messages: ChannelMessageEntity[];
+  @ApiProperty({ type: () => [MessageEntity] })
+  @OneToMany(() => MessageEntity, (message) => message.channel)
+  messages: MessageEntity[];
 
   @ApiProperty()
   @CreateDateColumn()

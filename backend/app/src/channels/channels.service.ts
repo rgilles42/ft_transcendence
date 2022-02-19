@@ -4,11 +4,15 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { MessageEntity } from 'src/_entities/channel-message.entity';
+import { RestrictionEntity } from 'src/_entities/channel-restriction.entity';
 import { ChannelEntity } from 'src/_entities/channel.entity';
 import { UserEntity } from 'src/_entities/user.entity';
 import { Repository } from 'typeorm';
-import { createChannelDto } from './dto/create-channel.dto';
-import { updateChannelDto } from './dto/update-channel.dto';
+import { createChannelDto } from './_dto/create-channel.dto';
+import { messageDto } from './_dto/message.dto';
+import { restrictionDto } from './_dto/restriction.dto';
+import { updateChannelDto } from './_dto/update-channel.dto';
 
 @Injectable()
 export class ChannelsService {
@@ -17,6 +21,10 @@ export class ChannelsService {
     private channelsRepository: Repository<ChannelEntity>,
     @InjectRepository(UserEntity)
     private usersRepository: Repository<UserEntity>,
+    @InjectRepository(MessageEntity)
+    private messagesRepository: Repository<MessageEntity>,
+    @InjectRepository(RestrictionEntity)
+    private restrictionsRepository: Repository<RestrictionEntity>,
   ) {}
 
   findAll(): Promise<ChannelEntity[]> {
@@ -90,6 +98,44 @@ export class ChannelsService {
       const channel = await this.channelsRepository.findOneOrFail(id);
       this.channelsRepository.delete(id);
       return channel;
+    } catch (err) {
+      throw new NotFoundException();
+    }
+  }
+
+  async get_messages(id: number): Promise<MessageEntity[]> {
+    try {
+      return (await this.channelsRepository.findOneOrFail(id)).messages;
+    } catch (err) {
+      throw new NotFoundException();
+    }
+  }
+
+  async send_message(
+    id: number,
+    messageData: messageDto,
+  ): Promise<MessageEntity> {
+    try {
+      //TODO
+    } catch (err) {
+      throw new NotFoundException();
+    }
+  }
+
+  async get_restrictions(id: number): Promise<RestrictionEntity[]> {
+    try {
+      return (await this.channelsRepository.findOneOrFail(id)).restrictions;
+    } catch (err) {
+      throw new NotFoundException();
+    }
+  }
+
+  async create_restriction(
+    id: number,
+    restrData: restrictionDto,
+  ): Promise<RestrictionEntity> {
+    try {
+      //TODO
     } catch (err) {
       throw new NotFoundException();
     }

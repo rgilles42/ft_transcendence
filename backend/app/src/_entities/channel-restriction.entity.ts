@@ -15,11 +15,10 @@ import { UserEntity } from './user.entity';
 export enum restrictionType {
   MUTE = 0,
   BAN = 1,
-  ALL = 2,
 }
 
 @Entity({ name: 'channel_restriction' })
-export class ChannelRestrictionEntity {
+export class RestrictionEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;

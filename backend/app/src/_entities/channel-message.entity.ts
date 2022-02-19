@@ -13,7 +13,7 @@ import { UserEntity } from './user.entity';
 import { ChannelEntity } from './channel.entity';
 
 @Entity({ name: 'channel_message' })
-export class ChannelMessageEntity {
+export class MessageEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
