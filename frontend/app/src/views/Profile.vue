@@ -33,7 +33,7 @@
 
 <script lang="ts">
 import {
-  defineComponent, toRefs, ref, computed, watch,
+  defineComponent, ref, computed, watch,
 } from 'vue';
 import { useStore } from '@/store';
 import { useRouter } from 'vue-router';
