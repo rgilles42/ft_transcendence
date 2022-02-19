@@ -53,6 +53,7 @@ module.exports = {
       display: ['group-hover'],
       scale: ['group-hover'],
       translate: ['group-hover'],
+      borderRadius: ['last'],
     },
   },
   plugins: [],
