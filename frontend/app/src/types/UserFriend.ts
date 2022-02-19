@@ -12,8 +12,8 @@ export default interface UserFriend {
   updatedAt: Date;
   status: boolean;
 
-  user?: User,
-  friend?: User,
+  user?: User;
+  friend?: User;
 
   [propName: string]: any;
 };

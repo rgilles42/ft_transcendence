@@ -7,14 +7,14 @@ import User from './User';
 
 export default interface ChannelMessage {
   id: number;
-  channelId: number,
-  userId: number,
-  content: string,
+  channelId: number;
+  userId: number;
+  content: string;
   createdAt: Date;
   updatedAt: Date;
 
-  channel?: Channel,
-  user?: User,
+  channel?: Channel;
+  user?: User;
 
   [propName: string]: any;
 };

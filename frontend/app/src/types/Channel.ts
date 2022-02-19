@@ -9,16 +9,16 @@ import User from './User';
 
 export default interface Channel {
   id: number;
-  ownerId: number,
-  type: boolean,
-  password: string | null,
+  ownerId: number;
+  type: boolean;
+  password: string | null;
   createdAt: Date;
   updatedAt: Date;
 
-  owner?: User,
-  members?: ChannelMember[],
-  messages?: ChannelMessage[],
-  restrictions?: ChannelRestriction[],
+  owner?: User;
+  members?: ChannelMember[];
+  messages?: ChannelMessage[];
+  restrictions?: ChannelRestriction[];
 
   [propName: string]: any;
 };

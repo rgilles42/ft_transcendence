@@ -7,14 +7,14 @@ import User from './User';
 
 export default interface ChannelMember {
   id: number;
-  channelId: number,
-  userId: number,
-  isAdmin: boolean,
+  channelId: number;
+  userId: number;
+  isAdmin: boolean;
   createdAt: Date;
   updatedAt: Date;
 
-  channel?: Channel,
-  user?: User,
+  channel?: Channel;
+  user?: User;
 
   [propName: string]: any;
 };

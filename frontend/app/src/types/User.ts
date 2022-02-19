@@ -18,10 +18,10 @@ export default interface User {
   status: number;
   activity?: string;
 
-  friends?: UserFriend[],
-  blocked?: UserBlock[],
-  channels?: Channel[],
-  games?: Game[],
+  friends?: UserFriend[];
+  blocked?: UserBlock[];
+  channels?: Channel[];
+  games?: Game[];
 
   [propName: string]: any;
 };
