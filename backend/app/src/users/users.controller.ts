@@ -17,8 +17,8 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { FriendshipEntity } from 'src/_entities/friendship.entity';
-import { BlockshipEntity } from 'src/_entities/blockship.entity';
+import { FriendshipEntity } from 'src/_entities/users_friendship.entity';
+import { BlockshipEntity } from 'src/_entities/users_blockship.entity';
 import { sendIdDto } from './_dto/send-id.dto';
 
 @ApiTags('users')

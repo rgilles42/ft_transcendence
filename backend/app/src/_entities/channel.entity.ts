@@ -1,6 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserEntity } from './user.entity';
-import { ChannelRestrictionEntity } from './channel-restriction.entity';
 import {
   Entity,
   Column,
@@ -12,6 +10,9 @@ import {
   JoinTable,
   ManyToOne,
 } from 'typeorm';
+import { UserEntity } from './user.entity';
+import { ChannelRestrictionEntity } from './channel-restriction.entity';
+import { ChannelMessageEntity } from './channel-message.entity';
 
 @Entity({ name: 'channel' })
 export class ChannelEntity {
@@ -49,9 +50,9 @@ export class ChannelEntity {
   )
   restrictions: ChannelRestrictionEntity[];
 
-  //    @ApiProperty()
-  //    @Column()
-  //    messages: array[channels_messages];
+  @ApiProperty({ type: () => [ChannelMessageEntity] })
+  @OneToMany(() => ChannelMessageEntity, (message) => message.channel)
+  messages: ChannelMessageEntity[];
 
   @ApiProperty()
   @CreateDateColumn()

@@ -4,8 +4,8 @@ import {
   ImATeapotException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BlockshipEntity } from 'src/_entities/blockship.entity';
-import { FriendshipEntity } from 'src/_entities/friendship.entity';
+import { BlockshipEntity } from 'src/_entities/users_blockship.entity';
+import { FriendshipEntity } from 'src/_entities/users_friendship.entity';
 import { UserEntity } from 'src/_entities/user.entity';
 import { Repository } from 'typeorm';
 import { createUserDto } from './_dto/create-user.dto';

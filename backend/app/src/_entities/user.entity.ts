@@ -7,8 +7,8 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { BlockshipEntity } from './blockship.entity';
-import { FriendshipEntity } from './friendship.entity';
+import { BlockshipEntity } from './users_blockship.entity';
+import { FriendshipEntity } from './users_friendship.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity {

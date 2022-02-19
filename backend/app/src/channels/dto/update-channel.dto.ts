@@ -2,14 +2,17 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class updateChannelDto {
   @ApiProperty({ required: false })
-  type?: boolean;
+  channel_password?: string;
 
   @ApiProperty({ required: false })
-  password?: string;
+  new_channel_type?: boolean;
 
   @ApiProperty({ required: false })
-  userid?: number;
+  new_password?: string;
 
   @ApiProperty({ required: false })
-  isAdmin?: boolean;
+  new_user_id?: number;
+
+  @ApiProperty({ required: false })
+  make_admin_as_well?: boolean;
 }

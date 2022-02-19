@@ -49,7 +49,6 @@ export class ChannelsController {
     @Param('id') id: string,
     @Body() updateChannelDto: updateChannelDto,
   ): Promise<ChannelEntity> {
-    //TODO MAKE LOGIC FOR ADDING USERS TO MEMBERS & ADMINS ARRAYS
     return this.channelsService.update(+id, updateChannelDto);
   }
 

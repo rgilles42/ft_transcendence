@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   FriendshipEntity,
   friendshipStatus,
-} from 'src/_entities/friendship.entity';
+} from 'src/_entities/users_friendship.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()

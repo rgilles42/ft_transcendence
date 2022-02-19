@@ -3,7 +3,7 @@ import { BlockedService } from './blocked.service';
 import { BlockedController } from './blocked.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { configService } from 'src/config/config.service';
-import { BlockshipEntity } from 'src/_entities/blockship.entity';
+import { BlockshipEntity } from 'src/_entities/users_blockship.entity';
 
 @Module({
   providers: [BlockedService],

@@ -4,8 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { UserEntity } from 'src/_entities/user.entity';
-import { FriendshipEntity } from 'src/_entities/friendship.entity';
-import { BlockshipEntity } from 'src/_entities/blockship.entity';
+import { FriendshipEntity } from 'src/_entities/users_friendship.entity';
+import { BlockshipEntity } from 'src/_entities/users_blockship.entity';
 import { FriendsModule } from './friends/friends.module';
 import { BlockedModule } from './blocked/blocked.module';
 
