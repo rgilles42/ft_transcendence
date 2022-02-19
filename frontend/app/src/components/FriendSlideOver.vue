@@ -14,8 +14,9 @@
 
             <ul class="mb-3 truncate">
               <li v-for="(friend, friendIndex) in group[1]" :key="friendIndex" class="py-1 rounded-sm mb-0.5 last:mb-0 group relative">
-                <ProfileQuickView :user="friend" class="" />
-                <router-link :to="{ name: 'Profile', params: { requestUserId: friend.username }}" class="nav-link m-0 block px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:bg-gray-700">
+
+              <VMenu :distance="15" placement="left" class="friend-item" popperClass="friend-item-quick-view" :triggers="['click']">
+                <a href="##" class="nav-link m-0 block px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:bg-gray-700">
                   <div class="flex items-center">
                     <span class="flex-none"><AccountAvatar :user="friend" alt="avatar" class="w-8 h-8 mr-2 rounded-full" /></span>
                     <div class="ml-2">
@@ -23,7 +24,13 @@
                       <div v-if="friend.activity" class="text-xxs text-gray-500">{{ friend.activity }}</div>
                     </div>
                   </div>
-                </router-link>
+                </a>
+
+                <template #popper>
+                  <ProfileQuickView :user="friend" class="" />
+                </template>
+              </VMenu>
+
               </li>
             </ul>
           </template>
@@ -124,6 +131,28 @@ export default defineComponent({
   components: { AccountAvatar, ProfileQuickView },
 });
 </script>
+
+<style>
+
+.friend-item.v-popper {
+  width: inherit !important;
+}
+
+.friend-item-quick-view.v-popper__popper .v-popper__arrow-container {
+  display: none;
+}
+
+.friend-item-quick-view.v-popper__popper {
+  z-index: 999999 !important;
+}
+
+.friend-item-quick-view.v-popper__popper .v-popper__inner {
+  border: none !important;
+  border-radius: unset !important;
+  background: unset !important;
+}
+
+</style>
 
 <style scoped>
   header {
