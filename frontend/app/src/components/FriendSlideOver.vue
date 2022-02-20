@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts">
-import screenInfo from '@/services/screenBreakPoint';
+import { screenInfo } from '@/services/screenBreakPoint';
 import { defineComponent, ref, computed } from 'vue';
 import AccountAvatar from './AccountAvatar.vue';
 import ProfileQuickView from './ProfileQuickView.vue';
