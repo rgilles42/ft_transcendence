@@ -23,7 +23,10 @@ export class MemberEntity {
   channel: ChannelEntity;
 
   @ApiProperty({ type: () => UserEntity })
-  @ManyToOne(() => UserEntity, { eager: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => UserEntity, (user) => user.memberships, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   user: UserEntity;
 
   @ApiProperty()

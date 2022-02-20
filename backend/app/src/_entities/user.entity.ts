@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
+import { MemberEntity } from './channel-member.entity';
 import { BlockshipEntity } from './users_blockship.entity';
 import { FriendshipEntity } from './users_friendship.entity';
 
@@ -43,6 +44,10 @@ export class UserEntity {
   //@ApiProperty({ type: () => [BlockshipEntity] })
   @OneToMany(() => BlockshipEntity, (blockship) => blockship.user)
   blocked_users: BlockshipEntity[];
+
+  //@ApiProperty({ type: () => [MemberEntity] })
+  @OneToMany(() => MemberEntity, (membership) => membership.user)
+  memberships: MemberEntity[];
 
   // @ApiProperty()
   // @Column()

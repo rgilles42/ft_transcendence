@@ -127,26 +127,29 @@ export class ChannelsService {
 
   async send_message(
     id: number,
+    user_id: number,
     messageData: messageDto,
   ): Promise<MessageEntity> {
+    let channel: ChannelEntity;
     try {
-      const channel = await this.channelsRepository.findOneOrFail(id);
-      if (
-        channel.restrictions.find(
-          (restr) => restr.user.id === messageData.user_id,
-        ) !== undefined
-      ) {
-        const message = new MessageEntity();
-        message.channel = channel;
-        message.user = await this.usersRepository.findOneOrFail(
-          messageData.user_id,
-        );
-        message.content = messageData.content;
-        return this.messagesRepository.save(message);
-      }
+      channel = await this.channelsRepository.findOneOrFail(id);
     } catch (err) {
       throw new NotFoundException();
     }
+    if (
+      channel.restrictions.find((restr) => restr.user.id === user_id) !==
+      undefined
+    ) {
+      try {
+        const message = new MessageEntity();
+        message.channel = channel;
+        message.user = await this.usersRepository.findOneOrFail(user_id);
+        message.content = messageData.content;
+        return this.messagesRepository.save(message);
+      } catch (err) {
+        throw new NotFoundException();
+      }
+    } else throw new ForbiddenException();
   }
 
   async get_restrictions(id: number): Promise<RestrictionEntity[]> {
@@ -157,19 +160,39 @@ export class ChannelsService {
     }
   }
 
-  // async create_restriction(
-  //   id: number,
-  //   restrData: restrictionDto,
-  // ): Promise<RestrictionEntity> {
-  //   try {
-  //     // const channel = await this.channelsRepository.findOneOrFail(id);
-  //     const restriction = new RestrictionEntity();
-
-  //     return this.restrictionsRepository.save(restriction);
-  //   } catch (err) {
-  //     throw new NotFoundException();
-  //   }
-  // }
+  async create_restriction(
+    channel_id: number,
+    issuer_id: number,
+    restrData: restrictionDto,
+  ): Promise<RestrictionEntity> {
+    let channel: ChannelEntity;
+    try {
+      channel = await this.channelsRepository.findOneOrFail(channel_id, {
+        relations: ['members', 'members.user'],
+      });
+    } catch (err) {
+      throw new NotFoundException();
+    }
+    const members = channel.members;
+    if (
+      members.find(
+        (member) => member.user.id === issuer_id && member.is_admin === true,
+      )
+    ) {
+      try {
+        const restriction = new RestrictionEntity();
+        restriction.channel = channel;
+        restriction.user = await this.usersRepository.findOneOrFail(
+          restrData.user_to_restrict_id,
+        );
+        restriction.type = restrData.type;
+        restriction.endAt = restrData.end_date;
+        return await this.restrictionsRepository.save(restriction);
+      } catch (err) {
+        throw new NotFoundException();
+      }
+    } else throw new ForbiddenException();
+  }
 
   async get_members(id: number): Promise<MemberEntity[]> {
     try {
@@ -189,7 +212,7 @@ export class ChannelsService {
       );
       if (memberData.asAdmin !== undefined)
         member.is_admin = memberData.asAdmin;
-      return this.messagesRepository.save(member);
+      return await this.membersRepository.save(member);
     } catch (err) {
       throw new NotFoundException();
     }

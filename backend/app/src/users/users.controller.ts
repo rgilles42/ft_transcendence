@@ -20,6 +20,8 @@ import {
 import { FriendshipEntity } from 'src/_entities/users_friendship.entity';
 import { BlockshipEntity } from 'src/_entities/users_blockship.entity';
 import { sendIdDto } from './_dto/send-id.dto';
+import { ChannelEntity } from 'src/_entities/channel.entity';
+import { GameEntity } from 'src/_entities/game.entity';
 
 @ApiTags('users')
 @Controller('users')
@@ -94,5 +96,19 @@ export class UsersController {
     @Body() friendshipData: sendIdDto,
   ): Promise<FriendshipEntity> {
     return this.usersService.request_friendship(+id, friendshipData);
+  }
+
+  @ApiOkResponse({ type: [ChannelEntity] })
+  @ApiNotFoundResponse()
+  @Get(':id/channels')
+  get_channels(@Param('id') id: string): Promise<ChannelEntity[]> {
+    return this.usersService.get_channels(+id);
+  }
+
+  @ApiOkResponse({ type: [GameEntity] })
+  @ApiNotFoundResponse()
+  @Get(':id/games')
+  get_games(@Param('id') id: string): Promise<GameEntity[]> {
+    return this.usersService.get_games(+id);
   }
 }

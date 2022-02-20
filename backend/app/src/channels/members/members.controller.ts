@@ -3,7 +3,7 @@ import { ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { MemberEntity } from 'src/_entities/channel-member.entity';
 import { MembersService } from './members.service';
 
-@ApiTags('members')
+@ApiTags('channel_members')
 @Controller('members')
 export class MembersController {
   constructor(private readonly membersService: MembersService) {}

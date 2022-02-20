@@ -3,7 +3,7 @@ import { ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { RestrictionEntity } from 'src/_entities/channel-restriction.entity';
 import { RestrictionsService } from './restrictions.service';
 
-@ApiTags('restrictions')
+@ApiTags('channel_restrictions')
 @Controller('restrictions')
 export class RestrictionsController {
   constructor(private readonly restrictionsService: RestrictionsService) {}

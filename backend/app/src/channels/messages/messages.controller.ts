@@ -3,7 +3,7 @@ import { ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { MessageEntity as MessageEntity } from 'src/_entities/channel-message.entity';
 import { MessagesService } from './messages.service';
 
-@ApiTags('messages')
+@ApiTags('channel_messages')
 @Controller('messages')
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}

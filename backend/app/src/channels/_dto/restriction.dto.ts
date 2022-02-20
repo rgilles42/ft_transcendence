@@ -1,12 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { restrictionType } from 'src/_entities/channel-restriction.entity';
 
 export class restrictionDto {
   @ApiProperty()
-  user_id: number;
+  user_to_restrict_id: number;
 
-  @ApiProperty({ type: restrictionType })
-  type: restrictionType;
+  @ApiProperty()
+  type: number;
 
   @ApiProperty({ type: Date })
   end_date?: Date;

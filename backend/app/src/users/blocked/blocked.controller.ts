@@ -3,7 +3,7 @@ import { ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { BlockshipEntity } from 'src/_entities/users_blockship.entity';
 import { BlockedService } from './blocked.service';
 
-@ApiTags('blocked')
+@ApiTags('users_blocked')
 @Controller('blocked')
 export class BlockedController {
   constructor(private readonly blockedService: BlockedService) {}

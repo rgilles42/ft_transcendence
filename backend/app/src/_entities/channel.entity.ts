@@ -7,7 +7,6 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { UserEntity } from './user.entity';
 import { RestrictionEntity as RestrictionEntity } from './channel-restriction.entity';
 import { MessageEntity } from './channel-message.entity';
 import { MemberEntity } from './channel-member.entity';

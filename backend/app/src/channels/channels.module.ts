@@ -24,7 +24,7 @@ import { MembersModule } from './members/members.module';
     ]),
     RestrictionsModule,
     MessagesModule,
-    MembersModule
+    MembersModule,
   ],
   controllers: [ChannelsController],
   providers: [ChannelsService],

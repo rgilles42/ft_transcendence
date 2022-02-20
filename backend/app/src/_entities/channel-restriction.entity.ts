@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ChannelEntity } from './channel.entity';
+import { UserEntity } from './user.entity';
 import {
   Entity,
   Column,
@@ -10,7 +11,6 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { UserEntity } from './user.entity';
 
 export enum restrictionType {
   MUTE = 0,
@@ -30,11 +30,11 @@ export class RestrictionEntity {
   channel: ChannelEntity;
 
   @ApiProperty({ type: () => UserEntity })
-  @OneToOne(() => UserEntity, { eager: true, onDelete: 'CASCADE' })
+  @OneToOne(() => UserEntity, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: UserEntity;
 
-  @ApiProperty()
+  @ApiProperty({ enum: restrictionType })
   @Column({
     type: 'enum',
     enum: restrictionType,

@@ -71,7 +71,7 @@ export class ChannelsController {
   @Get(':id/messages')
   get_messages(@Param('id') id: string): Promise<MessageEntity[]> {
     const authed_user = new UserEntity();
-   authed_user.id = 1;
+    authed_user.id = 1;
     return this.channelsService.get_messages(+id, authed_user.id);
   }
 
@@ -81,7 +81,9 @@ export class ChannelsController {
     @Param('id') id: string,
     @Body() messageData: messageDto,
   ): Promise<MessageEntity> {
-    return this.channelsService.send_message(+id, messageData);
+    const authed_user = new UserEntity();
+    authed_user.id = 1;
+    return this.channelsService.send_message(+id, authed_user.id, messageData);
   }
 
   @ApiOkResponse({ type: [RestrictionEntity] })
@@ -91,14 +93,20 @@ export class ChannelsController {
     return this.channelsService.get_restrictions(+id);
   }
 
-  // @ApiCreatedResponse({ type: RestrictionEntity })
-  // @Post(':id/messages')
-  // create_restriction(
-  //   @Param('id') id: string,
-  //   @Body() restrData: restrictionDto,
-  // ): Promise<RestrictionEntity> {
-  //   return this.channelsService.create_restriction(+id, restrData);
-  // }
+  @ApiCreatedResponse({ type: RestrictionEntity })
+  @Post(':id/restrictions')
+  create_restriction(
+    @Param('id') id: string,
+    @Body() restrData: restrictionDto,
+  ): Promise<RestrictionEntity> {
+    const authed_user = new UserEntity();
+    authed_user.id = 1;
+    return this.channelsService.create_restriction(
+      +id,
+      authed_user.id,
+      restrData,
+    );
+  }
 
   @ApiOkResponse({ type: [MemberEntity] })
   @ApiNotFoundResponse()

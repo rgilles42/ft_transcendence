@@ -31,7 +31,7 @@ export class FriendshipEntity {
   @CreateDateColumn()
   createdAt: Date;
 
-  @ApiProperty()
+  @ApiProperty({ enum: friendshipStatus })
   @Column({
     type: 'enum',
     enum: friendshipStatus,

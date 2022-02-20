@@ -11,6 +11,8 @@ import { Repository } from 'typeorm';
 import { createUserDto } from './_dto/create-user.dto';
 import { sendIdDto } from './_dto/send-id.dto';
 import { updateUserDto } from './_dto/update-user.dto';
+import { ChannelEntity } from 'src/_entities/channel.entity';
+import { GameEntity } from 'src/_entities/game.entity';
 
 @Injectable()
 export class UsersService {
@@ -21,6 +23,8 @@ export class UsersService {
     private friendshipsRepository: Repository<FriendshipEntity>,
     @InjectRepository(BlockshipEntity)
     private blockshipsRepository: Repository<BlockshipEntity>,
+    @InjectRepository(GameEntity)
+    private gamesRepository: Repository<GameEntity>,
   ) {}
 
   findAll(): Promise<UserEntity[]> {
@@ -121,6 +125,42 @@ export class UsersService {
       );
       await this.friendshipsRepository.save(newFriendship);
       return newFriendship;
+    } catch (err) {
+      throw new NotFoundException();
+    }
+  }
+
+  async get_channels(id: number): Promise<ChannelEntity[]> {
+    try {
+      const user = await this.usersRepository.findOneOrFail(id, {
+        relations: ['memberships', 'memberships.channel'],
+      });
+      let channels: ChannelEntity[];
+      // eslint-disable-next-line prefer-const
+      channels = [];
+      for (let index = 0; index < user.memberships.length; index++) {
+        channels.push(user.memberships[index].channel);
+      }
+      return channels;
+    } catch (err) {
+      throw new NotFoundException();
+    }
+  }
+
+  async get_games(id: number): Promise<GameEntity[]> {
+    try {
+      const games = await this.gamesRepository.find({
+        relations: ['player1', 'player2'],
+      });
+      let user_games: GameEntity[];
+      // eslint-disable-next-line prefer-const
+      user_games = [];
+      for (let index = 0; index < games.length; index++) {
+        if (games[index].player1.id === id || games[index].player2.id === id) {
+          user_games.push(games[index]);
+        }
+      }
+      return user_games;
     } catch (err) {
       throw new NotFoundException();
     }
