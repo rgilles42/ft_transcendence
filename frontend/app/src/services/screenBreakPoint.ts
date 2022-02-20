@@ -56,4 +56,6 @@ window.addEventListener(
   false,
 );
 
-export default screenInfo;
+export default {
+  screenInfo,
+};

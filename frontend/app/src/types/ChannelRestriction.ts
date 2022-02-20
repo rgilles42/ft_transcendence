@@ -8,7 +8,7 @@ import User from './User';
 export default interface ChannelRestriction {
   id: number;
   channelId: number;
-  userId: boolean;
+  userId: number;
   type: number;
   endAt: Date | null;
   createdAt: Date;
