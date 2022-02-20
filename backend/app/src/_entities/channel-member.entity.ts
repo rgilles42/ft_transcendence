@@ -4,36 +4,37 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToOne,
   ManyToOne,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
 
-@Entity({ name: 'channel_message' })
-export class MessageEntity {
+@Entity({ name: 'channel_member' })
+export class MemberEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
 
   @ApiProperty({ type: () => ChannelEntity })
-  @ManyToOne(() => ChannelEntity, (channel) => channel.messages, {
+  @ManyToOne(() => ChannelEntity, (channel) => channel.members, {
     onDelete: 'CASCADE',
   })
   channel: ChannelEntity;
 
   @ApiProperty({ type: () => UserEntity })
-  @OneToOne(() => UserEntity, { onDelete: 'CASCADE' })
-  @JoinColumn()
+  @ManyToOne(() => UserEntity, { eager: true, onDelete: 'CASCADE' })
   user: UserEntity;
 
   @ApiProperty()
-  @Column()
-  content: string;
+  @Column({ default: false })
+  is_admin: boolean;
 
   @ApiProperty()
+  @Column({ default: false })
+  is_owner: boolean;
+
+  @ApiProperty({ type: () => Date })
   @CreateDateColumn()
   createdAt: Date;
 

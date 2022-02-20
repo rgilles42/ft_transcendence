@@ -21,6 +21,9 @@ import { MessageEntity } from 'src/_entities/channel-message.entity';
 import { RestrictionEntity } from 'src/_entities/channel-restriction.entity';
 import { messageDto } from './_dto/message.dto';
 import { restrictionDto } from './_dto/restriction.dto';
+import { UserEntity } from 'src/_entities/user.entity';
+import { MemberEntity } from 'src/_entities/channel-member.entity';
+import { memberDto } from './_dto/member.dto';
 
 @ApiTags('channels')
 @Controller('channels')
@@ -67,7 +70,9 @@ export class ChannelsController {
   @ApiNotFoundResponse()
   @Get(':id/messages')
   get_messages(@Param('id') id: string): Promise<MessageEntity[]> {
-    return this.channelsService.get_messages(+id);
+    const authed_user = new UserEntity();
+   authed_user.id = 1;
+    return this.channelsService.get_messages(+id, authed_user.id);
   }
 
   @ApiCreatedResponse({ type: MessageEntity })
@@ -86,12 +91,28 @@ export class ChannelsController {
     return this.channelsService.get_restrictions(+id);
   }
 
-  @ApiCreatedResponse({ type: RestrictionEntity })
-  @Post(':id/messages')
-  create_restriction(
+  // @ApiCreatedResponse({ type: RestrictionEntity })
+  // @Post(':id/messages')
+  // create_restriction(
+  //   @Param('id') id: string,
+  //   @Body() restrData: restrictionDto,
+  // ): Promise<RestrictionEntity> {
+  //   return this.channelsService.create_restriction(+id, restrData);
+  // }
+
+  @ApiOkResponse({ type: [MemberEntity] })
+  @ApiNotFoundResponse()
+  @Get(':id/members')
+  get_members(@Param('id') id: string): Promise<MemberEntity[]> {
+    return this.channelsService.get_members(+id);
+  }
+
+  @ApiCreatedResponse({ type: MemberEntity })
+  @Post(':id/members')
+  add_member(
     @Param('id') id: string,
-    @Body() restrData: restrictionDto,
-  ): Promise<RestrictionEntity> {
-    return this.channelsService.create_restriction(+id, restrData);
+    @Body() memberData: memberDto,
+  ): Promise<MemberEntity> {
+    return this.channelsService.add_member(+id, memberData);
   }
 }

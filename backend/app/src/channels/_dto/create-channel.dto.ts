@@ -8,5 +8,5 @@ export class createChannelDto {
   password?: string;
 
   @ApiProperty()
-  owner: number;
+  owner_id: number;
 }

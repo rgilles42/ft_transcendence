@@ -9,6 +9,8 @@ import { RestrictionsModule } from './restrictions/restrictions.module';
 import { MessagesModule } from './messages/messages.module';
 import { RestrictionEntity } from 'src/_entities/channel-restriction.entity';
 import { MessageEntity } from 'src/_entities/channel-message.entity';
+import { MemberEntity } from 'src/_entities/channel-member.entity';
+import { MembersModule } from './members/members.module';
 
 @Module({
   imports: [
@@ -18,9 +20,11 @@ import { MessageEntity } from 'src/_entities/channel-message.entity';
       UserEntity,
       RestrictionEntity,
       MessageEntity,
+      MemberEntity,
     ]),
     RestrictionsModule,
     MessagesModule,
+    MembersModule
   ],
   controllers: [ChannelsController],
   providers: [ChannelsService],

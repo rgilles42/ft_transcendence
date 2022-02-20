@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class messageDto {
+export class memberDto {
   @ApiProperty()
   user_id: number;
 
   @ApiProperty()
-  content: string;
+  asAdmin?: boolean;
 }

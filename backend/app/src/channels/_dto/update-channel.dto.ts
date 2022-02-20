@@ -9,10 +9,4 @@ export class updateChannelDto {
 
   @ApiProperty({ required: false })
   new_password?: string;
-
-  @ApiProperty({ required: false })
-  new_user_id?: number;
-
-  @ApiProperty({ required: false })
-  make_admin_as_well?: boolean;
 }
