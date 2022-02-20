@@ -34,7 +34,7 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style lang="postcss">
 
 .dropdown-messages.v-popper__popper .v-popper__arrow-container {
   display: none;
@@ -49,30 +49,28 @@ export default defineComponent({
   background: unset !important;
 }
 
-.dropdown-messages.v-popper__popper .v-popper__wrapper {
-  transition-property: opacity, transform;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 100ms;
+.dropdown-messages.v-popper__popper.v-popper__popper--show .v-popper__wrapper {
+  @apply transition duration-200 ease-out;
 }
 
 .dropdown-messages.v-popper__popper.v-popper__popper--show-from .v-popper__wrapper {
-  opacity: 0;
-  transform: scale(.95);
+  @apply translate-y-1 opacity-0;
 }
 
 .dropdown-messages.v-popper__popper.v-popper__popper--show-to .v-popper__wrapper {
-  opacity: 100;
-  transform: scale(1);
+  @apply translate-y-0 opacity-100;
+}
+
+.dropdown-messages.v-popper__popper.v-popper__popper--hidden  .v-popper__wrapper {
+  @apply transition duration-150 ease-in;
 }
 
 .dropdown-messages.v-popper__popper.v-popper__popper--hidden-from .v-popper__wrapper {
-  opacity: 100;
-  transform: scale(1);
+  @apply translate-y-0 opacity-100;
 }
 
 .dropdown-messages.v-popper__popper.v-popper__popper--hidden-to .v-popper__wrapper {
-  opacity: 0;
-  transform: scale(.95);
+  @apply translate-y-1 opacity-0;
 }
 
 </style>

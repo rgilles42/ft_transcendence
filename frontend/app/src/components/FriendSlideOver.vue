@@ -15,7 +15,7 @@
             <ul class="mb-3 truncate">
               <li v-for="(friend, friendIndex) in group[1]" :key="friendIndex" class="py-1 rounded-sm mb-0.5 last:mb-0 group relative">
 
-              <VMenu :distance="15" placement="left" class="friend-item" popperClass="friend-item-quick-view" :triggers="['click']">
+              <VMenu :distance="15" placement="left-start" :positioning-disabled="screenInfo.is('all')" class="friend-item" popperClass="friend-item-quick-view" :triggers="['click']">
                 <a href="##" class="nav-link m-0 block px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:bg-gray-700">
                   <div class="flex items-center">
                     <span class="flex-none"><AccountAvatar :user="friend" alt="avatar" class="w-8 h-8 mr-2 rounded-full" /></span>
@@ -46,6 +46,7 @@
 </template>
 
 <script lang="ts">
+import screenInfo from '@/services/screenBreakPoint';
 import { defineComponent, ref, computed } from 'vue';
 import AccountAvatar from './AccountAvatar.vue';
 import ProfileQuickView from './ProfileQuickView.vue';
@@ -106,6 +107,7 @@ export default defineComponent({
       isSlideOpen,
       friends,
       groupedFriends,
+      screenInfo,
     };
   },
   methods: {
@@ -150,6 +152,34 @@ export default defineComponent({
   border: none !important;
   border-radius: unset !important;
   background: unset !important;
+}
+
+.friend-item-quick-view.v-popper__popper.v-popper__popper--no-positioning {
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.friend-item-quick-view.v-popper__popper.v-popper__popper--no-positioning .v-popper__backdrop {
+  display: block;
+  background: rgba(0 0 0 / 50%);
+}
+
+.friend-item-quick-view.v-popper__popper.v-popper__popper--no-positioning .v-popper__wrapper {
+  width: 100%;
+  pointer-events: auto;
+  transition: transform .15s ease-out;
+  margin-top: 50px;
+}
+
+.friend-item-quick-view.v-popper__popper.v-popper__popper--no-positioning.v-popper__popper--hidden .v-popper__wrapper {
+  transform: translateY(100%);
 }
 
 </style>
