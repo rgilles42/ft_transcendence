@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { GameEntity } from 'src/_entities/game.entity';
 import { GamesService } from './games.service';
 import { createGameDto } from './_dto/create-game.dto';
@@ -15,7 +15,7 @@ export class GamesController {
     return this.gamesService.findAll();
   }
 
-  @ApiOkResponse({ type: GameEntity })
+  @ApiCreatedResponse({ type: GameEntity })
   @Post()
   create(@Body() createGameData: createGameDto): Promise<GameEntity> {
     return this.gamesService.create(createGameData);

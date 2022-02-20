@@ -52,7 +52,6 @@ export class ChannelsService {
     try {
       const newMember = new MemberEntity();
       newMember.is_admin = true;
-      newMember.is_owner = true;
       newMember.user = await this.usersRepository.findOneOrFail(
         createChannelData.owner_id,
       );
@@ -61,6 +60,7 @@ export class ChannelsService {
         type: createChannelData.type,
         password: createChannelData.password,
       });
+      newChannel.owner = newMember.user;
       newChannel.members = [newMember];
       await this.channelsRepository.save(newChannel);
       return newChannel;

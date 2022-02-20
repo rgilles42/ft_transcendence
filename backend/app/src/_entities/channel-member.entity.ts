@@ -33,10 +33,6 @@ export class MemberEntity {
   @Column({ default: false })
   is_admin: boolean;
 
-  @ApiProperty()
-  @Column({ default: false })
-  is_owner: boolean;
-
   @ApiProperty({ type: () => Date })
   @CreateDateColumn()
   createdAt: Date;

@@ -6,10 +6,12 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
 } from 'typeorm';
 import { RestrictionEntity as RestrictionEntity } from './channel-restriction.entity';
 import { MessageEntity } from './channel-message.entity';
 import { MemberEntity } from './channel-member.entity';
+import { UserEntity } from './user.entity';
 
 @Entity({ name: 'channel' })
 export class ChannelEntity {
@@ -24,6 +26,13 @@ export class ChannelEntity {
   @ApiProperty()
   @Column({ nullable: true })
   password: string;
+
+  @ApiProperty({ type: () => UserEntity })
+  @ManyToOne(() => UserEntity, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
+  owner: UserEntity;
 
   @ApiProperty({ type: () => [MemberEntity] })
   @OneToMany(() => MemberEntity, (member) => member.channel, { eager: true })
