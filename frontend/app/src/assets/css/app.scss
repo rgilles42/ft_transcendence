@@ -1,1 +1,9 @@
 @charset "utf-8";
+
+@import "./font_awesome/scss/fontawesome.scss";
+$fa-font-path: "./font_awesome/webfonts";
+@import "./font_awesome/scss/solid.scss";
+
+@import "~floating-vue/dist/style.css";
+
+@import "./tailwind.css";
