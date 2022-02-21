@@ -11,7 +11,7 @@ export const $axios = axios.create({
     Accept: 'application/json',
     'Content-Type': 'application/json',
   },
-  withCredentials: ['production', 'prod'].includes(process.env.NODE_ENV),
+  withCredentials: true,
 });
 
 const repositories = {

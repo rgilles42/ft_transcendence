@@ -5,8 +5,8 @@ const AUTH_BASE = '/auth';
 export default ($axios: AxiosInstance) => ({
 
   // Auth Routes
-  login() {
-    return $axios.post(`${AUTH_BASE}/login`);
+  login(code: string, redirectUrl: string) {
+    return $axios.get(`${AUTH_BASE}/42/callback`, { params: { code, redirectUrl } });
   },
 
   logout() {
@@ -14,7 +14,7 @@ export default ($axios: AxiosInstance) => ({
   },
 
   refreshToken(refreshToken : string | null) {
-    return $axios.post(`${AUTH_BASE}/refreshToken`, { refreshToken });
+    return $axios.post(`${AUTH_BASE}/refresh`, { token: refreshToken });
   },
 
 });

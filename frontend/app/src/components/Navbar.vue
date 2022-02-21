@@ -9,7 +9,7 @@
 
       <div class="w-1/3 ml-auto flex flex-row-reverse nav-links">
         <template v-if="!currentUser">
-          <router-link to="/login" class="nav-link">Connexion</router-link>
+          <router-link to="/auth/login" class="nav-link">Connexion</router-link>
         </template>
         <template v-else>
           <NavbarDropdownUser :user="currentUser" />
@@ -41,7 +41,7 @@
 
       <div class="w-1/3 ml-auto flex flex-row-reverse nav-links">
         <template v-if="!currentUser">
-          <router-link to="/login" class="nav-link">Connexion</router-link>
+          <router-link to="/auth/login" class="nav-link">Connexion</router-link>
         </template>
         <template v-else>
           <NavbarDropdownUser :user="currentUser" />

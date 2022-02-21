@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import { useStore } from '../store/index';
 import Home from '../views/Home.vue';
-import Login from '../views/Login.vue';
-import Logout from '../views/Logout.vue';
+import Login from '../views/auth/Login.vue';
+import Logout from '../views/auth/Logout.vue';
 import Profile from '../views/Profile.vue';
 import Chat from '../views/Chat.vue';
 
@@ -13,12 +13,17 @@ const routes: Array<RouteRecordRaw> = [
     component: Home,
   },
   {
-    path: '/login',
+    path: '/auth/login',
     name: 'Login',
     component: Login,
   },
   {
-    path: '/logout',
+    path: '/auth/42/callback',
+    name: 'FortyTwoCallback',
+    component: () => import(/* webpackChunkName: "forthyTwo" */ '../views/auth/FortyTwo.vue'),
+  },
+  {
+    path: '/auth/logout',
     name: 'Logout',
     component: Logout,
   },
@@ -49,17 +54,18 @@ const router = createRouter({
 });
 
 router.beforeEach((to, _, next) => {
+  if (to.matched.length <= 0) {
+    next('/');
+    return;
+  }
   const store = useStore();
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!store.getUser) {
       // Redirect to the Login Page
-      next('/login');
-    } else {
-      next();
+      next('/auth/login');
     }
-  } else {
-    next();
   }
+  next();
 });
 
 export default router;
