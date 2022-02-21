@@ -26,5 +26,6 @@ import { GameEntity } from 'src/_entities/game.entity';
   ],
   controllers: [UsersController],
   providers: [UsersService],
+  exports: [UsersService],
 })
 export class UsersModule {}

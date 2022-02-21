@@ -50,6 +50,11 @@ export class UsersService {
     }
   }
 
+  async findOneByLogin(login: UserEntity['login']) {
+    const user = await this.usersRepository.findOne({ login });
+    return user;
+  }
+
   async create(createUserData: createUserDto): Promise<UserEntity> {
     const newUser = this.usersRepository.create(createUserData);
     await this.usersRepository.save(newUser);

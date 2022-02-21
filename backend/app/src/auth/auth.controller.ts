@@ -1,5 +1,4 @@
-import { JwtAuthGuard } from './jwt-auth.guard';
-import { ForthyTwoAuthGuard } from './forty-two-auth.guard';
+import { ForthyTwoAuthGuard } from './guards/forty-two-auth.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
@@ -11,18 +10,18 @@ export class AuthController {
 
   @UseGuards(ForthyTwoAuthGuard)
   @Get('42/login')
-  login(): any {
-    return { msg: 'logged In' };
+  login(@Request() req) {
+    console.log(req);
   }
 
+  @UseGuards(ForthyTwoAuthGuard)
   @Get('42/callback')
-  callback(): any {
-    return { msg: 'logged In' };
+  async callback(@Request() req) {
+    return this.authService.loginWithForthyTwo(req);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('protected')
-  helloWorld(): string {
-    return 'Hello World';
+  @Post('refresh')
+  helloWorld(@Request() req) {
+    return this.authService.refreshTokens(this.authService.getReqToken(req));
   }
 }
