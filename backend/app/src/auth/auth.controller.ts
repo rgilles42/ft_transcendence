@@ -8,20 +8,26 @@ import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  // Can be deleted or keep for debug in local (without front)
   @UseGuards(ForthyTwoAuthGuard)
   @Get('42/login')
-  login(@Request() req) {
-    console.log(req);
+  login() {
+    return 'Success';
   }
 
   @UseGuards(ForthyTwoAuthGuard)
   @Get('42/callback')
-  async callback(@Request() req) {
+  callback(@Request() req) {
     return this.authService.loginWithForthyTwo(req);
   }
 
   @Post('refresh')
   helloWorld(@Request() req) {
     return this.authService.refreshTokens(this.authService.getReqToken(req));
+  }
+
+  @Post('logout')
+  logout() {
+    return 'Success';
   }
 }

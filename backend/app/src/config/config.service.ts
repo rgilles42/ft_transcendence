@@ -58,7 +58,6 @@ class ConfigService {
       clientID: this.getValue('FORTHY_TWO_CLIENT_ID'),
       clientSecret: this.getValue('FORTHY_TWO_CLIENT_SECRET_ID'),
       callbackURL: 'http://127.0.0.1:3000/auth/42/callback',
-      scope: 'public',
     };
   }
 

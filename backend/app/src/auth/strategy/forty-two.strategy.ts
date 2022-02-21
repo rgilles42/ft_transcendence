@@ -10,6 +10,13 @@ export class ForthyTwoStrategy extends PassportStrategy(Strategy) {
     super(configService.getForthyTwoStrategyConfig()); // config
   }
 
+  public authenticate(req, options) {
+    if (req.query.redirectUrl) {
+      options.callbackURL = req.query.redirectUrl;
+    }
+    super.authenticate(req, options);
+  }
+
   async validate(accessToken: string, refreshToken: string, profile: any) {
     if (!profile) throw new UnauthorizedException();
     const user = {
@@ -18,4 +25,25 @@ export class ForthyTwoStrategy extends PassportStrategy(Strategy) {
     };
     return user;
   }
+
+  // validate(accessToken: string) {
+  //   return new Promise((resolve, reject) => {
+  //     this.userProfile(`${accessToken}z`, (err, profile) => {
+  //       if (err !== undefined && err !== null) {
+  //         console.log(err);
+  //         reject(err);
+  //         return;
+  //       }
+  //       if (!profile) {
+  //         reject(new UnauthorizedException());
+  //         return;
+  //       }
+  //       const user = {
+  //         login: profile.username,
+  //         imageUrl: profile.photos[0].value,
+  //       };
+  //       resolve(user);
+  //     });
+  //   });
+  // }
 }
