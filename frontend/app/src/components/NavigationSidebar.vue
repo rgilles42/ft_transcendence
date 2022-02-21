@@ -21,9 +21,6 @@
                 role="menuitem"
               >
                 <div class="flex flex-grow">
-                  <span class="flex-shrink-0 h-6 w-6 mr-3">
-                    <i class="fas fa-undo ml-1"></i>
-                  </span>
                   <span class="text-sm font-medium">Accueil</span>
                 </div>
               </router-link >

@@ -61,7 +61,7 @@ export class AuthService {
     return this.createTokens(user);
   }
 
-  async loginWithForthyTwo(req) {
+  async loginWithFortyTwo(req) {
     if (!req.user) throw new BadRequestException();
     let user = await this.usersService.findOneByLogin(req.user.login);
     if (!user) {

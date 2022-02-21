@@ -5,9 +5,9 @@ import { configService } from 'src/config/config.service';
 import { Strategy } from 'passport-42';
 
 @Injectable()
-export class ForthyTwoStrategy extends PassportStrategy(Strategy) {
+export class FortyTwoStrategy extends PassportStrategy(Strategy) {
   constructor(private authServe: AuthService) {
-    super(configService.getForthyTwoStrategyConfig()); // config
+    super(configService.getFortyTwoStrategyConfig()); // config
   }
 
   public authenticate(req, options) {

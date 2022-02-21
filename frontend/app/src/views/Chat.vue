@@ -127,7 +127,7 @@ export default defineComponent({
           channelId: 1,
           userId: 10,
           type: 0,
-          endAt: new Date(),
+          endAt: new Date('2022-02-21 17:29:00'),
           createdAt: new Date(),
           updatedAt: new Date(),
         },

@@ -53,10 +53,10 @@ class ConfigService {
     };
   }
 
-  public getForthyTwoStrategyConfig() {
+  public getFortyTwoStrategyConfig() {
     return {
-      clientID: this.getValue('FORTHY_TWO_CLIENT_ID'),
-      clientSecret: this.getValue('FORTHY_TWO_CLIENT_SECRET_ID'),
+      clientID: this.getValue('FORTY_TWO_CLIENT_ID'),
+      clientSecret: this.getValue('FORTY_TWO_CLIENT_SECRET_ID'),
       callbackURL: 'http://127.0.0.1:3000/auth/42/callback',
     };
   }

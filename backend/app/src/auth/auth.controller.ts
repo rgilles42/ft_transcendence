@@ -1,4 +1,4 @@
-import { ForthyTwoAuthGuard } from './guards/forty-two-auth.guard';
+import { FortyTwoAuthGuard } from './guards/forty-two-auth.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
@@ -9,16 +9,16 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   // Can be deleted or keep for debug in local (without front)
-  @UseGuards(ForthyTwoAuthGuard)
+  @UseGuards(FortyTwoAuthGuard)
   @Get('42/login')
   login() {
     return 'Success';
   }
 
-  @UseGuards(ForthyTwoAuthGuard)
+  @UseGuards(FortyTwoAuthGuard)
   @Get('42/callback')
   callback(@Request() req) {
-    return this.authService.loginWithForthyTwo(req);
+    return this.authService.loginWithFortyTwo(req);
   }
 
   @Post('refresh')

@@ -20,7 +20,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/auth/42/callback',
     name: 'FortyTwoCallback',
-    component: () => import(/* webpackChunkName: "forthyTwo" */ '../views/auth/FortyTwo.vue'),
+    component: () => import(/* webpackChunkName: "fortyTwo" */ '../views/auth/FortyTwo.vue'),
   },
   {
     path: '/auth/logout',
