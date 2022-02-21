@@ -26,10 +26,6 @@ export class UserEntity {
   username: string;
 
   @ApiProperty()
-  @Column({ unique: true })
-  email: string;
-
-  @ApiProperty()
   @Column({ nullable: true })
   imageUrl: string;
 

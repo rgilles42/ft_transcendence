@@ -5,9 +5,6 @@ export class updateUserDto {
   username?: string;
 
   @ApiProperty({ required: false })
-  email?: string;
-
-  @ApiProperty({ required: false })
   imageUrl?: string;
 
   @ApiProperty({ required: false })
