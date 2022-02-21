@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import { useStore } from '../store/index';
 import Home from '../views/Home.vue';
 import Login from '../views/Login.vue';
 import Logout from '../views/Logout.vue';
@@ -45,6 +46,20 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+});
+
+router.beforeEach((to, _, next) => {
+  const store = useStore();
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (!store.getUser) {
+      // Redirect to the Login Page
+      next('/login');
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
 });
 
 export default router;
