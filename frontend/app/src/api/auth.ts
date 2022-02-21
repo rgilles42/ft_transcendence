@@ -5,8 +5,8 @@ const AUTH_BASE = '/auth';
 export default ($axios: AxiosInstance) => ({
 
   // Auth Routes
-  localLogin() {
-    return $axios.post(`${AUTH_BASE}/login`);
+  localLogin(login: string) {
+    return $axios.post(`${AUTH_BASE}/login`, { login });
   },
 
   fortyTwoLogin(code: string, redirectUrl: string) {

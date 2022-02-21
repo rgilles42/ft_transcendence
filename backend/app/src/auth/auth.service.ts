@@ -61,6 +61,22 @@ export class AuthService {
     return this.createTokens(user);
   }
 
+  async loginWithLocal(req) {
+    if (!req.body.login) throw new BadRequestException();
+    let user = await this.usersService.findOneByLogin(req.body.login);
+    if (!user) {
+      user = await this.usersService.create({
+        login: req.body.login,
+        username: req.body.login,
+        imageUrl: null,
+      });
+    }
+    return {
+      ...this.createTokens(user),
+      user,
+    };
+  }
+
   async loginWithFortyTwo(req) {
     if (!req.user) throw new BadRequestException();
     let user = await this.usersService.findOneByLogin(req.user.login);
