@@ -52,6 +52,21 @@ class ConfigService {
       synchronize: !this.isProduction(),
     };
   }
+
+  public getForthyTwoStrategyConfig() {
+    return {
+      clientID: this.getValue('FORTHY_TWO_CLIENT_ID'),
+      clientSecret: this.getValue('FORTHY_TWO_CLIENT_SECRET_ID'),
+      callbackURL: 'http://127.0.0.1:3000/auth/42/callback',
+      scope: 'public',
+    };
+  }
+
+  public getJwtConfig() {
+    return {
+      secret: this.getValue('JWT_SECRET'),
+    };
+  }
 }
 
 const configService = new ConfigService(process.env).ensureValues([
