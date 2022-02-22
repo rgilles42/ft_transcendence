@@ -47,6 +47,7 @@
 
 <script lang="ts">
 import { screenInfo } from '@/services/screenBreakPoint';
+import { useStore } from '@/store';
 import { defineComponent, ref, computed } from 'vue';
 import AccountAvatar from './AccountAvatar.vue';
 import ProfileQuickView from './ProfileQuickView.vue';
@@ -65,30 +66,11 @@ export default defineComponent({
         slideStatus.value = value;
       },
     });
-    const friends = [
-      {
-        id: 10,
-        username: 'ppaglier',
-        imageUrl: 'https://cdn.intra.42.fr/users/ppaglier.jpg',
-        status: 0,
-        activity: 'Mange des bananes',
-      },
-      {
-        id: 11,
-        username: 'frossiny',
-        status: 0,
-      },
-      {
-        id: 12,
-        username: 'pkevin',
-        status: 1,
-      },
-      {
-        id: 13,
-        username: 'rgilles',
-        status: 2,
-      },
-    ];
+    const store = useStore();
+    const currentUser = computed(() => store.getUser);
+
+    const friends = computed(() => currentUser.value?.friends || []);
+
     function groupBy<T>(list: T[], keyGetter: (x: T) => unknown) {
       const map = new Map();
       list.forEach((item) => {
@@ -102,7 +84,8 @@ export default defineComponent({
       });
       return map;
     }
-    const groupedFriends = groupBy(friends, (friend) => friend.status);
+
+    const groupedFriends = groupBy(friends.value, (friend) => friend.status);
     return {
       isSlideOpen,
       friends,
@@ -120,7 +103,7 @@ export default defineComponent({
         'En ligne',
         'Hors ligne',
       ];
-      return indexes[index];
+      return indexes[index || 0];
     },
   },
   watch: {
