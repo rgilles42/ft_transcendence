@@ -7,7 +7,7 @@
       <div class="flex flex-col lg:flex-row md:flex-row items-center md:ml-12 mt-8">
         <AccountAvatar :user="user" class="mb-4 md:mb-0 rounded-full w-24 md:w-16" />
         <div class="md:ml-8">
-          <h6 v-if="isUserMe">Bonjour, {{ user.username }}!</h6>
+          <h6 v-if="isSameUser(currentUser, user)">Bonjour, {{ user.username }}!</h6>
           <h6 v-else>{{ user.username }}</h6>
         </div>
       </div>
@@ -18,8 +18,16 @@
             <div class="p-4 bg-white bg-opacity-5 border-b border-gray-800 flex justify-between items-center">
               <h4 class="text-xl">Détails du compte</h4>
 
-              <button v-if="!isUserIsFriend" @click="sendFriendRequest(user.id)" class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
+              <button v-if="canUserBeFriend(currentUser, user)" @click="sendFriendRequest(user)" class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
                 Envoyer une demande d'ami
+              </button>
+
+              <button v-if="canUserAcceptFriend(currentUser, user)" class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
+                Accepter la demande
+              </button>
+
+              <button v-if="isUserIsFriend(currentUser, user)" class="bg-red-900 hover:bg-red-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
+                Supprimer cet ami
               </button>
 
             </div>
@@ -48,6 +56,10 @@ import AccountAvatar from '@/components/AccountAvatar.vue';
 import Loader from '@/components/Loader.vue';
 import { AxiosResponse } from 'axios';
 import formater from '@/services/formater';
+import {
+  canUserAcceptFriend, canUserBeFriend, isSameUser, isUserIsFriend,
+} from '@/services/userUtils';
+import UserFriend from '@/types/UserFriend';
 
 export default defineComponent({
   name: 'Profile',
@@ -81,8 +93,17 @@ export default defineComponent({
         .catch(() => resolve(null));
     });
 
-    const sendFriendRequest = (userId: User['id']) => {
-      console.log(userId);
+    const sendFriendRequest = (newFriend: User | null) => {
+      if (!currentUser.value || !newFriend || !canUserBeFriend(currentUser.value, newFriend)) {
+        return;
+      }
+      api.users.addUserFriend(currentUser.value.id, newFriend.id)
+        .then((response) => {
+          console.log(response);
+          if (currentUser.value) {
+            currentUser.value.friends = currentUser.value.friends || [];
+          }
+        });
     };
 
     watch(
@@ -108,24 +129,11 @@ export default defineComponent({
       currentUser,
       formater,
       sendFriendRequest,
+      isUserIsFriend,
+      canUserBeFriend,
+      canUserAcceptFriend,
+      isSameUser,
     };
-  },
-  computed: {
-    isUserMe() {
-      if (!this.user || !this.currentUser) {
-        return false;
-      }
-      return this.user.id === this.currentUser.id;
-    },
-    isUserIsFriend() {
-      if (!this.user || !this.currentUser) {
-        return false;
-      }
-      if (!this.currentUser.friends) {
-        return false;
-      }
-      return this.currentUser.friends.some((friend) => this.user && this.user.id === friend.userId);
-    },
   },
 });
 </script>
