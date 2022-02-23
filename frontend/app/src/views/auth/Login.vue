@@ -36,6 +36,7 @@ import { useStore } from '@/store';
 import { defineComponent, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '@/api';
+import { configService } from '@/services/configService';
 
 export default defineComponent({
   name: 'Login',
@@ -48,7 +49,7 @@ export default defineComponent({
     const loginRef = ref('');
     const goToFortyTwo = () => {
       const query = {
-        client_id: process.env.VUE_APP_FORTY_TWO_CLIENT_ID,
+        client_id: configService.getFortyTwoConfig().clientId,
         redirect_uri: `${window.location.origin}/auth/42/callback`,
         response_type: 'code',
       };
@@ -62,16 +63,15 @@ export default defineComponent({
     const localLogin = (login: string) => {
       api.auth.localLogin(login).then((response) => {
         store.setTokens(response.data.access_token, response.data.refresh_token);
+        store.setXsrfToken(response.data.xsrf_token);
         store.setUser(response.data.user);
         router.replace('/');
       });
     };
 
-    console.log(process.env.NODE_ENV);
-
     return {
       loginRef,
-      isProduction: ['production', 'prod'].includes(process.env.NODE_ENV),
+      isProduction: configService.isProduction(),
       localLogin,
       goToFortyTwo,
     };

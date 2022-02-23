@@ -48,7 +48,7 @@ export const parseDate = (date: any): Date => {
     // Default return date if date is not valid
     newDate = new Date();
   }
-  return date;
+  return newDate;
 };
 
 export const formatDate = (date: any, format: string): string => formatDateFns(parseDate(date), format);

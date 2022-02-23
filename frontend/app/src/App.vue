@@ -10,13 +10,32 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import api from '@/api';
 import Navbar from './components/Navbar.vue';
 import Footer from './components/Footer.vue';
+import { useStore } from './store';
 
 export default defineComponent({
   components: {
     Navbar,
     Footer,
+  },
+  setup() {
+    const store = useStore();
+
+    const refreshCurrentUser = () => {
+      api.users.getMyUser()
+        .then((response) => {
+          store.setUser(response.data.user);
+        })
+        .catch(() => {
+          store.logoutUser();
+        });
+    };
+
+    if (store.getUser) {
+      refreshCurrentUser();
+    }
   },
 });
 </script>

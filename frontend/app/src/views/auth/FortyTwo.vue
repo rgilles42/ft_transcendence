@@ -24,6 +24,7 @@ export default defineComponent({
     const loginFortyTwo = (code: string) => {
       api.auth.fortyTwoLogin(code, `${window.location.origin}/auth/42/callback`).then((response) => {
         store.setTokens(response.data.access_token, response.data.refresh_token);
+        store.setXsrfToken(response.data.xsrf_token);
         store.setUser(response.data.user);
         router.replace('/');
       });

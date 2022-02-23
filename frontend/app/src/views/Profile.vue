@@ -15,13 +15,18 @@
       <div class="mt-8 flex flex-row">
         <section class="flex-grow mx-4">
           <div class="rounded-md bg-gray-900 text-sm">
-            <div class="p-4 bg-white bg-opacity-5 border-b border-gray-800">
+            <div class="p-4 bg-white bg-opacity-5 border-b border-gray-800 flex justify-between items-center">
               <h4 class="text-xl">Détails du compte</h4>
+
+              <button v-if="!isUserIsFriend" @click="sendFriendRequest(user.id)" class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
+                Envoyer une demande d'ami
+              </button>
+
             </div>
             <div class="p-4 flex mb-4">
               <div class="w-1/3">
                 <p class="text-gray-400 mb-1">Date de création:</p>
-                <p>Le {{ user.createdAt }}</p>
+                <p>Le {{ formater.formatDate(user.createdAt, 'dd/MM/yyyy à HH:mm') }}</p>
               </div>
             </div>
           </div>
@@ -42,9 +47,11 @@ import User from '@/types/User';
 import AccountAvatar from '@/components/AccountAvatar.vue';
 import Loader from '@/components/Loader.vue';
 import { AxiosResponse } from 'axios';
+import formater from '@/services/formater';
 
 export default defineComponent({
   name: 'Profile',
+  components: { AccountAvatar, Loader },
   props: {
     requestUserId: {
       type: String,
@@ -54,6 +61,8 @@ export default defineComponent({
   setup(props) {
     const router = useRouter();
     const store = useStore();
+
+    const currentUser = computed(() => store.getUser);
 
     const user = ref<User | null>(null);
 
@@ -71,6 +80,10 @@ export default defineComponent({
         .then((response: { data: User | null; }) => resolve(response.data))
         .catch(() => resolve(null));
     });
+
+    const sendFriendRequest = (userId: User['id']) => {
+      console.log(userId);
+    };
 
     watch(
       () => props.requestUserId,
@@ -92,7 +105,9 @@ export default defineComponent({
 
     return {
       user,
-      currentUser: computed(() => store.getUser),
+      currentUser,
+      formater,
+      sendFriendRequest,
     };
   },
   computed: {
@@ -102,7 +117,15 @@ export default defineComponent({
       }
       return this.user.id === this.currentUser.id;
     },
+    isUserIsFriend() {
+      if (!this.user || !this.currentUser) {
+        return false;
+      }
+      if (!this.currentUser.friends) {
+        return false;
+      }
+      return this.currentUser.friends.some((friend) => this.user && this.user.id === friend.userId);
+    },
   },
-  components: { AccountAvatar, Loader },
 });
 </script>
