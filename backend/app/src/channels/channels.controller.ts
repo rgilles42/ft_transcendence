@@ -24,8 +24,11 @@ import { restrictionDto } from './_dto/restriction.dto';
 import { UserEntity } from 'src/_entities/user.entity';
 import { MemberEntity } from 'src/_entities/channel-member.entity';
 import { memberDto } from './_dto/member.dto';
+import { ValidationPipe } from '@nestjs/common';
+import { UsePipes } from '@nestjs/common';
 
 @ApiTags('channels')
+@UsePipes(new ValidationPipe())
 @Controller('channels')
 export class ChannelsController {
   constructor(private readonly channelsService: ChannelsService) {}

@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  UsePipes,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserEntity } from 'src/_entities/user.entity';
