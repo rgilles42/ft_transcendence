@@ -14,24 +14,14 @@ export class FriendsService {
   ) {}
 
   findAll(): Promise<FriendshipEntity[]> {
-    return this.friendshipsRepository.find({
-      relations: ['user'],
-    });
+    return this.friendshipsRepository.find({});
   }
 
   async update_status(id: number): Promise<FriendshipEntity> {
     try {
-      const friendship = await this.friendshipsRepository.findOneOrFail(id, {
-        relations: ['user'],
-      });
+      const friendship = await this.friendshipsRepository.findOneOrFail(id);
       friendship.status = friendshipStatus.ACCEPTED;
       await this.friendshipsRepository.save(friendship);
-
-      const friendship2 = new FriendshipEntity();
-      friendship2.user = friendship.friend;
-      friendship2.friend = friendship.user;
-      friendship2.status = friendshipStatus.ACCEPTED;
-      await this.friendshipsRepository.save(friendship2);
       return friendship;
     } catch (err) {
       throw new NotFoundException();
@@ -40,19 +30,8 @@ export class FriendsService {
 
   async remove(id: number): Promise<FriendshipEntity> {
     try {
-      const friendship = await this.friendshipsRepository.findOneOrFail(id, {
-        relations: ['user'],
-      });
-      const matching_friendship = await this.friendshipsRepository.findOne({
-        relations: ['user'],
-        where: { user: friendship.friend, friend: friendship.user },
-      });
+      const friendship = await this.friendshipsRepository.findOneOrFail(id);
       await this.friendshipsRepository.delete(id);
-      if (matching_friendship !== undefined) {
-        await this.friendshipsRepository.delete(
-          matching_friendship.friendship_id,
-        );
-      }
       return friendship;
     } catch (err) {
       throw new NotFoundException();

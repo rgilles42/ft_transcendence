@@ -11,16 +11,12 @@ export class BlockedService {
   ) {}
 
   findAll(): Promise<BlockshipEntity[]> {
-    return this.blockshipsRepository.find({
-      relations: ['user'],
-    });
+    return this.blockshipsRepository.find({});
   }
 
   async remove(id: number): Promise<BlockshipEntity> {
     try {
-      const blockship = await this.blockshipsRepository.findOneOrFail(id, {
-        relations: ['user'],
-      });
+      const blockship = await this.blockshipsRepository.findOneOrFail(id, {});
       this.blockshipsRepository.delete(id);
       return blockship;
     } catch (err) {

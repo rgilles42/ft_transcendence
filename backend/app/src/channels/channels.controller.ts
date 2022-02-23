@@ -6,12 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { ChannelsService } from './channels.service';
 import { ChannelEntity } from 'src/_entities/channel.entity';
 import { createChannelDto } from './_dto/create-channel.dto';
 import { updateChannelDto } from './_dto/update-channel.dto';
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -26,10 +28,13 @@ import { MemberEntity } from 'src/_entities/channel-member.entity';
 import { memberDto } from './_dto/member.dto';
 import { ValidationPipe } from '@nestjs/common';
 import { UsePipes } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @ApiTags('channels')
 @UsePipes(new ValidationPipe())
 @Controller('channels')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('access_token')
 export class ChannelsController {
   constructor(private readonly channelsService: ChannelsService) {}
 

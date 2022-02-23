@@ -2,7 +2,7 @@ import {
   NotFoundException,
   Injectable,
   BadRequestException,
-  ForbiddenException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MemberEntity } from 'src/_entities/channel-member.entity';
@@ -122,7 +122,7 @@ export class ChannelsService {
         restrictionType.MUTE
     )
       return channel.messages;
-    else throw new ForbiddenException();
+    else throw new UnauthorizedException();
   }
 
   async send_message(
@@ -149,7 +149,7 @@ export class ChannelsService {
       } catch (err) {
         throw new NotFoundException();
       }
-    } else throw new ForbiddenException();
+    } else throw new UnauthorizedException();
   }
 
   async get_restrictions(id: number): Promise<RestrictionEntity[]> {
@@ -191,7 +191,7 @@ export class ChannelsService {
       } catch (err) {
         throw new NotFoundException();
       }
-    } else throw new ForbiddenException();
+    } else throw new UnauthorizedException();
   }
 
   async get_members(id: number): Promise<MemberEntity[]> {
