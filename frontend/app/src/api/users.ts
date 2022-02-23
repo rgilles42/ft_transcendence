@@ -32,7 +32,7 @@ export default ($axios: AxiosInstance) => ({
   },
 
   getMyUser() {
-    return $axios.get(`${USERS_BASE}/me`);
+    return $axios.get(`${USERS_BASE}/me`, { params: { include: 'friends+blocked_users+games+channels' } });
   },
 
   getUserFriends(userId: User['id']) {
@@ -60,8 +60,8 @@ export default ($axios: AxiosInstance) => ({
   },
 
   // User's friends routes
-  addUserFriend(userId: User['id'], userFriendId: User['id']) {
-    return $axios.post(`${USERS_BASE}/${userId}/friends`, { userFriendId });
+  addUserFriend(userId: User['id'], targetUserId: User['id']) {
+    return $axios.post(`${USERS_BASE}/${userId}/friends`, { targetUserId });
   },
 
   updateUserFriend(friendId: UserFriend['id']) {
@@ -73,8 +73,8 @@ export default ($axios: AxiosInstance) => ({
   },
 
   // User's blocked routes
-  addUserBlocked(userId: User['id'], userBlockedId: User['id']) {
-    return $axios.post(`${USERS_BASE}/${userId}/blocked`, { userBlockedId });
+  addUserBlocked(userId: User['id'], targetUserId: User['id']) {
+    return $axios.post(`${USERS_BASE}/${userId}/blocked`, { targetUserId });
   },
 
   deleteUserBlocked(blockedId: UserBlock['id']) {

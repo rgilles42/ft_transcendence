@@ -62,7 +62,7 @@ import Loader from '@/components/Loader.vue';
 import { AxiosResponse } from 'axios';
 import formater from '@/services/formater';
 import {
-  canUserAcceptFriend, canUserBeFriend, getUserFriend, isSameUser, isUserIsFriend,
+  canUserAcceptFriend, canUserBeFriend, getUserFriendIndex, getUserFriend, isSameUser, isUserIsFriend,
 } from '@/services/userUtils';
 import UserFriend from '@/types/UserFriend';
 
@@ -105,16 +105,15 @@ export default defineComponent({
       console.log(newFriend.id);
       api.users.addUserFriend(currentUser.value.id, newFriend.id)
         .then((response) => {
-          console.log(response);
           if (currentUser.value) {
             currentUser.value.friends = currentUser.value.friends || [];
             const userFriend: UserFriend = {
-              id: response.data.friendship_id,
+              id: response.data.id,
               status: response.data.status,
-              userId: response.data.user.id,
-              friendId: newFriend.id,
+              userId: response.data.userId,
+              friendId: response.data.friendId,
               createdAt: response.data.createdAt,
-              updatedAt: response.data.createdAt,
+              updatedAt: response.data.updatedAt,
             };
             currentUser.value.friends.push(userFriend);
           }
@@ -145,7 +144,10 @@ export default defineComponent({
       }
       api.users.deleteUserFriend(userFriend.id)
         .then(() => {
-          userFriend.status = true;
+          const index = getUserFriendIndex(currentUser.value, user.value);
+          if (index >= 0 && currentUser.value && currentUser.value.friends) {
+            currentUser.value.friends.splice(index);
+          }
         });
     };
 
@@ -159,7 +161,10 @@ export default defineComponent({
       }
       api.users.deleteUserFriend(userFriend.id)
         .then(() => {
-          userFriend.status = true;
+          const index = getUserFriendIndex(currentUser.value, user.value);
+          if (index >= 0 && currentUser.value && currentUser.value.friends) {
+            currentUser.value.friends.splice(index);
+          }
         });
     };
 

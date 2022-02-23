@@ -9,6 +9,16 @@ export const isSameUser = (currentUser: User | null, user: User | null): boolean
   return currentUser.id === user.id;
 };
 
+export const getUserBlockedIndex = (currentUser: User | null, user: User | null): number => {
+  if (!currentUser || !user) {
+    return -1;
+  }
+  if (!currentUser.blocked) {
+    return -1;
+  }
+  return currentUser.blocked.findIndex((blocked) => (currentUser.id === blocked.userId && user.id === blocked.blockedId));
+};
+
 export const getUserBlocked = (currentUser: User | null, user: User | null): UserBlock | undefined => {
   if (!currentUser || !user) {
     return undefined;
@@ -16,7 +26,11 @@ export const getUserBlocked = (currentUser: User | null, user: User | null): Use
   if (!currentUser.blocked) {
     return undefined;
   }
-  return currentUser.blocked.find((blocked) => (currentUser.id === blocked.userId && user.id === blocked.blockedId));
+  const index = getUserBlockedIndex(currentUser, user);
+  if (index <= -1) {
+    return undefined;
+  }
+  return currentUser.blocked[index];
 };
 
 export const isUserIsBlocked = (currentUser: User | null, user: User | null): boolean => {
@@ -38,6 +52,16 @@ export const canUserBeBlocked = (currentUser: User | null, user: User | null): b
   return true;
 };
 
+export const getUserFriendIndex = (currentUser: User | null, user: User | null): number => {
+  if (!currentUser || !user) {
+    return -1;
+  }
+  if (!currentUser.friends) {
+    return -1;
+  }
+  return currentUser.friends.findIndex((friend) => (currentUser.id === friend.userId && user.id === friend.friendId) || (currentUser.id === friend.friendId && user.id === friend.userId));
+};
+
 export const getUserFriend = (currentUser: User | null, user: User | null): UserFriend | undefined => {
   if (!currentUser || !user) {
     return undefined;
@@ -45,7 +69,11 @@ export const getUserFriend = (currentUser: User | null, user: User | null): User
   if (!currentUser.friends) {
     return undefined;
   }
-  return currentUser.friends.find((friend) => (currentUser.id === friend.userId && user.id === friend.friendId) || (currentUser.id === friend.friendId && user.id === friend.userId));
+  const index = getUserFriendIndex(currentUser, user);
+  if (index <= -1) {
+    return undefined;
+  }
+  return currentUser.friends[index];
 };
 
 export const isUserIsFriend = (currentUser: User | null, user: User | null): boolean => {
@@ -86,9 +114,11 @@ export const canUserAcceptFriend = (currentUser: User | null, user: User | null)
 
 export default {
   isSameUser,
+  getUserBlockedIndex,
   getUserBlocked,
   isUserIsBlocked,
   canUserBeBlocked,
+  getUserFriendIndex,
   getUserFriend,
   isUserIsFriend,
   canUserBeFriend,

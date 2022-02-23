@@ -29,7 +29,7 @@ export default defineComponent({
     const refreshCurrentUser = () => {
       api.users.getMyUser()
         .then((response) => {
-          store.setUser(response.data.user);
+          store.setUser(response.data);
         })
         .catch(() => {
           store.logoutUser();
