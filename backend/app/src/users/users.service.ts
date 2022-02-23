@@ -115,7 +115,7 @@ export class UsersService {
     if (reqUser.id != id) throw new UnauthorizedException();
     if (
       (await this.blockshipsRepository.findOne({
-        where: { userId: id, blockedId: blockData.target_user_id },
+        where: { userId: id, blockedId: blockData.targetUserId },
       })) !== undefined
     )
       throw new BadRequestException();
@@ -123,10 +123,14 @@ export class UsersService {
       const newBlockship = new BlockshipEntity();
       newBlockship.user = await this.usersRepository.findOneOrFail(id);
       newBlockship.blockedUser = await this.usersRepository.findOneOrFail(
-        blockData.target_user_id,
+        blockData.targetUserId,
       );
       await this.blockshipsRepository.save(newBlockship);
-      return newBlockship;
+      return {
+        ...newBlockship,
+        user: undefined,
+        blockedUser: undefined,
+      };
     } catch (err) {
       throw new NotFoundException();
     }
@@ -159,10 +163,10 @@ export class UsersService {
     if (reqUser.id != id) throw new UnauthorizedException();
     if (
       (await this.friendshipsRepository.findOne({
-        where: { userId: id, friendId: frienshipData.target_user_id },
+        where: { userId: id, friendId: frienshipData.targetUserId },
       })) !== undefined ||
       (await this.friendshipsRepository.findOne({
-        where: { friendId: id, userId: frienshipData.target_user_id },
+        where: { friendId: id, userId: frienshipData.targetUserId },
       })) !== undefined
     )
       throw new BadRequestException();
@@ -170,10 +174,14 @@ export class UsersService {
       const newFriendship = new FriendshipEntity();
       newFriendship.user = await this.usersRepository.findOneOrFail(id);
       newFriendship.friend = await this.usersRepository.findOneOrFail(
-        frienshipData.target_user_id,
+        frienshipData.targetUserId,
       );
       await this.friendshipsRepository.save(newFriendship);
-      return newFriendship;
+      return {
+        ...newFriendship,
+        user: undefined,
+        friend: undefined,
+      };
     } catch (err) {
       throw new NotFoundException();
     }

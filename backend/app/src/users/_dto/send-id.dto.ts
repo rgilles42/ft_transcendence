@@ -5,5 +5,5 @@ export class sendIdDto {
   @ApiProperty()
   @IsInt()
   @IsNotEmpty()
-  target_user_id: number;
+  targetUserId: number;
 }

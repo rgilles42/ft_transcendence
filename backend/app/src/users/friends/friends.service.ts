@@ -1,9 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  FriendshipEntity,
-  friendshipStatus,
-} from 'src/_entities/users_friendship.entity';
+import { FriendshipEntity } from 'src/_entities/users_friendship.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -20,7 +17,7 @@ export class FriendsService {
   async update_status(id: number): Promise<FriendshipEntity> {
     try {
       const friendship = await this.friendshipsRepository.findOneOrFail(id);
-      friendship.status = friendshipStatus.ACCEPTED;
+      friendship.status = true;
       await this.friendshipsRepository.save(friendship);
       return friendship;
     } catch (err) {

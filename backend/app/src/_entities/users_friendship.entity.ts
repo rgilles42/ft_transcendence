@@ -6,13 +6,9 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
-
-export enum friendshipStatus {
-  PENDING = 0,
-  ACCEPTED = 1,
-}
 
 @Entity({ name: 'user_friendships' })
 export class FriendshipEntity {
@@ -40,11 +36,11 @@ export class FriendshipEntity {
   @CreateDateColumn()
   createdAt: Date;
 
-  @ApiProperty({ enum: friendshipStatus })
-  @Column({
-    type: 'enum',
-    enum: friendshipStatus,
-    default: friendshipStatus.PENDING,
-  })
-  status: friendshipStatus;
+  @ApiProperty()
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @ApiProperty()
+  @Column({ default: false })
+  status: boolean;
 }

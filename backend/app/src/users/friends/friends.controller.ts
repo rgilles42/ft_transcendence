@@ -19,7 +19,7 @@ import { FriendsService } from './friends.service';
 @ApiTags('users_friends')
 @ApiBearerAuth('access_token')
 @UseGuards(JwtAuthGuard)
-@Controller('friends')
+@Controller('/users/friends')
 export class FriendsController {
   constructor(private readonly friendsService: FriendsService) {}
 

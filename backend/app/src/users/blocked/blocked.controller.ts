@@ -12,7 +12,7 @@ import { BlockedService } from './blocked.service';
 @ApiTags('users_blocked')
 @ApiBearerAuth('access_token')
 @UseGuards(JwtAuthGuard)
-@Controller('blocked')
+@Controller('/users/blocked')
 export class BlockedController {
   constructor(private readonly blockedService: BlockedService) {}
 
