@@ -56,6 +56,8 @@ export class UsersService {
           user.blocked_users = await this.get_blockeds(user.id);
         else if (to_incl[index] == 'channels')
           user.channels = await this.get_channels(user.id);
+        else if (to_incl[index] == 'games')
+          user.games = await this.get_games(user.id);
         else throw new BadRequestException();
       }
     }
@@ -197,9 +199,7 @@ export class UsersService {
       const games = await this.gamesRepository.find({
         relations: ['player1', 'player2'],
       });
-      let user_games: GameEntity[];
-      // eslint-disable-next-line prefer-const
-      user_games = [];
+      const user_games: GameEntity[] = [];
       for (let index = 0; index < games.length; index++) {
         if (games[index].player1.id === id || games[index].player2.id === id) {
           user_games.push(games[index]);

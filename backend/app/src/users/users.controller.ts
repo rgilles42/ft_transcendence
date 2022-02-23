@@ -49,16 +49,26 @@ export class UsersController {
     return this.usersService.create(createUserData);
   }
 
+  @ApiQuery({
+    name: 'include',
+    description:
+      "The relations to include to the user object to return (friends, blocks and/or channels (not memberships !) (ex: 'friends+channels')",
+    required: false,
+    type: String,
+  })
   @ApiOkResponse({ type: UserEntity })
   @Get('me')
-  get_me(@Request() req): Promise<UserEntity[]> {
-    return req.user;
+  get_me(
+    @Request() req,
+    @Query('include') include: string,
+  ): Promise<UserEntity> {
+    return this.usersService.findOne(req.user.username, include);
   }
 
   @ApiQuery({
     name: 'include',
     description:
-      "The relations to include to the user to return (friends, blocks and/or memberships (ex: 'friends+memberships')",
+      "The relations to include to the user object to return (friends, blocked_users, games and/or channels (not memberships !) (ex: 'friends+channels')",
     required: false,
     type: String,
   })

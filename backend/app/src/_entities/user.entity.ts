@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { MemberEntity } from './channel-member.entity';
 import { ChannelEntity } from './channel.entity';
+import { GameEntity } from './game.entity';
 import { BlockshipEntity } from './users_blockship.entity';
 import { FriendshipEntity } from './users_friendship.entity';
 
@@ -47,6 +48,7 @@ export class UserEntity {
   memberships: MemberEntity[];
 
   channels: ChannelEntity[];
+  games: GameEntity[];
 
   // @ApiProperty()
   // @Column()
