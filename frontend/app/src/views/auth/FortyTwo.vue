@@ -9,7 +9,6 @@ import { defineComponent } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useStore } from '@/store';
 import api from '@/api';
-import { isString } from '@vueuse/core';
 
 export default defineComponent({
   name: 'Login',
@@ -17,7 +16,7 @@ export default defineComponent({
     const router = useRouter();
     const route = useRoute();
     const store = useStore();
-    if (store.getUser || !route.query.code || !isString(route.query.code)) {
+    if (store.getUser || !route.query.code) {
       router.replace('/');
       return;
     }
@@ -29,7 +28,7 @@ export default defineComponent({
         router.replace('/');
       });
     };
-    loginFortyTwo(route.query.code);
+    loginFortyTwo(route.query.code.toString());
   },
 });
 </script>

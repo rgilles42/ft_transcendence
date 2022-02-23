@@ -32,12 +32,18 @@ const routes: Array<RouteRecordRaw> = [
     path: '/chat',
     name: 'Chat',
     component: Chat,
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: '/profile/:requestUserId?',
     name: 'Profile',
     props: true,
     component: Profile,
+    meta: {
+      requiresAuth: true,
+    },
   },
   // {
   //   path: '/about',

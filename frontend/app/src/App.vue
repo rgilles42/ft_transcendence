@@ -11,6 +11,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import api from '@/api';
+import { useRoute, useRouter } from 'vue-router';
 import Navbar from './components/Navbar.vue';
 import Footer from './components/Footer.vue';
 import { useStore } from './store';
@@ -22,6 +23,8 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    const router = useRouter();
+    const route = useRoute();
 
     const refreshCurrentUser = () => {
       api.users.getMyUser()
@@ -30,6 +33,9 @@ export default defineComponent({
         })
         .catch(() => {
           store.logoutUser();
+          if (route.meta.requiresAuth) {
+            router.replace('/auth/login');
+          }
         });
     };
 

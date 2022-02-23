@@ -16,12 +16,26 @@ export const getUserBlocked = (currentUser: User | null, user: User | null): Use
   if (!currentUser.blocked) {
     return undefined;
   }
-  return currentUser.blocked.find((blocked) => (currentUser.id === blocked.userId && user.id === blocked.blockedId) || (currentUser.id === blocked.blockedId && user.id === blocked.userId));
+  return currentUser.blocked.find((blocked) => (currentUser.id === blocked.userId && user.id === blocked.blockedId));
 };
 
 export const isUserIsBlocked = (currentUser: User | null, user: User | null): boolean => {
   const blocked = getUserBlocked(currentUser, user);
   return (blocked !== undefined);
+};
+
+export const canUserBeBlocked = (currentUser: User | null, user: User | null): boolean => {
+  if (!currentUser || !user) {
+    return false;
+  }
+  if (currentUser.id === user.id) {
+    return false;
+  }
+  const blocked = getUserBlocked(currentUser, user);
+  if (blocked) {
+    return false;
+  }
+  return true;
 };
 
 export const getUserFriend = (currentUser: User | null, user: User | null): UserFriend | undefined => {
@@ -56,10 +70,6 @@ export const canUserBeFriend = (currentUser: User | null, user: User | null): bo
   if (friend) {
     return false;
   }
-  const blocked = getUserBlocked(currentUser, user);
-  if (blocked) {
-    return false;
-  }
   return true;
 };
 
@@ -74,27 +84,13 @@ export const canUserAcceptFriend = (currentUser: User | null, user: User | null)
   return (friend.status === false && friend.userId === user.id);
 };
 
-export const canUserBeBlocked = (currentUser: User | null, user: User | null): boolean => {
-  if (!currentUser || !user) {
-    return false;
-  }
-  if (currentUser.id === user.id) {
-    return false;
-  }
-  const blocked = getUserBlocked(currentUser, user);
-  if (blocked) {
-    return false;
-  }
-  return true;
-};
-
 export default {
   isSameUser,
   getUserBlocked,
   isUserIsBlocked,
+  canUserBeBlocked,
   getUserFriend,
   isUserIsFriend,
   canUserBeFriend,
   canUserAcceptFriend,
-  canUserBeBlocked,
 };

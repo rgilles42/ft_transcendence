@@ -64,8 +64,8 @@ export default ($axios: AxiosInstance) => ({
     return $axios.post(`${USERS_BASE}/${userId}/friends`, { userFriendId });
   },
 
-  updateUserFriend(friendId: UserFriend['id'], userFriendDate: UserFriend) {
-    return $axios.patch(`${USERS_BASE}/friends/${friendId}`, { userFriendDate });
+  updateUserFriend(friendId: UserFriend['id']) {
+    return $axios.patch(`${USERS_BASE}/friends/${friendId}`);
   },
 
   deleteUserFriend(friendId: UserFriend['id']) {

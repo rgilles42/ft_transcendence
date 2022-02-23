@@ -22,11 +22,16 @@
                 Envoyer une demande d'ami
               </button>
 
-              <button v-if="canUserAcceptFriend(currentUser, user)" class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
-                Accepter la demande
-              </button>
+              <template v-if="canUserAcceptFriend(currentUser, user)">
+                <button @click="acceptFriendRequest(user)" class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
+                  Accepter la demande
+                </button>
+                <button @click="declineFriendRequest(user)" class="bg-red-900 hover:bg-red-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
+                  Refuser la demande
+                </button>
+              </template>
 
-              <button v-if="isUserIsFriend(currentUser, user)" class="bg-red-900 hover:bg-red-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
+              <button v-if="isUserIsFriend(currentUser, user)" @click="deleteFriend(user)" class="bg-red-900 hover:bg-red-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
                 Supprimer cet ami
               </button>
 
@@ -57,7 +62,7 @@ import Loader from '@/components/Loader.vue';
 import { AxiosResponse } from 'axios';
 import formater from '@/services/formater';
 import {
-  canUserAcceptFriend, canUserBeFriend, isSameUser, isUserIsFriend,
+  canUserAcceptFriend, canUserBeFriend, getUserFriend, isSameUser, isUserIsFriend,
 } from '@/services/userUtils';
 import UserFriend from '@/types/UserFriend';
 
@@ -97,12 +102,64 @@ export default defineComponent({
       if (!currentUser.value || !newFriend || !canUserBeFriend(currentUser.value, newFriend)) {
         return;
       }
+      console.log(newFriend.id);
       api.users.addUserFriend(currentUser.value.id, newFriend.id)
         .then((response) => {
           console.log(response);
           if (currentUser.value) {
             currentUser.value.friends = currentUser.value.friends || [];
+            const userFriend: UserFriend = {
+              id: response.data.friendship_id,
+              status: response.data.status,
+              userId: response.data.user.id,
+              friendId: newFriend.id,
+              createdAt: response.data.createdAt,
+              updatedAt: response.data.createdAt,
+            };
+            currentUser.value.friends.push(userFriend);
           }
+        });
+    };
+
+    const acceptFriendRequest = (newFriend: User | null) => {
+      if (!currentUser.value || !newFriend || !canUserAcceptFriend(currentUser.value, newFriend)) {
+        return;
+      }
+      const userFriend = getUserFriend(currentUser.value, newFriend);
+      if (!userFriend) {
+        return;
+      }
+      api.users.updateUserFriend(userFriend.id)
+        .then(() => {
+          userFriend.status = true;
+        });
+    };
+
+    const declineFriendRequest = (newFriend: User | null) => {
+      if (!currentUser.value || !newFriend || !canUserAcceptFriend(currentUser.value, newFriend)) {
+        return;
+      }
+      const userFriend = getUserFriend(currentUser.value, newFriend);
+      if (!userFriend) {
+        return;
+      }
+      api.users.deleteUserFriend(userFriend.id)
+        .then(() => {
+          userFriend.status = true;
+        });
+    };
+
+    const deleteFriend = (oldFriend: User | null) => {
+      if (!currentUser.value || !oldFriend || !isUserIsFriend(currentUser.value, oldFriend)) {
+        return;
+      }
+      const userFriend = getUserFriend(currentUser.value, oldFriend);
+      if (!userFriend) {
+        return;
+      }
+      api.users.deleteUserFriend(userFriend.id)
+        .then(() => {
+          userFriend.status = true;
         });
     };
 
@@ -129,6 +186,9 @@ export default defineComponent({
       currentUser,
       formater,
       sendFriendRequest,
+      acceptFriendRequest,
+      declineFriendRequest,
+      deleteFriend,
       isUserIsFriend,
       canUserBeFriend,
       canUserAcceptFriend,
