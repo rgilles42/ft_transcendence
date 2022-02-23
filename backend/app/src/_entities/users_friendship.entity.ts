@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -17,14 +18,22 @@ export enum friendshipStatus {
 export class FriendshipEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn()
-  friendship_id: number;
+  id: number;
 
-  @ApiProperty({ type: () => UserEntity })
+  @ApiProperty()
+  @Column({ nullable: false })
+  userId: number;
+
   @ManyToOne(() => UserEntity, (user) => user.friends, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'userId' })
   user: UserEntity;
 
-  @ApiProperty({ type: () => UserEntity })
-  @ManyToOne(() => UserEntity, { eager: true, onDelete: 'CASCADE' })
+  @ApiProperty()
+  @Column({ nullable: false })
+  friendId: number;
+
+  @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'friendId' })
   friend: UserEntity;
 
   @ApiProperty()

@@ -2,6 +2,8 @@ import {
   NotFoundException,
   Injectable,
   ImATeapotException,
+  UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BlockshipEntity } from 'src/_entities/users_blockship.entity';
@@ -31,23 +33,35 @@ export class UsersService {
     return this.usersRepository.find();
   }
 
-  async findOne(id: string): Promise<UserEntity> {
+  async findOne(id: string, include: string = null): Promise<UserEntity> {
+    let user: UserEntity;
     try {
-      if (isNaN(Number(id))) {
-        throw new ImATeapotException();
-      }
-      const user = await this.usersRepository.findOneOrFail(Number(id));
-      return user;
+      if (isNaN(Number(id))) throw new ImATeapotException();
+      user = await this.usersRepository.findOneOrFail(Number(id));
     } catch (err) {
       try {
-        const user = await this.usersRepository.findOneOrFail({
+        user = await this.usersRepository.findOneOrFail({
           where: { username: id },
         });
-        return user;
       } catch (err) {
         throw new NotFoundException();
       }
     }
+    if (include !== null && include !== undefined) {
+      const to_incl = include.split('+');
+      for (let index = 0; index < to_incl.length; index++) {
+        if (to_incl[index] == 'friends')
+          user.friends = await this.get_friends(user.id);
+        else if (to_incl[index] == 'blocked_users')
+          user.blocked_users = await this.get_blockeds(user.id);
+        else if (to_incl[index] == 'channels')
+          user.channels = await this.get_channels(user.id);
+        else if (to_incl[index] == 'games')
+          user.games = await this.get_games(user.id);
+        else throw new BadRequestException();
+      }
+    }
+    return user;
   }
 
   async findOneByLogin(login: UserEntity['login']) {
@@ -93,11 +107,22 @@ export class UsersService {
     }
   }
 
-  async block(id: number, blockData: sendIdDto): Promise<BlockshipEntity> {
+  async block(
+    reqUser: UserEntity,
+    id: number,
+    blockData: sendIdDto,
+  ): Promise<BlockshipEntity> {
+    if (reqUser.id != id) throw new UnauthorizedException();
+    if (
+      (await this.blockshipsRepository.findOne({
+        where: { userId: id, blockedId: blockData.target_user_id },
+      })) !== undefined
+    )
+      throw new BadRequestException();
     try {
       const newBlockship = new BlockshipEntity();
       newBlockship.user = await this.usersRepository.findOneOrFail(id);
-      newBlockship.blocked_user = await this.usersRepository.findOneOrFail(
+      newBlockship.blockedUser = await this.usersRepository.findOneOrFail(
         blockData.target_user_id,
       );
       await this.blockshipsRepository.save(newBlockship);
@@ -109,19 +134,38 @@ export class UsersService {
 
   async get_friends(id: number): Promise<FriendshipEntity[]> {
     try {
-      const user = await this.usersRepository.findOneOrFail(id, {
-        relations: ['friends'],
+      const friends = (
+        await this.usersRepository.findOneOrFail(id, {
+          relations: ['friends'],
+        })
+      ).friends;
+      const otherfriends = await this.friendshipsRepository.find({
+        where: { friendId: id },
       });
-      return user.friends;
+      for (let index = 0; index < otherfriends.length; index++) {
+        friends.push(otherfriends[index]);
+      }
+      return friends;
     } catch (err) {
       throw new NotFoundException();
     }
   }
 
   async request_friendship(
+    reqUser: UserEntity,
     id: number,
     frienshipData: sendIdDto,
   ): Promise<FriendshipEntity> {
+    if (reqUser.id != id) throw new UnauthorizedException();
+    if (
+      (await this.friendshipsRepository.findOne({
+        where: { userId: id, friendId: frienshipData.target_user_id },
+      })) !== undefined ||
+      (await this.friendshipsRepository.findOne({
+        where: { friendId: id, userId: frienshipData.target_user_id },
+      })) !== undefined
+    )
+      throw new BadRequestException();
     try {
       const newFriendship = new FriendshipEntity();
       newFriendship.user = await this.usersRepository.findOneOrFail(id);
@@ -140,9 +184,7 @@ export class UsersService {
       const user = await this.usersRepository.findOneOrFail(id, {
         relations: ['memberships', 'memberships.channel'],
       });
-      let channels: ChannelEntity[];
-      // eslint-disable-next-line prefer-const
-      channels = [];
+      const channels: ChannelEntity[] = [];
       for (let index = 0; index < user.memberships.length; index++) {
         channels.push(user.memberships[index].channel);
       }
@@ -157,9 +199,7 @@ export class UsersService {
       const games = await this.gamesRepository.find({
         relations: ['player1', 'player2'],
       });
-      let user_games: GameEntity[];
-      // eslint-disable-next-line prefer-const
-      user_games = [];
+      const user_games: GameEntity[] = [];
       for (let index = 0; index < games.length; index++) {
         if (games[index].player1.id === id || games[index].player2.id === id) {
           user_games.push(games[index]);

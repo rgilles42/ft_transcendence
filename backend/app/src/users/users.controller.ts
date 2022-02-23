@@ -6,15 +6,21 @@ import {
   Patch,
   Param,
   Delete,
+  UsePipes,
+  UseGuards,
+  Request,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserEntity } from 'src/_entities/user.entity';
 import { createUserDto } from './_dto/create-user.dto';
 import { updateUserDto } from './_dto/update-user.dto';
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { FriendshipEntity } from 'src/_entities/users_friendship.entity';
@@ -22,9 +28,12 @@ import { BlockshipEntity } from 'src/_entities/users_blockship.entity';
 import { sendIdDto } from './_dto/send-id.dto';
 import { ChannelEntity } from 'src/_entities/channel.entity';
 import { GameEntity } from 'src/_entities/game.entity';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @ApiTags('users')
 @Controller('users')
+@ApiBearerAuth('access_token')
+@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -40,11 +49,37 @@ export class UsersController {
     return this.usersService.create(createUserData);
   }
 
+  @ApiQuery({
+    name: 'include',
+    description:
+      "The relations to include to the user object to return (friends, blocks and/or channels (not memberships !) (ex: 'friends+channels')",
+    required: false,
+    type: String,
+  })
+  @ApiOkResponse({ type: UserEntity })
+  @Get('me')
+  get_me(
+    @Request() req,
+    @Query('include') include: string,
+  ): Promise<UserEntity> {
+    return this.usersService.findOne(req.user.username, include);
+  }
+
+  @ApiQuery({
+    name: 'include',
+    description:
+      "The relations to include to the user object to return (friends, blocked_users, games and/or channels (not memberships !) (ex: 'friends+channels')",
+    required: false,
+    type: String,
+  })
   @ApiOkResponse({ type: UserEntity })
   @ApiNotFoundResponse()
   @Get(':id_or_username')
-  findOne(@Param('id_or_username') id: string): Promise<UserEntity> {
-    return this.usersService.findOne(id);
+  findOne(
+    @Param('id_or_username') id: string,
+    @Query('include') include: string,
+  ): Promise<UserEntity> {
+    return this.usersService.findOne(id, include);
   }
 
   @ApiOkResponse({ type: UserEntity })
@@ -75,10 +110,11 @@ export class UsersController {
   @ApiNotFoundResponse()
   @Post(':id/blocked')
   block(
+    @Request() req,
     @Param('id') id: string,
     @Body() blockData: sendIdDto,
   ): Promise<BlockshipEntity> {
-    return this.usersService.block(+id, blockData);
+    return this.usersService.block(req.user, +id, blockData);
   }
 
   @ApiOkResponse({ type: [FriendshipEntity] })
@@ -92,10 +128,11 @@ export class UsersController {
   @ApiNotFoundResponse()
   @Post(':id/friends')
   request_friendship(
+    @Request() req,
     @Param('id') id: string,
     @Body() friendshipData: sendIdDto,
   ): Promise<FriendshipEntity> {
-    return this.usersService.request_friendship(+id, friendshipData);
+    return this.usersService.request_friendship(req.user, +id, friendshipData);
   }
 
   @ApiOkResponse({ type: [ChannelEntity] })

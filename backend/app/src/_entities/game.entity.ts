@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -27,16 +28,22 @@ export class GameEntity {
   })
   type: gameType;
 
+  @Column()
+  player1Id: number;
   @ApiProperty({ type: () => UserEntity })
   @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'player1Id' })
   player1: UserEntity;
 
   @ApiProperty()
   @Column()
   player1score: number;
 
+  @Column()
+  player2Id: number;
   @ApiProperty({ type: () => UserEntity })
   @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'player2Id' })
   player2: UserEntity;
 
   @ApiProperty()

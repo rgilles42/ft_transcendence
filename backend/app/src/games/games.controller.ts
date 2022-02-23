@@ -1,10 +1,29 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
+import { UsePipes } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { GameEntity } from 'src/_entities/game.entity';
 import { GamesService } from './games.service';
 import { createGameDto } from './_dto/create-game.dto';
 
 @ApiTags('games')
+@UsePipes(new ValidationPipe())
+@ApiBearerAuth('access_token')
+@UseGuards(JwtAuthGuard)
 @Controller('games')
 export class GamesController {
   constructor(private readonly gamesService: GamesService) {}

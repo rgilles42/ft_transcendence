@@ -1,9 +1,17 @@
-import { Controller, Delete, Get, Param } from '@nestjs/common';
-import { ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Delete, Get, Param, UseGuards } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { MessageEntity as MessageEntity } from 'src/_entities/channel-message.entity';
 import { MessagesService } from './messages.service';
 
 @ApiTags('channel_messages')
+@ApiBearerAuth('access_token')
+@UseGuards(JwtAuthGuard)
 @Controller('messages')
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
