@@ -1,3 +1,4 @@
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { FortyTwoAuthGuard } from './guards/forty-two-auth.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
@@ -7,6 +8,7 @@ import {
   NotFoundException,
   Post,
   Request,
+  Response,
   UseGuards,
 } from '@nestjs/common';
 import { configService } from '../config/config.service';
@@ -17,9 +19,30 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  localLogin(@Request() req) {
+  async localLogin(@Request() req, @Response({ passthrough: true }) res) {
     if (configService.isProduction()) throw new NotFoundException();
-    return this.authService.loginWithLocal(req);
+
+    const data = await this.authService.loginWithLocal(req);
+
+    // res.cookie('access_token', data.access_token, {
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: 'None',
+    // });
+
+    // res.cookie('refresh_token', data.refresh_token, {
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: 'None',
+    //   path: '/token',
+    // });
+
+    return {
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+      xsrf_token: data.xsrf_token,
+      user: data.user,
+    };
   }
 
   // Can be deleted or keep for debug in local (without front)
@@ -31,17 +54,53 @@ export class AuthController {
 
   @UseGuards(FortyTwoAuthGuard)
   @Get('42/callback')
-  callback(@Request() req) {
-    return this.authService.loginWithFortyTwo(req);
+  async callback(@Request() req, @Response({ passthrough: true }) res) {
+    const data = await this.authService.loginWithFortyTwo(req);
+
+    // res.cookie('access_token', data.access_token, {
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: 'None',
+    // });
+
+    // res.cookie('refresh_token', data.refresh_token, {
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: 'None',
+    // });
+
+    return {
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+      xsrf_token: data.xsrf_token,
+      user: data.user,
+    };
   }
 
   @Post('refresh')
   helloWorld(@Request() req) {
-    return this.authService.refreshTokens(this.authService.getReqToken(req));
+    return this.authService.refreshTokens(req);
   }
 
   @Post('logout')
-  logout() {
+  logout(@Response({ passthrough: true }) res) {
+    // res.cookie('access_token', false, {
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: 'None',
+    // });
+
+    // res.cookie('refresh_token', false, {
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: 'None',
+    // });
     return 'Success';
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('test')
+  test() {
+    return 'test';
   }
 }

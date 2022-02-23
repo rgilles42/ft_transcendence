@@ -1,3 +1,4 @@
+import { configService } from 'src/config/config.service';
 import { UserEntity } from './../_entities/user.entity';
 import { UsersService } from './../users/users.service';
 import { JwtService } from '@nestjs/jwt';
@@ -7,6 +8,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { isStringObject } from 'util/types';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -32,31 +34,41 @@ export class AuthService {
     return null;
   }
 
-  public createTokens({ id, login, username }: UserEntity) {
+  public createTokens(user: UserEntity) {
+    const xsrfToken = randomBytes(64).toString('hex');
+
     const payload = {
-      id: id,
-      login: login,
-      username: username,
+      id: user.id,
+      login: user.login,
+      username: user.username,
+      xsrfToken,
     };
 
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: configService.getJwtConfig().accessToken.maxAge, // 15 minutes
+      subject: user.id.toString(),
+    });
+
+    const refreshToken = this.jwtService.sign(payload, {
+      expiresIn: configService.getJwtConfig().refreshToken.maxAge, // 30 days
+      subject: user.id.toString(),
+    });
+
     return {
-      access_token: this.jwtService.sign(payload, {
-        expiresIn: '15 minutes',
-      }),
-      refresh_token: this.jwtService.sign(payload, {
-        expiresIn: '30 days',
-      }),
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      xsrf_token: xsrfToken,
     };
   }
 
-  public async refreshTokens(refreshToken: string) {
-    const decodedToken = this.jwtService.decode(refreshToken);
+  public async refreshTokens(req) {
+    const decodedToken = this.jwtService.decode(this.getReqToken(req));
     if (!decodedToken || isStringObject(decodedToken)) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Invalid payload');
     }
     const user = await this.usersService.findOne(decodedToken.id);
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('User not found');
     }
     return this.createTokens(user);
   }
@@ -71,8 +83,9 @@ export class AuthService {
         imageUrl: null,
       });
     }
+    const tokens = this.createTokens(user);
     return {
-      ...this.createTokens(user),
+      ...tokens,
       user,
     };
   }
@@ -87,8 +100,9 @@ export class AuthService {
         imageUrl: req.user.imageUrl,
       });
     }
+    const tokens = this.createTokens(user);
     return {
-      ...this.createTokens(user),
+      ...tokens,
       user,
     };
   }
