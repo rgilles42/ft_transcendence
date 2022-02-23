@@ -20,7 +20,7 @@ export default defineComponent({
     }
     const logout = () => {
       api.auth.logout().then(() => {
-        store.setUser(null);
+        store.logoutUser();
         router.replace('/');
       });
     };

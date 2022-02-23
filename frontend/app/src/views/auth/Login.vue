@@ -62,12 +62,11 @@ export default defineComponent({
     const localLogin = (login: string) => {
       api.auth.localLogin(login).then((response) => {
         store.setTokens(response.data.access_token, response.data.refresh_token);
+        store.setXsrfToken(response.data.xsrf_token);
         store.setUser(response.data.user);
         router.replace('/');
       });
     };
-
-    console.log(process.env.NODE_ENV);
 
     return {
       loginRef,

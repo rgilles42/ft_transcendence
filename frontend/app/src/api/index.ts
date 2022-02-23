@@ -1,5 +1,7 @@
+/* eslint-disable import/no-cycle */
 import axios from 'axios';
 
+import setupInterceptors from '@/services/setupInterceptors';
 import Auth from './auth';
 import Users from './users';
 import Channels from './channels';
@@ -11,8 +13,10 @@ export const $axios = axios.create({
     Accept: 'application/json',
     'Content-Type': 'application/json',
   },
-  // withCredentials: true,
+  withCredentials: true,
 });
+
+setupInterceptors();
 
 const repositories = {
   auth: Auth($axios),

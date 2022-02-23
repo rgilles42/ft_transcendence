@@ -11,8 +11,9 @@ export const useStore = defineStore('main', {
       },
     }),
     tokens: {
-      accessToken: useStorage<string | null>('access-token', null),
-      refreshToken: useStorage<string | null>('refresh-token', null),
+      accessToken: useStorage<string | null>('access_token', null),
+      refreshToken: useStorage<string | null>('refresh_token', null),
+      xsrfToken: useStorage<string | null>('xsrf_token', null),
     },
   }),
   getters: {
@@ -25,14 +26,26 @@ export const useStore = defineStore('main', {
     getRefreshToken(): string | null {
       return this.tokens.refreshToken;
     },
+    getXsrfToken(): string | null {
+      return this.tokens.xsrfToken;
+    },
   },
   actions: {
+    logoutUser() {
+      this.user = null;
+      this.tokens.accessToken = null;
+      this.tokens.refreshToken = null;
+      this.tokens.xsrfToken = null;
+    },
     setUser(user: User | null) {
       this.user = user;
     },
     setTokens(accessToken: string | null, refreshToken: string | null) {
       this.tokens.accessToken = accessToken;
       this.tokens.refreshToken = refreshToken;
+    },
+    setXsrfToken(xsrfToken: string | null) {
+      this.tokens.xsrfToken = xsrfToken;
     },
   },
 });
