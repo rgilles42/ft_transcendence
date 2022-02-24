@@ -11,7 +11,7 @@ export class MessagesService {
   ) {}
 
   findAll(): Promise<MessageEntity[]> {
-    return this.messagesRepository.find({ relations: ['user'] });
+    return this.messagesRepository.find();
   }
 
   async remove(id: number): Promise<MessageEntity> {

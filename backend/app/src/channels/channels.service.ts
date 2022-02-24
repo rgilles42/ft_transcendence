@@ -1,7 +1,6 @@
 import {
   NotFoundException,
   Injectable,
-  BadRequestException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -48,16 +47,17 @@ export class ChannelsService {
     }
   }
 
-  async create(createChannelData: createChannelDto): Promise<ChannelEntity> {
+  async create(
+    ownerId: number,
+    createChannelData: createChannelDto,
+  ): Promise<ChannelEntity> {
     try {
       const newMember = new MemberEntity();
-      newMember.is_admin = true;
-      newMember.user = await this.usersRepository.findOneOrFail(
-        createChannelData.owner_id,
-      );
+      newMember.isAdmin = true;
+      newMember.user = await this.usersRepository.findOneOrFail(ownerId);
       await this.membersRepository.save(newMember);
       const newChannel = this.channelsRepository.create({
-        type: createChannelData.type,
+        isPrivate: createChannelData.isPrivate,
         password: createChannelData.password,
       });
       newChannel.owner = newMember.user;
@@ -71,6 +71,7 @@ export class ChannelsService {
 
   async update(
     id: number,
+    userId: number,
     updateChannelData: updateChannelDto,
   ): Promise<ChannelEntity> {
     let channel: ChannelEntity;
@@ -80,56 +81,26 @@ export class ChannelsService {
       throw new NotFoundException();
     }
     if (
-      channel.password !== null &&
-      updateChannelData.channel_password !== channel.password
+      !(
+        channel.ownerId === userId ||
+        channel.members.some(
+          (member) => member.userId === userId && member.isAdmin === true,
+        )
+      )
     )
-      throw new BadRequestException();
+      throw new UnauthorizedException();
     try {
-      if (updateChannelData.new_channel_type !== undefined)
-        channel.type = updateChannelData.new_channel_type;
-      if (updateChannelData.new_password !== undefined)
-        channel.password = updateChannelData.new_password;
+      if (updateChannelData.channelType !== undefined)
+        channel.isPrivate = updateChannelData.channelType;
+      if (updateChannelData.newPassword !== undefined)
+        channel.password = updateChannelData.newPassword;
       await this.channelsRepository.save(channel);
       return this.channelsRepository.findOneOrFail(id);
     } catch (err) {
       throw new NotFoundException();
     }
   }
-  async remove(id: number): Promise<ChannelEntity> {
-    try {
-      const channel = await this.channelsRepository.findOneOrFail(id);
-      this.channelsRepository.delete(id);
-      return channel;
-    } catch (err) {
-      throw new NotFoundException();
-    }
-  }
-
-  async get_messages(
-    channel_id: number,
-    user_id: number,
-  ): Promise<MessageEntity[]> {
-    let channel;
-    try {
-      channel = await this.channelsRepository.findOneOrFail(channel_id);
-    } catch (err) {
-      throw new NotFoundException();
-    }
-    if (
-      channel.restrictions.find((restr) => restr.user.id === user_id) ===
-        undefined ||
-      channel.restrictions.find((restr) => restr.user.id === user_id).type ===
-        restrictionType.MUTE
-    )
-      return channel.messages;
-    else throw new UnauthorizedException();
-  }
-
-  async send_message(
-    id: number,
-    user_id: number,
-    messageData: messageDto,
-  ): Promise<MessageEntity> {
+  async remove(id: number, userId: number): Promise<ChannelEntity> {
     let channel: ChannelEntity;
     try {
       channel = await this.channelsRepository.findOneOrFail(id);
@@ -137,15 +108,63 @@ export class ChannelsService {
       throw new NotFoundException();
     }
     if (
-      channel.restrictions.find((restr) => restr.user.id === user_id) !==
-      undefined
+      !(
+        channel.ownerId === userId ||
+        channel.members.some(
+          (member) => member.userId === userId && member.isAdmin === true,
+        )
+      )
+    )
+      throw new UnauthorizedException();
+    this.channelsRepository.delete(id);
+    return channel;
+  }
+
+  async get_messages(
+    channel_id: number,
+    userId: number,
+  ): Promise<MessageEntity[]> {
+    let channel: ChannelEntity;
+    try {
+      channel = await this.channelsRepository.findOneOrFail(channel_id, {
+        relations: ['restrictions', 'messages'],
+      });
+    } catch (err) {
+      throw new NotFoundException();
+    }
+    if (
+      channel.members.some((member) => member.userId === userId) &&
+      (!channel.restrictions.some((restr) => restr.userId === userId) ||
+        channel.restrictions.find((restr) => restr.userId === userId).type ===
+          restrictionType.MUTE)
+    )
+      return channel.messages;
+    else throw new UnauthorizedException();
+  }
+
+  async send_message(
+    id: number,
+    userId: number,
+    messageData: messageDto,
+  ): Promise<MessageEntity> {
+    let channel: ChannelEntity;
+    try {
+      channel = await this.channelsRepository.findOneOrFail(id, {
+        relations: ['members'],
+      });
+    } catch (err) {
+      throw new NotFoundException();
+    }
+    if (
+      channel.members.some((member) => member.userId === userId) &&
+      !channel.restrictions.some((restr) => restr.user.id === userId)
     ) {
       try {
         const message = new MessageEntity();
         message.channel = channel;
-        message.user = await this.usersRepository.findOneOrFail(user_id);
+        message.userId = userId;
         message.content = messageData.content;
-        return this.messagesRepository.save(message);
+        return await this.messagesRepository.save(message);
       } catch (err) {
         throw new NotFoundException();
       }
@@ -154,7 +173,11 @@ export class ChannelsService {
 
   async get_restrictions(id: number): Promise<RestrictionEntity[]> {
     try {
-      return (await this.channelsRepository.findOneOrFail(id)).restrictions;
+      return (
+        await this.channelsRepository.findOneOrFail(id, {
+          relations: ['restrictions'],
+        })
+      ).restrictions;
     } catch (err) {
       throw new NotFoundException();
     }
@@ -162,31 +185,29 @@ export class ChannelsService {
 
   async create_restriction(
     channel_id: number,
-    issuer_id: number,
+    issuerId: number,
     restrData: restrictionDto,
   ): Promise<RestrictionEntity> {
     let channel: ChannelEntity;
     try {
       channel = await this.channelsRepository.findOneOrFail(channel_id, {
-        relations: ['members', 'members.user'],
+        relations: ['members'],
       });
     } catch (err) {
       throw new NotFoundException();
     }
-    const members = channel.members;
     if (
-      members.find(
-        (member) => member.user.id === issuer_id && member.is_admin === true,
+      channel.ownerId == issuerId ||
+      channel.members.some(
+        (member) => member.userId === issuerId && member.isAdmin === true,
       )
     ) {
       try {
         const restriction = new RestrictionEntity();
         restriction.channel = channel;
-        restriction.user = await this.usersRepository.findOneOrFail(
-          restrData.user_to_restrict_id,
-        );
+        restriction.userId = restrData.targetUserId;
         restriction.type = restrData.type;
-        restriction.endAt = restrData.end_date;
+        restriction.endAt = restrData.endDate;
         return await this.restrictionsRepository.save(restriction);
       } catch (err) {
         throw new NotFoundException();
@@ -202,19 +223,49 @@ export class ChannelsService {
     }
   }
 
-  async add_member(id: number, memberData: memberDto): Promise<MemberEntity> {
+  async add_member(
+    id: number,
+    userId: number,
+    memberData: memberDto,
+  ): Promise<MemberEntity> {
+    let channel: ChannelEntity;
     try {
-      const channel = await this.channelsRepository.findOneOrFail(id);
-      const member = new MemberEntity();
-      member.channel = channel;
-      member.user = await this.usersRepository.findOneOrFail(
-        memberData.user_id,
-      );
-      if (memberData.asAdmin !== undefined)
-        member.is_admin = memberData.asAdmin;
-      return await this.membersRepository.save(member);
+      channel = await this.channelsRepository.findOneOrFail(id, {
+        relations: ['members'],
+      });
     } catch (err) {
       throw new NotFoundException();
     }
+    if (
+      !(
+        channel.ownerId === userId ||
+        channel.members.some((member) => member.userId === userId)
+      ) &&
+      (channel.isPrivate === true || userId !== memberData.newMemberId)
+    )
+      throw new UnauthorizedException();
+    if (
+      !(
+        channel.ownerId === userId ||
+        channel.members.some((member) => member.userId === userId)
+      ) &&
+      channel.password !== null &&
+      channel.password !== undefined &&
+      memberData.password !== channel.password
+    )
+      throw new UnauthorizedException();
+    const member = new MemberEntity();
+    member.channel = channel;
+    member.userId = memberData.newMemberId;
+    if (
+      (channel.ownerId === userId ||
+        channel.members.some(
+          (member) => member.userId === userId && member.isAdmin === true,
+        )) &&
+      memberData.asAdmin !== undefined &&
+      memberData.asAdmin !== null
+    )
+      member.isAdmin = memberData.asAdmin;
+    return await this.membersRepository.save(member);
   }
 }

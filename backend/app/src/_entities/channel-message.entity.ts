@@ -18,15 +18,20 @@ export class MessageEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({ type: () => ChannelEntity })
+  @ApiProperty()
+  @Column({ nullable: false })
+  channelId: number;
   @ManyToOne(() => ChannelEntity, (channel) => channel.messages, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'channelId' })
   channel: ChannelEntity;
 
-  @ApiProperty({ type: () => UserEntity })
+  @ApiProperty()
+  @Column({ nullable: false })
+  userId: number;
   @OneToOne(() => UserEntity, { onDelete: 'CASCADE' })
-  @JoinColumn()
+  @JoinColumn({ name: 'userId' })
   user: UserEntity;
 
   @ApiProperty()

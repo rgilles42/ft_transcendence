@@ -27,7 +27,6 @@ export class FriendshipEntity {
   @ApiProperty()
   @Column({ nullable: false })
   friendId: number;
-
   @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'friendId' })
   friend: UserEntity;

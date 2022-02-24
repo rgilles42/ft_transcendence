@@ -11,18 +11,18 @@ export class createGameDto {
   @ApiProperty()
   @IsInt()
   @IsNotEmpty()
-  player1_id: number;
+  player1Id: number;
 
   @ApiProperty()
   @IsInt()
   @IsNotEmpty()
-  player2_id: number;
+  player2Id: number;
 
   @ApiProperty({ required: false })
   @IsInt()
-  player1_score?: number;
+  player1Score?: number;
 
   @ApiProperty({ required: false })
   @IsInt()
-  player2_score?: number;
+  player2Score?: number;
 }

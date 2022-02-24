@@ -11,7 +11,7 @@ export class MembersService {
   ) {}
 
   findAll(): Promise<MemberEntity[]> {
-    return this.membersRepository.find({ relations: ['user'] });
+    return this.membersRepository.find();
   }
 
   async remove(id: number): Promise<MemberEntity> {

@@ -12,7 +12,7 @@ import { MembersService } from './members.service';
 @ApiTags('channel_members')
 @ApiBearerAuth('access_token')
 @UseGuards(JwtAuthGuard)
-@Controller('members')
+@Controller('channels/members')
 export class MembersController {
   constructor(private readonly membersService: MembersService) {}
 
