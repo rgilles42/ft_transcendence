@@ -18,7 +18,7 @@ export default ($axios: AxiosInstance) => ({
   },
 
   refreshToken(refreshToken : string | null) {
-    return $axios.post(`${AUTH_BASE}/refresh`, { token: refreshToken });
+    return $axios.post(`${AUTH_BASE}/refresh`, { refreshToken });
   },
 
 });

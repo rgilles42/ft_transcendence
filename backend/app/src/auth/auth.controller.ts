@@ -9,6 +9,7 @@ import {
   Post,
   Request,
   Response,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { configService } from '../config/config.service';
@@ -78,8 +79,12 @@ export class AuthController {
   }
 
   @Post('refresh')
-  helloWorld(@Request() req) {
-    return this.authService.refreshTokens(req);
+  refreshTokens(@Request() req) {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh not found');
+    }
+    return this.authService.refreshTokens(refreshToken);
   }
 
   @Post('logout')

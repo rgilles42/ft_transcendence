@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { isStringObject } from 'util/types';
 import { randomBytes } from 'crypto';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -19,18 +20,6 @@ export class AuthService {
 
   validateUser(): Promise<any> {
     console.log('validate me');
-    return null;
-  }
-
-  public getReqToken(req): string {
-    if (
-      req.headers.authorization &&
-      req.headers.authorization.split(' ')[0] === 'Bearer'
-    ) {
-      return req.headers.authorization.split(' ')[1];
-    } else if (req.query && req.query.token) {
-      return req.query.token;
-    }
     return null;
   }
 
@@ -61,11 +50,16 @@ export class AuthService {
     };
   }
 
-  public async refreshTokens(req) {
-    const decodedToken = this.jwtService.decode(this.getReqToken(req));
+  public async refreshTokens(refreshToken: string) {
+    const decodedToken = this.jwtService.decode(refreshToken);
     if (!decodedToken || isStringObject(decodedToken)) {
       throw new UnauthorizedException('Invalid payload');
     }
+
+    if (Date.now() < decodedToken.exp) {
+      throw new UnauthorizedException('Refresh is expired');
+    }
+
     const user = await this.usersService.findOne(decodedToken.id);
     if (!user) {
       throw new UnauthorizedException('User not found');
