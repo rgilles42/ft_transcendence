@@ -33,7 +33,7 @@ export class UsersService {
     return this.usersRepository.find();
   }
 
-  async findOne(id: string, include: string = null): Promise<UserEntity> {
+  async findOne(id: string, include: string[] = []): Promise<UserEntity> {
     let user: UserEntity;
     try {
       if (isNaN(Number(id))) throw new ImATeapotException();
@@ -47,25 +47,35 @@ export class UsersService {
         throw new NotFoundException();
       }
     }
-    if (include !== null && include !== undefined) {
-      const to_incl = include.split('+');
-      for (let index = 0; index < to_incl.length; index++) {
-        if (to_incl[index] == 'friends')
-          user.friends = await this.get_friends(user.id);
-        else if (to_incl[index] == 'blocked_users')
-          user.blocked_users = await this.get_blockeds(user.id);
-        else if (to_incl[index] == 'channels')
-          user.channels = await this.get_channels(user.id);
-        else if (to_incl[index] == 'games')
-          user.games = await this.get_games(user.id);
-        else throw new BadRequestException();
-      }
+    for (let index = 0; index < include.length; index++) {
+      if (include[index] == 'friends')
+        user.friends = await this.get_friends(user.id);
+      else if (include[index] == 'blocked_users')
+        user.blocked_users = await this.get_blockeds(user.id);
+      else if (include[index] == 'channels')
+        user.channels = await this.get_channels(user.id);
+      else if (include[index] == 'games')
+        user.games = await this.get_games(user.id);
     }
     return user;
   }
 
-  async findOneByLogin(login: UserEntity['login']) {
+  async findOneByLogin(login: UserEntity['login'], include: string[] = []) {
     const user = await this.usersRepository.findOne({ login });
+    if (!user) {
+      return null;
+    }
+
+    for (let index = 0; index < include.length; index++) {
+      if (include[index] == 'friends')
+        user.friends = await this.get_friends(user.id);
+      else if (include[index] == 'blocked_users')
+        user.blocked_users = await this.get_blockeds(user.id);
+      else if (include[index] == 'channels')
+        user.channels = await this.get_channels(user.id);
+      else if (include[index] == 'games')
+        user.games = await this.get_games(user.id);
+    }
     return user;
   }
 
@@ -126,11 +136,7 @@ export class UsersService {
         blockData.targetUserId,
       );
       await this.blockshipsRepository.save(newBlockship);
-      return {
-        ...newBlockship,
-        user: undefined,
-        blockedUser: undefined,
-      };
+      return newBlockship;
     } catch (err) {
       throw new NotFoundException();
     }
@@ -140,11 +146,12 @@ export class UsersService {
     try {
       const friends = (
         await this.usersRepository.findOneOrFail(id, {
-          relations: ['friends'],
+          relations: ['friends', 'friends.user', 'friends.friend'],
         })
       ).friends;
       const otherfriends = await this.friendshipsRepository.find({
         where: { friendId: id },
+        relations: ['user', 'friend'],
       });
       for (let index = 0; index < otherfriends.length; index++) {
         friends.push(otherfriends[index]);
@@ -177,11 +184,7 @@ export class UsersService {
         frienshipData.targetUserId,
       );
       await this.friendshipsRepository.save(newFriendship);
-      return {
-        ...newFriendship,
-        user: undefined,
-        friend: undefined,
-      };
+      return newFriendship;
     } catch (err) {
       throw new NotFoundException();
     }

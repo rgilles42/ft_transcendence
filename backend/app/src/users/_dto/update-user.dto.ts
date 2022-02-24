@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsString, IsInt } from 'class-validator';
 
 export class updateUserDto {
   @ApiProperty({ required: false })
@@ -11,6 +11,10 @@ export class updateUserDto {
   imageUrl?: string;
 
   @ApiProperty({ required: false })
+  @IsInt()
+  status?: number;
+
+  @ApiProperty({ required: false })
   @IsString()
-  status?: string;
+  activity?: string;
 }

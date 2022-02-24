@@ -58,11 +58,8 @@ export class UsersController {
   })
   @ApiOkResponse({ type: UserEntity })
   @Get('me')
-  get_me(
-    @Request() req,
-    @Query('include') include: string,
-  ): Promise<UserEntity> {
-    return this.usersService.findOne(req.user.username, include);
+  get_me(@Request() req, @Query('include') include = ''): Promise<UserEntity> {
+    return this.usersService.findOne(req.user.username, include.split('+'));
   }
 
   @ApiQuery({
@@ -77,9 +74,9 @@ export class UsersController {
   @Get(':id_or_username')
   findOne(
     @Param('id_or_username') id: string,
-    @Query('include') include: string,
+    @Query('include') include = '',
   ): Promise<UserEntity> {
-    return this.usersService.findOne(id, include);
+    return this.usersService.findOne(id, include.split('+'));
   }
 
   @ApiOkResponse({ type: UserEntity })

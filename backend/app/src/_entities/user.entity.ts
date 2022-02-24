@@ -32,8 +32,12 @@ export class UserEntity {
   imageUrl: string;
 
   @ApiProperty()
+  @Column({ default: 0 })
+  status: number;
+
+  @ApiProperty()
   @Column({ nullable: true })
-  status: string;
+  activity: string;
 
   //@ApiProperty({ type: () => [FriendshipEntity] })
   @OneToMany(() => FriendshipEntity, (friendship) => friendship.user)

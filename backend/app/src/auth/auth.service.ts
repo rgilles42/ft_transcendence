@@ -75,7 +75,12 @@ export class AuthService {
 
   async loginWithLocal(req) {
     if (!req.body.login) throw new BadRequestException();
-    let user = await this.usersService.findOneByLogin(req.body.login);
+    let user = await this.usersService.findOneByLogin(req.body.login, [
+      'friends',
+      'blocked_users',
+      'channels',
+      'games',
+    ]);
     if (!user) {
       user = await this.usersService.create({
         login: req.body.login,
@@ -92,7 +97,12 @@ export class AuthService {
 
   async loginWithFortyTwo(req) {
     if (!req.user) throw new BadRequestException();
-    let user = await this.usersService.findOneByLogin(req.user.login);
+    let user = await this.usersService.findOneByLogin(req.user.login, [
+      'friends',
+      'blocked_users',
+      'channels',
+      'games',
+    ]);
     if (!user) {
       user = await this.usersService.create({
         login: req.user.login,
