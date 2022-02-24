@@ -1,18 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNotEmpty, IsString, IsInt} from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
 
 export class createChannelDto {
   @ApiProperty()
   @IsBoolean()
   @IsNotEmpty()
-  type: boolean;
+  isPrivate: boolean;
 
   @ApiProperty({ required: false })
   @IsString()
   password?: string;
-
-  @ApiProperty()
-  @IsInt()
-  @IsNotEmpty()
-  owner_id: number;
 }

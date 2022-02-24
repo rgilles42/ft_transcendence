@@ -7,6 +7,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
 
@@ -16,22 +17,28 @@ export class MemberEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({ type: () => ChannelEntity })
+  @ApiProperty()
+  @Column({ nullable: false })
+  channelId: number;
   @ManyToOne(() => ChannelEntity, (channel) => channel.members, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'channelId' })
   channel: ChannelEntity;
 
+  @ApiProperty()
+  @Column({ nullable: false })
+  userId: number;
   @ApiProperty({ type: () => UserEntity })
   @ManyToOne(() => UserEntity, (user) => user.memberships, {
-    eager: true,
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'userId' })
   user: UserEntity;
 
   @ApiProperty()
   @Column({ default: false })
-  is_admin: boolean;
+  isAdmin: boolean;
 
   @ApiProperty({ type: () => Date })
   @CreateDateColumn()

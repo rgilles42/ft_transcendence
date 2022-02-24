@@ -7,6 +7,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { RestrictionEntity as RestrictionEntity } from './channel-restriction.entity';
 import { MessageEntity } from './channel-message.entity';
@@ -21,17 +22,19 @@ export class ChannelEntity {
 
   @ApiProperty()
   @Column()
-  type: boolean;
+  isPrivate: boolean;
 
   @ApiProperty()
   @Column({ nullable: true })
   password: string;
 
-  @ApiProperty({ type: () => UserEntity })
+  @ApiProperty()
+  @Column({ nullable: false })
+  ownerId: number;
   @ManyToOne(() => UserEntity, {
-    eager: true,
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'ownerId' })
   owner: UserEntity;
 
   @ApiProperty({ type: () => [MemberEntity] })

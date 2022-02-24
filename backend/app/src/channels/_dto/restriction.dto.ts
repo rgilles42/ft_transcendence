@@ -5,7 +5,7 @@ export class restrictionDto {
   @ApiProperty()
   @IsInt()
   @IsNotEmpty()
-  user_to_restrict_id: number;
+  targetUserId: number;
 
   @ApiProperty()
   @IsInt()
@@ -14,5 +14,5 @@ export class restrictionDto {
 
   @ApiProperty({ type: Date })
   @IsDate()
-  end_date?: Date;
+  endDate?: Date;
 }

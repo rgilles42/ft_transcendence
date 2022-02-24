@@ -12,7 +12,7 @@ import { RestrictionsService } from './restrictions.service';
 @ApiTags('channel_restrictions')
 @ApiBearerAuth('access_token')
 @UseGuards(JwtAuthGuard)
-@Controller('restrictions')
+@Controller('channels/restrictions')
 export class RestrictionsController {
   constructor(private readonly restrictionsService: RestrictionsService) {}
 

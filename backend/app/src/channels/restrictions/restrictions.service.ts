@@ -11,7 +11,7 @@ export class RestrictionsService {
   ) {}
 
   findAll(): Promise<RestrictionEntity[]> {
-    return this.restrictionRepository.find({ relations: ['user'] });
+    return this.restrictionRepository.find();
   }
 
   async remove(id: number): Promise<RestrictionEntity> {

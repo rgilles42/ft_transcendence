@@ -4,13 +4,9 @@ import { IsString } from 'class-validator';
 export class updateChannelDto {
   @ApiProperty({ required: false })
   @IsString()
-  channel_password?: string;
+  channelType?: boolean;
 
   @ApiProperty({ required: false })
   @IsString()
-  new_channel_type?: boolean;
-
-  @ApiProperty({ required: false })
-  @IsString()
-  new_password?: string;
+  newPassword?: string;
 }

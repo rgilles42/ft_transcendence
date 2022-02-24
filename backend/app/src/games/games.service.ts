@@ -31,16 +31,15 @@ export class GamesService {
     const newGame = new GameEntity();
     newGame.type = createGameData.type;
     newGame.player1 = await this.usersRepository.findOneOrFail(
-      createGameData.player1_id,
+      createGameData.player1Id,
     );
     newGame.player2 = await this.usersRepository.findOneOrFail(
-      createGameData.player2_id,
+      createGameData.player2Id,
     );
-    if (createGameData.player1_score !== undefined)
-      newGame.player1score = createGameData.player1_score;
-    if (createGameData.player2_score !== undefined)
-      newGame.player2score = createGameData.player2_score;
-    console.log(newGame);
+    if (createGameData.player1Score !== undefined)
+      newGame.player1score = createGameData.player1Score;
+    if (createGameData.player2Score !== undefined)
+      newGame.player2score = createGameData.player2Score;
     await this.gamesRepository.save(newGame);
     return newGame;
   }

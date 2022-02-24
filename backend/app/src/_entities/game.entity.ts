@@ -28,9 +28,9 @@ export class GameEntity {
   })
   type: gameType;
 
-  @Column()
+  @ApiProperty()
+  @Column({ nullable: false })
   player1Id: number;
-  @ApiProperty({ type: () => UserEntity })
   @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'player1Id' })
   player1: UserEntity;
@@ -39,9 +39,9 @@ export class GameEntity {
   @Column()
   player1score: number;
 
-  @Column()
+  @ApiProperty()
+  @Column({ nullable: false })
   player2Id: number;
-  @ApiProperty({ type: () => UserEntity })
   @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'player2Id' })
   player2: UserEntity;

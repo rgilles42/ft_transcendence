@@ -12,7 +12,7 @@ import { MessagesService } from './messages.service';
 @ApiTags('channel_messages')
 @ApiBearerAuth('access_token')
 @UseGuards(JwtAuthGuard)
-@Controller('messages')
+@Controller('channels/messages')
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 
