@@ -33,6 +33,19 @@ export const getUserBlocked = (currentUser: User | null, user: User | null): Use
   return currentUser.blocked[index];
 };
 
+export const getUserBlockeds = (currentUser: User | null): User[] => {
+  if (!currentUser || !currentUser.blocked) {
+    return [];
+  }
+  const blockeds: User[] = [];
+  currentUser.blocked.forEach((blockedRelation) => {
+    if (currentUser.id === blockedRelation.userId && blockedRelation.blocked) {
+      blockeds.push(blockedRelation.blocked);
+    }
+  });
+  return blockeds;
+};
+
 export const isUserIsBlocked = (currentUser: User | null, user: User | null): boolean => {
   const blocked = getUserBlocked(currentUser, user);
   return (blocked !== undefined);
@@ -133,10 +146,12 @@ export default {
   isSameUser,
   getUserBlockedIndex,
   getUserBlocked,
+  getUserBlockeds,
   isUserIsBlocked,
   canUserBeBlocked,
   getUserFriendIndex,
   getUserFriend,
+  getUserFriends,
   isUserIsFriend,
   canUserBeFriend,
   canUserAcceptFriend,
