@@ -22,14 +22,14 @@
                 Envoyer une demande d'ami
               </button>
 
-              <template v-if="canUserAcceptFriend(currentUser, user)">
+              <div v-if="canUserAcceptFriend(currentUser, user)" class="space-x-4 flex">
                 <button @click="acceptFriendRequest(user)" class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
                   Accepter la demande
                 </button>
                 <button @click="declineFriendRequest(user)" class="bg-red-900 hover:bg-red-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
                   Refuser la demande
                 </button>
-              </template>
+              </div>
 
               <button v-if="isUserIsFriend(currentUser, user)" @click="deleteFriend(user)" class="bg-red-900 hover:bg-red-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
                 Supprimer cet ami
@@ -43,7 +43,35 @@
               </div>
             </div>
           </div>
+
+          <Tabs v-if="isSameUser(currentUser, user)" defaultActiveTab="information" class="rounded-md bg-gray-900 text-sm">
+            <template v-slot:tabs="{ activeTab, clickTab }">
+              <div class="bg-white bg-opacity-5 border-b border-gray-800 flex w-full">
+                <Tab :isActive="activeTab === 'information'" @click="clickTab('information')">
+                  <i class="fa-solid fa-address-card mr-2"></i>
+                  Informations Personnelles
+                </Tab>
+                <Tab :isActive="activeTab === 'editProfile'" @click="clickTab('editProfile')">
+                  <i class="fa-solid fa-user-gear mr-2"></i>
+                  Modifier le profil
+                </Tab>
+              </div>
+            </template>
+
+            <template v-slot:default="{ activeTab }">
+              <section class="p-4 flex mb-4">
+                <div v-if="activeTab === 'information'">
+                  Voici mon profil
+                </div>
+                <div v-if="activeTab === 'editProfile'">
+                  Formulaire de modif de ton profil
+                </div>
+              </section>
+            </template>
+          </Tabs>
+
         </section>
+
       </div>
     </section>
   </div>
@@ -65,10 +93,17 @@ import {
   canUserAcceptFriend, canUserBeFriend, getUserFriendIndex, getUserFriend, isSameUser, isUserIsFriend,
 } from '@/services/userUtils';
 import UserFriend from '@/types/UserFriend';
+import Tabs from '@/components/tab/Tabs.vue';
+import Tab from '@/components/tab/Tab.vue';
 
 export default defineComponent({
   name: 'Profile',
-  components: { AccountAvatar, Loader },
+  components: {
+    AccountAvatar,
+    Loader,
+    Tabs,
+    Tab,
+  },
   props: {
     requestUserId: {
       type: String,
