@@ -6,10 +6,11 @@ import {
   Patch,
   Param,
   Delete,
-  UsePipes,
   UseGuards,
   Request,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserEntity } from 'src/_entities/user.entity';
@@ -29,6 +30,7 @@ import { sendIdDto } from './_dto/send-id.dto';
 import { ChannelEntity } from 'src/_entities/channel.entity';
 import { GameEntity } from 'src/_entities/game.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('users')
 @Controller('users')
@@ -81,12 +83,14 @@ export class UsersController {
 
   @ApiOkResponse({ type: UserEntity })
   @ApiNotFoundResponse()
+  @UseInterceptors(FileInterceptor('newAvatar'))
   @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updateUserDto: updateUserDto,
-  ): Promise<UserEntity> {
-    return this.usersService.update(+id, updateUserDto);
+    @UploadedFile() newAvatar,
+  ) {
+    return this.usersService.update(+id, updateUserDto, newAvatar);
   }
 
   @ApiOkResponse({ type: UserEntity })

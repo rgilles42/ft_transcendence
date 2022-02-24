@@ -10,6 +10,7 @@ import { FriendsModule } from './friends/friends.module';
 import { BlockedModule } from './blocked/blocked.module';
 import { GamesModule } from 'src/games/games.module';
 import { GameEntity } from 'src/_entities/game.entity';
+import { StorageModule } from 'src/storage/storage.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { GameEntity } from 'src/_entities/game.entity';
     FriendsModule,
     BlockedModule,
     GamesModule,
+    StorageModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],

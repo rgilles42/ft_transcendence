@@ -1,9 +1,11 @@
+import { StorageService } from './../storage/storage.service';
 import {
   NotFoundException,
   Injectable,
   ImATeapotException,
   UnauthorizedException,
   BadRequestException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BlockshipEntity } from 'src/_entities/users_blockship.entity';
@@ -27,6 +29,7 @@ export class UsersService {
     private blockshipsRepository: Repository<BlockshipEntity>,
     @InjectRepository(GameEntity)
     private gamesRepository: Repository<GameEntity>,
+    private storageService: StorageService,
   ) {}
 
   findAll(): Promise<UserEntity[]> {
@@ -85,15 +88,27 @@ export class UsersService {
     return newUser;
   }
 
-  async update(id: number, updateUserData: updateUserDto): Promise<UserEntity> {
+  async update(id: number, updateUserData: updateUserDto, newAvatar) {
+    let user = null;
     try {
-      let user = await this.usersRepository.findOneOrFail(id);
-      await this.usersRepository.update(id, updateUserData);
-      user = await this.usersRepository.findOne(id);
-      return user;
+      user = await this.usersRepository.findOneOrFail(id);
     } catch (err) {
       throw new NotFoundException();
     }
+    if (newAvatar) {
+      const filename = await this.storageService.storeUserAvatar(
+        newAvatar,
+        user,
+      );
+      updateUserData.imageUrl = filename;
+    }
+    try {
+      await this.usersRepository.update(id, updateUserData);
+    } catch (err) {
+      throw new InternalServerErrorException();
+    }
+    user = await this.usersRepository.findOne(id);
+    return user;
   }
 
   async remove(id: number): Promise<UserEntity> {
