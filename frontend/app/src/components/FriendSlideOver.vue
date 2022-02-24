@@ -47,8 +47,11 @@
 
 <script lang="ts">
 import { screenInfo } from '@/services/screenBreakPoint';
+import { getUserFriends } from '@/services/userUtils';
 import { useStore } from '@/store';
-import { defineComponent, ref, computed } from 'vue';
+import {
+  defineComponent, ref, computed, watch,
+} from 'vue';
 import AccountAvatar from './AccountAvatar.vue';
 import ProfileQuickView from './ProfileQuickView.vue';
 
@@ -69,7 +72,7 @@ export default defineComponent({
     const store = useStore();
     const currentUser = computed(() => store.getUser);
 
-    const friends = computed(() => currentUser.value?.friends || []);
+    const friends = computed(() => getUserFriends(currentUser.value));
 
     function groupBy<T>(list: T[], keyGetter: (x: T) => unknown) {
       const map = new Map();
@@ -85,8 +88,9 @@ export default defineComponent({
       return map;
     }
 
-    const groupedFriends = groupBy(friends.value, (friend) => friend.status);
+    const groupedFriends = computed(() => groupBy(friends.value, (friend) => friend.status));
     return {
+      currentUser,
       isSlideOpen,
       friends,
       groupedFriends,

@@ -76,6 +76,23 @@ export const getUserFriend = (currentUser: User | null, user: User | null): User
   return currentUser.friends[index];
 };
 
+export const getUserFriends = (currentUser: User | null, strict = true): User[] => {
+  if (!currentUser || !currentUser.friends) {
+    return [];
+  }
+  const friends: User[] = [];
+  currentUser.friends.forEach((friendRelation) => {
+    if ((strict && friendRelation.status === true) || !strict) {
+      if (currentUser.id === friendRelation.userId && friendRelation.friend) {
+        friends.push(friendRelation.friend);
+      } else if (currentUser.id === friendRelation.friendId && friendRelation.user) {
+        friends.push(friendRelation.user);
+      }
+    }
+  });
+  return friends;
+};
+
 export const isUserIsFriend = (currentUser: User | null, user: User | null): boolean => {
   if (!currentUser || !user) {
     return false;
