@@ -25,78 +25,74 @@ export class ActivityGateway
   private userSockets: Socket[] = [];
 
   /*
-  The UserActivity object is as such: {id: number, inGame: boolean, isDisconnecting: boolean}
+  The UserActivity object is as such: {id: number, newStatus: number}, with newStatus being either: 1 (connected), 2 (in game), or 0 (disconnecting)
   This socket covers the following events:
 
   On every new user connection, two things will happen :
     - an array of UserActivity objects describing his/her online friends will be sent to him in a connectedUsers message:
-          expect this: [{onlineFriendId1, false, false}, {onlineFriendId2, true, false}, {onlineFriendId3, false, false}...]
+          new arriving user expect this: [{currentlyOnlineFriendId1, 1}, {currentlyOnlineFriendId2, 2}, {currentlyOnlineFriendId3, 1}]
     - an array of a single UserActivity object describing him will be sent to his currently online friends in a connectedUsers message:
-          expect this: [{newUserId, false, false}]
+          connected friends expect this: [{arrivingUserId, 1}]
 
-  Everytime a user joins or quits a game, he or she should send a changeGameActivity message of any payload, then :
+  On every changeGameActivity message of any payload from an user:
     - an array of a single UserActivity object describing him will be sent to his currently online friends in a connectedUsers message:
-          expect this: [{userid, oppositeOfPreviousInGameStatus, false}]
+          connected friends expect this: [{statusChangingUserId, (1 or 2)}]
 
-  On every user disconnect :
+  On every user disconnect:
     - an array of a single UserActivity object describing him will be sent to his currently online friends in a connectedUsers message:
-          expect this: [{disconnectingUserId, false, true}]
-
-    [{ id: 5, newStatus: 2 }]: id 5 vient d'entrer en game
-    [{ id: 5, newStatus: 1 }]: id 5 vient de ce connecter
-    [{ id: 5, newStatus: 0 }]: id 5 vient de ce déconnecter
+          connected friends expect this: [{disconnectingUserId, 0}]
 
   */
 
-  async sendClientDiffToAll(changingClient: Socket, disconnect = false) {
-    const userObject = changingClient.data.user;
-    userObject.isDisconnecting = disconnect;
-    const friends = (
-      await this.usersService.findOne(userObject.id.toString(), ['friends'])
+  async sendAllLoggedFriendsToArriving(client: Socket): Promise<void> {
+    const clientFriends = (
+      await this.usersService.findOne(client.data.user.id.toString(), [
+        'friends',
+      ])
+    ).friends;
+    const connectedFriendsUserActivities = [];
+    this.userSockets.forEach((socket) => {
+      if (
+        socket.data.user.id !== client.data.user.id &&
+        clientFriends.some(
+          (clientFriendship) =>
+            socket.data.user.id === clientFriendship.friendId ||
+            socket.data.user.id === clientFriendship.userId,
+        )
+      )
+        connectedFriendsUserActivities.push(socket.data.user);
+    });
+    client.emit('connectedUsers', connectedFriendsUserActivities);
+  }
+
+  async sendClientDiffToAll(changingClient: Socket) {
+    const userNewActivity = changingClient.data.user;
+    const clientFriends = (
+      await this.usersService.findOne(userNewActivity.id.toString(), [
+        'friends',
+      ])
     ).friends;
     this.userSockets.forEach((socket) => {
       if (
-        socket.data.user.id !== userObject.id &&
-        friends.some(
-          (friendship) =>
-            socket.data.user.id === friendship.friendId ||
-            socket.data.user.id === friendship.userId,
+        socket.data.user.id !== userNewActivity.id &&
+        clientFriends.some(
+          (clientFriendship) =>
+            socket.data.user.id === clientFriendship.friendId ||
+            socket.data.user.id === clientFriendship.userId,
         )
       )
-        socket.emit('connectedUsers', [userObject]);
+        socket.emit('connectedUsers', [userNewActivity]);
     });
   }
 
   @SubscribeMessage('changeGameActivity')
   async changeGameActivity(changingClient: Socket) {
-    changingClient.data.user.inGame = !changingClient.data.user.inGame;
-    const userToEdit = this.userSockets.find(
+    const storedClientSocket = this.userSockets.find(
       (socket) => socket.id === changingClient.id,
-    ).data.user;
-    userToEdit.inGame = !userToEdit.inGame;
-    this.sendClientDiffToAll(changingClient);
-  }
-
-  async sendAllLoggedFriendsToOne(client: Socket): Promise<void> {
-    const friends = (
-      await this.usersService.findOne(client.data.user.id.toString(), [
-        'friends',
-      ])
-    ).friends;
-    console.log(friends);
-    const loggedFriends = [];
-    this.userSockets.forEach((socket) => {
-      if (
-        socket.data.user.id !== client.data.user.id &&
-        friends.some(
-          (friendship) =>
-            socket.data.user.id === friendship.friendId ||
-            socket.data.user.id === friendship.userId,
-        )
-      )
-        loggedFriends.push(socket.data.user);
-    });
-    client.emit('connectedUsers', loggedFriends);
+    );
+    storedClientSocket.data.user.newStatus =
+      storedClientSocket.data.user.newStatus === 2 ? 1 : 2;
+    this.sendClientDiffToAll(storedClientSocket);
   }
 
   async handleConnection(client: Socket) {
@@ -111,9 +107,9 @@ export class ActivityGateway
       const payload = this.authService.verifyJwt(access_token);
       const user = await this.usersService.findOne(payload.id);
       if (!user) throw new UnauthorizedException('User not found');
-      client.data.user = { id: user.id, inGame: false, isDisconnecting: false };
+      client.data.user = { id: user.id, newStatus: 1 };
       this.userSockets.push(client);
-      await this.sendAllLoggedFriendsToOne(client);
+      await this.sendAllLoggedFriendsToArriving(client);
       await this.sendClientDiffToAll(client);
     } catch (error) {
       client.emit('Error', new UnauthorizedException());
@@ -123,12 +119,16 @@ export class ActivityGateway
 
   async handleDisconnect(client: Socket) {
     console.log(`Client Disconnected: ${client.id}`);
+    const socketToDelete = this.userSockets.find(
+      (socket) => socket.id === client.id,
+    );
     const socketIndex = this.userSockets.findIndex(
       (socket) => socket.id === client.id,
     );
     if (socketIndex > -1) {
       this.userSockets.splice(socketIndex, 1);
     }
-    await this.sendClientDiffToAll(client, true);
+    socketToDelete.data.user.newStatus = 0;
+    await this.sendClientDiffToAll(socketToDelete);
   }
 }
