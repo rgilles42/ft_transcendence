@@ -24,11 +24,30 @@ export class ActivityGateway
   private logger: Logger = new Logger('ActivityGateway');
   private userSockets: Socket[] = [];
 
+  /*
+  The UserActivity object is as such: {id: number, inGame: boolean, isDisconnecting: boolean}
+  This socket covers the following events:
+  
+  On every new user connection, two things will happen :
+    - an array of UserActivity objects describing his/her online friends will be sent to him in a connectedUsers message:
+          expect this: [{onlineFriendId1, false, false}, {onlineFriendId2, true, false}, {onlineFriendId3, false, false}...]
+    - an array of a single UserActivity object describing him will be sent to his currently online friends in a connectedUsers message:
+          expect this: [{newUserId, false, false}]
+  
+  Everytime a user joins or quits a game, he or she should send a changeGameActivity message of any payload, then :
+    - an array of a single UserActivity object describing him will be sent to his currently online friends in a connectedUsers message:
+          expect this: [{userid, oppositeOfPreviousInGameStatus, false}]
+  
+  On every user disconnect :
+    - an array of a single UserActivity object describing him will be sent to his currently online friends in a connectedUsers message:
+          expect this: [{disconnectingUserId, false, true}]
+  */
+
   async sendClientDiffToAll(changingClient: Socket, disconnect = false) {
     const userObject = changingClient.data.user;
     userObject.isDisconnecting = disconnect;
     const friends = (
-      await this.usersService.findOne(userObject.id.toString(), 'friends')
+      await this.usersService.findOne(userObject.id.toString(), ['friends'])
     ).friends;
     this.userSockets.forEach((socket) => {
       if (
@@ -55,7 +74,7 @@ export class ActivityGateway
 
   async sendAllLoggedFriendsToOne(client: Socket): Promise<void> {
     const friends = (
-      await this.usersService.findOne(client.data.user.id.toString(), 'friends')
+      await this.usersService.findOne(client.data.user.id.toString(), ['friends'])
     ).friends;
     console.log(friends);
     const loggedFriends = [];
