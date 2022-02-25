@@ -51,6 +51,14 @@ export default ($axios: AxiosInstance) => ({
     return $axios.get(`${USERS_BASE}/${userId}/games_history`);
   },
 
+  editUserProfile(userId: User['id'], data: any) {
+    const formData = new FormData();
+    Object.keys(data).forEach((key) => {
+      formData.append(key, data[key]);
+    });
+    return $axios.patch(`${USERS_BASE}/${userId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+  },
+
   editUser(userId: User['id'], userData: User) {
     return $axios.patch(`${USERS_BASE}/${userId}`, { userData });
   },

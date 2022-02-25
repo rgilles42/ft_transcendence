@@ -2,7 +2,7 @@
   <li
     @click="onClick"
     :class="[isActive ? 'text-white border-b-2 border-blue-500' : 'text-gray-500 hover:text-red-400' ]"
-    class="flex items-center justify-center flex-grow text-center no-underline hover:no-underline cursor-pointer border-transparent uppercase tracking-wide font-bold text-xs py-3 mr-8 transition"
+    class="flex items-center justify-center flex-grow text-center no-underline hover:no-underline cursor-pointer border-transparent uppercase tracking-wide font-bold text-xs py-3 transition"
   >
     <slot name="icon"></slot>
     <slot>{{ title }}</slot>

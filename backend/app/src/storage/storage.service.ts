@@ -2,6 +2,7 @@ import { UserEntity } from './../_entities/user.entity';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Storage } from '@squareboat/nest-storage';
 import * as path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class StorageService {
@@ -23,10 +24,13 @@ export class StorageService {
   async storeUserAvatar(avatar, user: UserEntity) {
     const storage = Storage.disk('local');
     if (await storage.exists(user.imageUrl)) {
-      storage.delete(user.imageUrl);
+      await storage.delete(user.imageUrl);
     }
     const fileExtension = path.parse(avatar.originalname).ext;
-    const filename = `${user.id}-${user.login}${fileExtension}`;
+    let filename = '';
+    do {
+      filename = `${uuidv4()}${fileExtension}`;
+    } while (await storage.exists(user.imageUrl));
 
     const filePath = path.join('usersAvatars', filename);
     await storage.put(filePath, avatar.buffer);
