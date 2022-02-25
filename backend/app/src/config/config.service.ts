@@ -1,4 +1,5 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { StorageOptions } from '@squareboat/nest-storage';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
@@ -69,6 +70,18 @@ class ConfigService {
       },
       refreshToken: {
         maxAge: 60 * 60 * 24 * 30, // 30 days
+      },
+    };
+  }
+
+  public getStorageConfig(): StorageOptions {
+    return {
+      default: 'local',
+      disks: {
+        local: {
+          driver: 'local',
+          basePath: './uploads/', // fully qualified path of the folder
+        },
       },
     };
   }

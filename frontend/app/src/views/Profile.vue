@@ -7,7 +7,7 @@
       <div class="flex flex-col lg:flex-row md:flex-row items-center md:ml-12 mt-8">
         <AccountAvatar :user="user" class="mb-4 md:mb-0 rounded-full w-24 md:w-16" />
         <div class="md:ml-8">
-          <h6 v-if="isSameUser(currentUser, user)">Bonjour, {{ user.username }}!</h6>
+          <h6 v-if="userUtils.isSameUser(currentUser, user)">Bonjour, {{ user.username }}!</h6>
           <h6 v-else>{{ user.username }}</h6>
         </div>
       </div>
@@ -18,20 +18,20 @@
             <div class="p-4 bg-white bg-opacity-5 border-b border-gray-800 flex justify-between items-center">
               <h4 class="text-xl">Détails du compte</h4>
 
-              <button v-if="canUserBeFriend(currentUser, user)" @click="sendFriendRequest(user)" class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
+              <button v-if="userUtils.canUserBeFriend(currentUser, user)" @click="sendFriendRequest(user)" class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
                 Envoyer une demande d'ami
               </button>
 
-              <template v-if="canUserAcceptFriend(currentUser, user)">
+              <div v-if="userUtils.canUserAcceptFriend(currentUser, user)" class="space-x-4 flex">
                 <button @click="acceptFriendRequest(user)" class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
                   Accepter la demande
                 </button>
                 <button @click="declineFriendRequest(user)" class="bg-red-900 hover:bg-red-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
                   Refuser la demande
                 </button>
-              </template>
+              </div>
 
-              <button v-if="isUserIsFriend(currentUser, user)" @click="deleteFriend(user)" class="bg-red-900 hover:bg-red-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
+              <button v-if="userUtils.isUserIsFriend(currentUser, user)" @click="deleteFriend(user)" class="bg-red-900 hover:bg-red-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
                 Supprimer cet ami
               </button>
 
@@ -43,7 +43,50 @@
               </div>
             </div>
           </div>
+
+          <Tabs v-if="userUtils.isSameUser(currentUser, user)" defaultActiveTab="information" class="rounded-md bg-gray-900 text-sm">
+            <template v-slot:tabs="{ activeTab, clickTab }">
+              <div class="bg-white bg-opacity-5 border-b border-gray-800 block sm:flex w-full flex-between">
+                <Tab :isActive="activeTab === 'information'" @click="clickTab('information')">
+                  <i class="fa-solid fa-address-card mr-2"></i>
+                  Informations Personnelles
+                </Tab>
+                <Tab :isActive="activeTab === 'editProfile'" @click="clickTab('editProfile')">
+                  <i class="fa-solid fa-user-gear mr-2"></i>
+                  Modifier le profil
+                </Tab>
+              </div>
+            </template>
+
+            <template v-slot:default="{ activeTab }">
+              <section class="p-4 mb-4">
+                <div v-if="activeTab === 'information'">
+                  Voici mon profil
+                </div>
+                <template v-if="activeTab === 'editProfile'">
+                  <div>
+                    <div class="mb-6">
+                      <input v-model.trim="editProfileData.username" type="text" placeholder="Nom d'utilisateur" class="block w-full py-2 m-0 pl-4 rounded-full focus:outline-none">
+                    </div>
+                    <div class="mb-6">
+                      <input @change="onImgChange" ref="newAvatarInput" type="file" accept="image/*" class="block w-full py-2 m-0 pl-4 rounded-full focus:outline-none">
+                    </div>
+                    <div class="mb-6">
+                      <input v-model.trim="editProfileData.activity" type="text" placeholder="Message d'activité" class="block w-full py-2 m-0 pl-4 rounded-full focus:outline-none">
+                    </div>
+                    <div class="flex">
+                      <button @click="editProfile(user, editProfileData)" class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none w-full p-2 text-xs rounded-full uppercase font-bold tracking-wider">
+                        Modifier mon profil
+                      </button>
+                    </div>
+                  </div>
+                </template>
+              </section>
+            </template>
+          </Tabs>
+
         </section>
+
       </div>
     </section>
   </div>
@@ -60,15 +103,20 @@ import User from '@/types/User';
 import AccountAvatar from '@/components/AccountAvatar.vue';
 import Loader from '@/components/Loader.vue';
 import { AxiosResponse } from 'axios';
-import formater from '@/services/formater';
-import {
-  canUserAcceptFriend, canUserBeFriend, getUserFriendIndex, getUserFriend, isSameUser, isUserIsFriend,
-} from '@/services/userUtils';
+import * as formater from '@/services/formater';
+import * as userUtils from '@/services/userUtils';
 import UserFriend from '@/types/UserFriend';
+import Tabs from '@/components/tab/Tabs.vue';
+import Tab from '@/components/tab/Tab.vue';
 
 export default defineComponent({
   name: 'Profile',
-  components: { AccountAvatar, Loader },
+  components: {
+    AccountAvatar,
+    Loader,
+    Tabs,
+    Tab,
+  },
   props: {
     requestUserId: {
       type: String,
@@ -98,11 +146,12 @@ export default defineComponent({
         .catch(() => resolve(null));
     });
 
+    // Friend methods
+
     const sendFriendRequest = (newFriend: User | null) => {
-      if (!currentUser.value || !newFriend || !canUserBeFriend(currentUser.value, newFriend)) {
+      if (!currentUser.value || !newFriend || !userUtils.canUserBeFriend(currentUser.value, newFriend)) {
         return;
       }
-      console.log(newFriend.id);
       api.users.addUserFriend(currentUser.value.id, newFriend.id)
         .then((response) => {
           if (currentUser.value) {
@@ -121,10 +170,10 @@ export default defineComponent({
     };
 
     const acceptFriendRequest = (newFriend: User | null) => {
-      if (!currentUser.value || !newFriend || !canUserAcceptFriend(currentUser.value, newFriend)) {
+      if (!currentUser.value || !newFriend || !userUtils.canUserAcceptFriend(currentUser.value, newFriend)) {
         return;
       }
-      const userFriend = getUserFriend(currentUser.value, newFriend);
+      const userFriend = userUtils.getUserFriend(currentUser.value, newFriend);
       if (!userFriend) {
         return;
       }
@@ -135,37 +184,63 @@ export default defineComponent({
     };
 
     const declineFriendRequest = (newFriend: User | null) => {
-      if (!currentUser.value || !newFriend || !canUserAcceptFriend(currentUser.value, newFriend)) {
+      if (!currentUser.value || !newFriend || !userUtils.canUserAcceptFriend(currentUser.value, newFriend)) {
         return;
       }
-      const userFriend = getUserFriend(currentUser.value, newFriend);
+      const userFriend = userUtils.getUserFriend(currentUser.value, newFriend);
       if (!userFriend) {
         return;
       }
       api.users.deleteUserFriend(userFriend.id)
         .then(() => {
-          const index = getUserFriendIndex(currentUser.value, user.value);
+          const index = userUtils.getUserFriendIndex(currentUser.value, user.value);
           if (index >= 0 && currentUser.value && currentUser.value.friends) {
-            currentUser.value.friends.splice(index);
+            currentUser.value.friends.splice(index, 1);
           }
         });
     };
 
     const deleteFriend = (oldFriend: User | null) => {
-      if (!currentUser.value || !oldFriend || !isUserIsFriend(currentUser.value, oldFriend)) {
+      if (!currentUser.value || !oldFriend || !userUtils.isUserIsFriend(currentUser.value, oldFriend)) {
         return;
       }
-      const userFriend = getUserFriend(currentUser.value, oldFriend);
+      const userFriend = userUtils.getUserFriend(currentUser.value, oldFriend);
       if (!userFriend) {
         return;
       }
       api.users.deleteUserFriend(userFriend.id)
         .then(() => {
-          const index = getUserFriendIndex(currentUser.value, user.value);
+          const index = userUtils.getUserFriendIndex(currentUser.value, user.value);
           if (index >= 0 && currentUser.value && currentUser.value.friends) {
-            currentUser.value.friends.splice(index);
+            currentUser.value.friends.splice(index, 1);
           }
         });
+    };
+
+    // Edit profile methods
+
+    const newAvatarInput = ref<any>(null);
+
+    const editProfileData = ref({
+      username: '',
+      newAvatar: null,
+      activity: '',
+    });
+
+    const onImgChange = (event: any) => {
+      const { files } = event.target;
+      [editProfileData.value.newAvatar] = files;
+    };
+
+    const editProfile = (editedUser: User | null, newProfileData: any) => {
+      if (!editedUser) {
+        return;
+      }
+      api.users.editUserProfile(editedUser.id, newProfileData).then((response) => {
+        user.value = response.data;
+        newAvatarInput.value.value = '';
+        editProfileData.value.newAvatar = null;
+      });
     };
 
     watch(
@@ -174,6 +249,10 @@ export default defineComponent({
         fetchData(props.requestUserId)
           .then((fetchUser) => {
             user.value = fetchUser;
+
+            editProfileData.value.username = user.value?.username || '';
+
+            editProfileData.value.activity = user.value?.activity || '';
           })
           .finally(() => {
             if (!user.value) {
@@ -190,14 +269,17 @@ export default defineComponent({
       user,
       currentUser,
       formater,
+      userUtils,
+      // Friend request
       sendFriendRequest,
       acceptFriendRequest,
       declineFriendRequest,
       deleteFriend,
-      isUserIsFriend,
-      canUserBeFriend,
-      canUserAcceptFriend,
-      isSameUser,
+      // Edit Profile
+      editProfile,
+      onImgChange,
+      editProfileData,
+      newAvatarInput,
     };
   },
 });

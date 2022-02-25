@@ -12,6 +12,7 @@ import { GamesModule } from 'src/games/games.module';
 import { GameEntity } from 'src/_entities/game.entity';
 import { ActivityGateway } from './activity.gateway';
 import { AuthModule } from 'src/auth/auth.module';
+import { StorageModule } from 'src/storage/storage.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AuthModule } from 'src/auth/auth.module';
     BlockedModule,
     GamesModule,
     forwardRef(() => AuthModule),
+    StorageModule,
   ],
   controllers: [UsersController],
   providers: [UsersService, ActivityGateway],

@@ -9,6 +9,7 @@ import {
   Post,
   Request,
   Response,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { configService } from '../config/config.service';
@@ -24,18 +25,18 @@ export class AuthController {
 
     const data = await this.authService.loginWithLocal(req);
 
-    // res.cookie('access_token', data.access_token, {
-    //   httpOnly: true,
-    //   secure: true,
-    //   sameSite: 'None',
-    // });
+    res.cookie('access_token', data.access_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None',
+    });
 
-    // res.cookie('refresh_token', data.refresh_token, {
-    //   httpOnly: true,
-    //   secure: true,
-    //   sameSite: 'None',
-    //   path: '/token',
-    // });
+    res.cookie('refresh_token', data.refresh_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None',
+      path: '/token',
+    });
 
     return {
       access_token: data.access_token,
@@ -57,17 +58,17 @@ export class AuthController {
   async callback(@Request() req, @Response({ passthrough: true }) res) {
     const data = await this.authService.loginWithFortyTwo(req);
 
-    // res.cookie('access_token', data.access_token, {
-    //   httpOnly: true,
-    //   secure: true,
-    //   sameSite: 'None',
-    // });
+    res.cookie('access_token', data.access_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None',
+    });
 
-    // res.cookie('refresh_token', data.refresh_token, {
-    //   httpOnly: true,
-    //   secure: true,
-    //   sameSite: 'None',
-    // });
+    res.cookie('refresh_token', data.refresh_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None',
+    });
 
     return {
       access_token: data.access_token,
@@ -78,23 +79,41 @@ export class AuthController {
   }
 
   @Post('refresh')
-  helloWorld(@Request() req) {
-    return this.authService.refreshTokens(req);
+  async refreshTokens(@Request() req, @Response({ passthrough: true }) res) {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh not found');
+    }
+    const data = await this.authService.refreshTokens(refreshToken);
+    res.cookie('access_token', data.access_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None',
+    });
+
+    res.cookie('refresh_token', data.refresh_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None',
+      path: '/token',
+    });
+
+    return data;
   }
 
   @Post('logout')
   logout(@Response({ passthrough: true }) res) {
-    // res.cookie('access_token', false, {
-    //   httpOnly: true,
-    //   secure: true,
-    //   sameSite: 'None',
-    // });
+    res.cookie('access_token', false, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None',
+    });
 
-    // res.cookie('refresh_token', false, {
-    //   httpOnly: true,
-    //   secure: true,
-    //   sameSite: 'None',
-    // });
+    res.cookie('refresh_token', false, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None',
+    });
     return 'Success';
   }
 

@@ -28,7 +28,8 @@ class ConfigService {
   }
 
   public getApiUrl() {
-    return this.getValue('VUE_APP_API_URL', '', false);
+    const apiUrl = this.getValue('VUE_APP_API_URL', '', false);
+    return apiUrl.replace(new RegExp('[/]+$'), '');
   }
 
   public isProduction() {
