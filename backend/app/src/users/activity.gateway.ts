@@ -10,7 +10,7 @@ import { Server, Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from './users.service';
 
-@WebSocketGateway(3001, { namespace: 'activity', cors: { origin: '*' } })
+@WebSocketGateway({ namespace: 'activity', cors: { origin: '*' } })
 export class ActivityGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
@@ -27,20 +27,25 @@ export class ActivityGateway
   /*
   The UserActivity object is as such: {id: number, inGame: boolean, isDisconnecting: boolean}
   This socket covers the following events:
-  
+
   On every new user connection, two things will happen :
     - an array of UserActivity objects describing his/her online friends will be sent to him in a connectedUsers message:
           expect this: [{onlineFriendId1, false, false}, {onlineFriendId2, true, false}, {onlineFriendId3, false, false}...]
     - an array of a single UserActivity object describing him will be sent to his currently online friends in a connectedUsers message:
           expect this: [{newUserId, false, false}]
-  
+
   Everytime a user joins or quits a game, he or she should send a changeGameActivity message of any payload, then :
     - an array of a single UserActivity object describing him will be sent to his currently online friends in a connectedUsers message:
           expect this: [{userid, oppositeOfPreviousInGameStatus, false}]
-  
+
   On every user disconnect :
     - an array of a single UserActivity object describing him will be sent to his currently online friends in a connectedUsers message:
           expect this: [{disconnectingUserId, false, true}]
+
+    [{ id: 5, newStatus: 2 }]: id 5 vient d'entrer en game
+    [{ id: 5, newStatus: 1 }]: id 5 vient de ce connecter
+    [{ id: 5, newStatus: 0 }]: id 5 vient de ce déconnecter
+
   */
 
   async sendClientDiffToAll(changingClient: Socket, disconnect = false) {
@@ -74,7 +79,9 @@ export class ActivityGateway
 
   async sendAllLoggedFriendsToOne(client: Socket): Promise<void> {
     const friends = (
-      await this.usersService.findOne(client.data.user.id.toString(), ['friends'])
+      await this.usersService.findOne(client.data.user.id.toString(), [
+        'friends',
+      ])
     ).friends;
     console.log(friends);
     const loggedFriends = [];

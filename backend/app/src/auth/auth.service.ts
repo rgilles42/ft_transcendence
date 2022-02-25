@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { isStringObject } from 'util/types';
 import { randomBytes } from 'crypto';
-import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -111,7 +110,7 @@ export class AuthService {
     };
   }
 
-  verifyJwt(jwt: string) {
+  public verifyJwt(jwt: string) {
     return this.jwtService.verify(jwt);
   }
 }
