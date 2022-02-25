@@ -223,7 +223,7 @@ export default defineComponent({
 
     const editProfileData = ref({
       username: '',
-      newAvatar: new Blob(),
+      newAvatar: null,
       activity: '',
     });
 
@@ -239,6 +239,7 @@ export default defineComponent({
       api.users.editUserProfile(editedUser.id, newProfileData).then((response) => {
         user.value = response.data;
         newAvatarInput.value.value = '';
+        editProfileData.value.newAvatar = null;
       });
     };
 

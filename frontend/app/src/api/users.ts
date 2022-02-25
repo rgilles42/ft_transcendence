@@ -54,7 +54,9 @@ export default ($axios: AxiosInstance) => ({
   editUserProfile(userId: User['id'], data: any) {
     const formData = new FormData();
     Object.keys(data).forEach((key) => {
-      formData.append(key, data[key]);
+      if (data[key] !== undefined && data[key] !== null) {
+        formData.append(key, data[key]);
+      }
     });
     return $axios.patch(`${USERS_BASE}/${userId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
   },
