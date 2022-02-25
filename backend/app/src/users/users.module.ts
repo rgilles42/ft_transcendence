@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { configService } from '../config/config.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersService } from './users.service';
@@ -10,6 +10,8 @@ import { FriendsModule } from './friends/friends.module';
 import { BlockedModule } from './blocked/blocked.module';
 import { GamesModule } from 'src/games/games.module';
 import { GameEntity } from 'src/_entities/game.entity';
+import { ActivityGateway } from './activity.gateway';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
@@ -23,9 +25,10 @@ import { GameEntity } from 'src/_entities/game.entity';
     FriendsModule,
     BlockedModule,
     GamesModule,
+    forwardRef(() => AuthModule),
   ],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, ActivityGateway],
   exports: [UsersService],
 })
 export class UsersModule {}

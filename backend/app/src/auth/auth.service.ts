@@ -106,4 +106,8 @@ export class AuthService {
       user,
     };
   }
+
+  verifyJwt(jwt: string) {
+    return this.jwtService.verify(jwt);
+  }
 }
