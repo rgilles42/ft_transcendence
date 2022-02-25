@@ -67,9 +67,16 @@ class ConfigService {
       secret: this.getValue('JWT_SECRET'),
       accessToken: {
         maxAge: 60 * 15, // 15 minutes
+        httpOnly: true,
+        secure: true,
+        sameSite: 'None',
       },
       refreshToken: {
         maxAge: 60 * 60 * 24 * 30, // 30 days
+        httpOnly: true,
+        secure: true,
+        sameSite: 'None',
+        path: '/auth/refresh',
       },
     };
   }

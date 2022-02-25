@@ -26,16 +26,16 @@ export class AuthController {
     const data = await this.authService.loginWithLocal(req);
 
     res.cookie('access_token', data.access_token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'None',
+      httpOnly: configService.getJwtConfig().accessToken.httpOnly,
+      secure: configService.getJwtConfig().accessToken.secure,
+      sameSite: configService.getJwtConfig().accessToken.sameSite,
     });
 
     res.cookie('refresh_token', data.refresh_token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'None',
-      path: '/token',
+      httpOnly: configService.getJwtConfig().refreshToken.httpOnly,
+      secure: configService.getJwtConfig().refreshToken.secure,
+      sameSite: configService.getJwtConfig().refreshToken.sameSite,
+      path: configService.getJwtConfig().refreshToken.path,
     });
 
     return {
@@ -59,15 +59,16 @@ export class AuthController {
     const data = await this.authService.loginWithFortyTwo(req);
 
     res.cookie('access_token', data.access_token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'None',
+      httpOnly: configService.getJwtConfig().accessToken.httpOnly,
+      secure: configService.getJwtConfig().accessToken.secure,
+      sameSite: configService.getJwtConfig().accessToken.sameSite,
     });
 
     res.cookie('refresh_token', data.refresh_token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'None',
+      httpOnly: configService.getJwtConfig().refreshToken.httpOnly,
+      secure: configService.getJwtConfig().refreshToken.secure,
+      sameSite: configService.getJwtConfig().refreshToken.sameSite,
+      path: configService.getJwtConfig().refreshToken.path,
     });
 
     return {
@@ -85,17 +86,18 @@ export class AuthController {
       throw new UnauthorizedException('Refresh not found');
     }
     const data = await this.authService.refreshTokens(refreshToken);
+
     res.cookie('access_token', data.access_token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'None',
+      httpOnly: configService.getJwtConfig().accessToken.httpOnly,
+      secure: configService.getJwtConfig().accessToken.secure,
+      sameSite: configService.getJwtConfig().accessToken.sameSite,
     });
 
     res.cookie('refresh_token', data.refresh_token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'None',
-      path: '/token',
+      httpOnly: configService.getJwtConfig().refreshToken.httpOnly,
+      secure: configService.getJwtConfig().refreshToken.secure,
+      sameSite: configService.getJwtConfig().refreshToken.sameSite,
+      path: configService.getJwtConfig().refreshToken.path,
     });
 
     return data;
@@ -104,15 +106,16 @@ export class AuthController {
   @Post('logout')
   logout(@Response({ passthrough: true }) res) {
     res.cookie('access_token', false, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'None',
+      httpOnly: configService.getJwtConfig().accessToken.httpOnly,
+      secure: configService.getJwtConfig().accessToken.secure,
+      sameSite: configService.getJwtConfig().accessToken.sameSite,
     });
 
     res.cookie('refresh_token', false, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'None',
+      httpOnly: configService.getJwtConfig().refreshToken.httpOnly,
+      secure: configService.getJwtConfig().refreshToken.secure,
+      sameSite: configService.getJwtConfig().refreshToken.sameSite,
+      path: configService.getJwtConfig().refreshToken.path,
     });
     return 'Success';
   }
