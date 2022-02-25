@@ -32,6 +32,11 @@ class ConfigService {
     return apiUrl.replace(new RegExp('[/]+$'), '');
   }
 
+  public getWebSocketUrl() {
+    const apiUrl = this.getValue('VUE_APP_WEBSOCKET_URL', '', false);
+    return apiUrl.replace(new RegExp('[/]+$'), '');
+  }
+
   public isProduction() {
     return ['production', 'prod'].includes(this.getAppEnv());
   }
@@ -47,6 +52,7 @@ export const configService = new ConfigService(process.env).ensureValues([
   'NODE_ENV',
   'BASE_URL',
   'VUE_APP_API_URL',
+  'VUE_APP_WEBSOCKET_URL',
   'VUE_APP_FORTY_TWO_CLIENT_ID',
 ]);
 
