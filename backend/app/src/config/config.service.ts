@@ -29,6 +29,18 @@ class ConfigService {
     return ['production', 'prod'].includes(this.getAppEnv());
   }
 
+  public getCorsConfig() {
+    return {
+      origin: [
+        'http://localhost:8080',
+        'http://127.0.0.1:8080',
+        'https://localhost:8080',
+        'https://127.0.0.1:8080',
+      ],
+      credentials: true,
+    };
+  }
+
   public getTypeOrmConfig(): TypeOrmModuleOptions {
     return {
       type: this.getValue('DB_DRIVER') as any,

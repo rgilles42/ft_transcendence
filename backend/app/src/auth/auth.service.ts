@@ -17,11 +17,6 @@ export class AuthService {
     private usersService: UsersService,
   ) {}
 
-  validateUser(): Promise<any> {
-    console.log('validate me');
-    return null;
-  }
-
   public createTokens(user: UserEntity) {
     const xsrfToken = randomBytes(64).toString('hex');
 

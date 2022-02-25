@@ -1,4 +1,5 @@
-import { Logger, UnauthorizedException } from '@nestjs/common';
+import { configService } from 'src/config/config.service';
+import { Logger, UnauthorizedException, UseGuards } from '@nestjs/common';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -9,8 +10,24 @@ import {
 import { Server, Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from './users.service';
+import { parse } from 'cookie';
 
-@WebSocketGateway({ namespace: 'activity', cors: { origin: '*' } })
+@WebSocketGateway({
+  namespace: 'activity',
+  cors: {
+    origin: (reqOrigin, cb) => {
+      if (
+        !reqOrigin ||
+        !configService.getCorsConfig().origin.includes(reqOrigin)
+      ) {
+        cb(new Error('Not allowed by CORS'));
+        return;
+      }
+      cb(null, true);
+    },
+    credentials: configService.getCorsConfig().credentials,
+  },
+})
 export class ActivityGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
@@ -99,20 +116,23 @@ export class ActivityGateway
     try {
       console.log(`Client Connected: ${client.id}`);
       console.log(client);
-      const access_token = client.handshake.auth.access_token;
-      if (!access_token)
-        throw new UnauthorizedException(
-          'No access_token in auth field of socket.',
-        );
+      const cookies = parse(client.handshake.headers.cookie || '');
+      const access_token =
+        client.handshake.auth.access_token || cookies.access_token;
+      if (!access_token) {
+        throw new UnauthorizedException('No access_token provided.');
+      }
       const payload = this.authService.verifyJwt(access_token);
       const user = await this.usersService.findOne(payload.id);
-      if (!user) throw new UnauthorizedException('User not found');
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
       client.data.user = { id: user.id, newStatus: 1 };
       this.userSockets.push(client);
       await this.sendAllLoggedFriendsToArriving(client);
       await this.sendClientDiffToAll(client);
     } catch (error) {
-      client.emit('Error', new UnauthorizedException());
+      client.emit('Error', new UnauthorizedException(error));
       return client.disconnect();
     }
   }
