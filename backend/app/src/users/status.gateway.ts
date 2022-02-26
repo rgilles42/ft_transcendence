@@ -1,5 +1,5 @@
 import { configService } from 'src/config/config.service';
-import { Logger, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { UnauthorizedException, UseGuards } from '@nestjs/common';
 import {
   ConnectedSocket,
   OnGatewayConnection,
@@ -41,8 +41,6 @@ export class StatusGateway
     private authService: AuthService,
     private usersService: UsersService,
   ) {}
-
-  private logger: Logger = new Logger('StatusGateway');
 
   /*
   The UserStatus object is as such: {id: number, newStatus: number}, with newStatus being either: 1 (connected), 2 (in game), or 0 (disconnecting)
