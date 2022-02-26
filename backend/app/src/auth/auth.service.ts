@@ -65,7 +65,7 @@ export class AuthService {
     if (!req.body.login) throw new BadRequestException();
     let user = await this.usersService.findOneByLogin(req.body.login, [
       'friends',
-      'blocked_users',
+      'blockedUsers',
       'channels',
       'games',
     ]);
@@ -87,7 +87,7 @@ export class AuthService {
     if (!req.user) throw new BadRequestException();
     let user = await this.usersService.findOneByLogin(req.user.login, [
       'friends',
-      'blocked_users',
+      'blockedUsers',
       'channels',
       'games',
     ]);

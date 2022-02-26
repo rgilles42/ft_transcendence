@@ -18,23 +18,32 @@
             <div class="p-4 bg-white bg-opacity-5 border-b border-gray-800 flex justify-between items-center">
               <h4 class="text-xl">Détails du compte</h4>
 
-              <button v-if="userUtils.canUserBeFriend(currentUser, user)" @click="sendFriendRequest(user)" class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
-                Envoyer une demande d'ami
-              </button>
-
-              <div v-if="userUtils.canUserAcceptFriend(currentUser, user)" class="space-x-4 flex">
-                <button @click="acceptFriendRequest(user)" class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
-                  Accepter la demande
-                </button>
-                <button @click="declineFriendRequest(user)" class="bg-red-900 hover:bg-red-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
-                  Refuser la demande
-                </button>
+              <div class="block sm:flex justify-between text-center">
+                <div class="sm:mr-8">
+                  <button v-if="userUtils.canUserBeBlocked(currentUser, user)" @click="blockUser(user)" class="bg-orange-900 hover:bg-orange-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
+                    Bloquer cet utilisateur
+                  </button>
+                  <button v-if="userUtils.isUserIsBlocked(currentUser, user)" @click="unBlockUser(user)" class="bg-orange-900 hover:bg-orange-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
+                    Débloquer cet utilisateur
+                  </button>
+                </div>
+                <div>
+                  <button v-if="userUtils.canUserBeFriend(currentUser, user)" @click="sendFriendRequest(user)" class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
+                    Envoyer une demande d'ami
+                  </button>
+                  <template v-if="userUtils.canUserAcceptFriend(currentUser, user)" class="space-x-4 flex">
+                    <button @click="acceptFriendRequest(user)" class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider sm:mr-4">
+                      Accepter la demande
+                    </button>
+                    <button @click="declineFriendRequest(user)" class="bg-red-900 hover:bg-red-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
+                      Refuser la demande
+                    </button>
+                  </template>
+                  <button v-if="userUtils.isUserIsFriend(currentUser, user)" @click="deleteFriend(user)" class="bg-red-900 hover:bg-red-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
+                    Supprimer cet ami
+                  </button>
+                </div>
               </div>
-
-              <button v-if="userUtils.isUserIsFriend(currentUser, user)" @click="deleteFriend(user)" class="bg-red-900 hover:bg-red-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
-                Supprimer cet ami
-              </button>
-
             </div>
             <div class="p-4 flex mb-4">
               <div class="w-1/3">
@@ -108,6 +117,7 @@ import * as userUtils from '@/services/userUtils';
 import UserFriend from '@/types/UserFriend';
 import Tabs from '@/components/tab/Tabs.vue';
 import Tab from '@/components/tab/Tab.vue';
+import UserBlock from '@/types/UserBlock';
 
 export default defineComponent({
   name: 'Profile',
@@ -145,6 +155,44 @@ export default defineComponent({
         .then((response: { data: User | null; }) => resolve(response.data))
         .catch(() => resolve(null));
     });
+
+    // Blocked methods
+
+    const blockUser = (newBlocked: User | null) => {
+      if (!currentUser.value || !newBlocked || !userUtils.canUserBeBlocked(currentUser.value, newBlocked)) {
+        return;
+      }
+      api.users.addUserBlocked(currentUser.value.id, newBlocked.id)
+        .then((response) => {
+          if (currentUser.value) {
+            currentUser.value.blockedUsers = currentUser.value.blockedUsers || [];
+            const userBlocked: UserBlock = {
+              id: response.data.id,
+              userId: response.data.userId,
+              blockedId: response.data.blockedId,
+              createdAt: response.data.createdAt,
+            };
+            currentUser.value.blockedUsers.push(userBlocked);
+          }
+        });
+    };
+
+    const unBlockUser = (oldBlocked: User | null) => {
+      if (!currentUser.value || !oldBlocked || !userUtils.isUserIsBlocked(currentUser.value, oldBlocked)) {
+        return;
+      }
+      const userFriend = userUtils.getUserBlocked(currentUser.value, oldBlocked);
+      if (!userFriend) {
+        return;
+      }
+      api.users.deleteUserBlocked(userFriend.id)
+        .then(() => {
+          const index = userUtils.getUserBlockedIndex(currentUser.value, user.value);
+          if (index >= 0 && currentUser.value && currentUser.value.blockedUsers) {
+            currentUser.value.blockedUsers.splice(index, 1);
+          }
+        });
+    };
 
     // Friend methods
 
@@ -270,6 +318,9 @@ export default defineComponent({
       currentUser,
       formater,
       userUtils,
+      // Block user
+      blockUser,
+      unBlockUser,
       // Friend request
       sendFriendRequest,
       acceptFriendRequest,

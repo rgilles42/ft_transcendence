@@ -32,7 +32,7 @@ export default ($axios: AxiosInstance) => ({
   },
 
   getMyUser() {
-    return $axios.get(`${USERS_BASE}/me`, { params: { include: 'friends+blocked_users+games+channels' } });
+    return $axios.get(`${USERS_BASE}/me`, { params: { include: 'friends+blockedUsers+games+channels' } });
   },
 
   getUserFriends(userId: User['id']) {

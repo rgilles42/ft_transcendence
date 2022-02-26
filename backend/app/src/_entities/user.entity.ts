@@ -45,7 +45,7 @@ export class UserEntity {
 
   //@ApiProperty({ type: () => [BlockshipEntity] })
   @OneToMany(() => BlockshipEntity, (blockship) => blockship.user)
-  blocked_users: BlockshipEntity[];
+  blockedUsers: BlockshipEntity[];
 
   //@ApiProperty({ type: () => [MemberEntity] })
   @OneToMany(() => MemberEntity, (membership) => membership.user)

@@ -9,7 +9,6 @@ export default interface UserBlock {
   userId: number;
   blockedId: number;
   createdAt: Date;
-  status: boolean;
 
   user?: User;
   blocked?: User;

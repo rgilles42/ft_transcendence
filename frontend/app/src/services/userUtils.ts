@@ -13,34 +13,34 @@ export const getUserBlockedIndex = (currentUser: User | null, user: User | null)
   if (!currentUser || !user) {
     return -1;
   }
-  if (!currentUser.blocked) {
+  if (!currentUser.blockedUsers) {
     return -1;
   }
-  return currentUser.blocked.findIndex((blocked) => (currentUser.id === blocked.userId && user.id === blocked.blockedId));
+  return currentUser.blockedUsers.findIndex((blocked) => (currentUser.id === blocked.userId && user.id === blocked.blockedId));
 };
 
 export const getUserBlocked = (currentUser: User | null, user: User | null): UserBlock | undefined => {
   if (!currentUser || !user) {
     return undefined;
   }
-  if (!currentUser.blocked) {
+  if (!currentUser.blockedUsers) {
     return undefined;
   }
   const index = getUserBlockedIndex(currentUser, user);
   if (index <= -1) {
     return undefined;
   }
-  return currentUser.blocked[index];
+  return currentUser.blockedUsers[index];
 };
 
 export const getUserBlockeds = (currentUser: User | null): User[] => {
-  if (!currentUser || !currentUser.blocked) {
+  if (!currentUser || !currentUser.blockedUsers) {
     return [];
   }
   const blockeds: User[] = [];
-  currentUser.blocked.forEach((blockedRelation) => {
-    if (currentUser.id === blockedRelation.userId && blockedRelation.blocked) {
-      blockeds.push(blockedRelation.blocked);
+  currentUser.blockedUsers.forEach((blockedRelation) => {
+    if (currentUser.id === blockedRelation.userId && blockedRelation.blockedUsers) {
+      blockeds.push(blockedRelation.blockedUsers);
     }
   });
   return blockeds;

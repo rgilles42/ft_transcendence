@@ -19,7 +19,7 @@ export default interface User {
   activity?: string;
 
   friends?: UserFriend[];
-  blocked?: UserBlock[];
+  blockedUsers?: UserBlock[];
   channels?: Channel[];
   games?: Game[];
 

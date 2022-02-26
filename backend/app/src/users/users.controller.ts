@@ -67,7 +67,7 @@ export class UsersController {
   @ApiQuery({
     name: 'include',
     description:
-      "The relations to include to the user object to return (friends, blocked_users, games and/or channels (not memberships !) (ex: 'friends+channels')",
+      "The relations to include to the user object to return (friends, blockedUsers, games and/or channels (not memberships !) (ex: 'friends+channels')",
     required: false,
     type: String,
   })

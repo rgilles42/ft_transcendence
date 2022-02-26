@@ -53,8 +53,8 @@ export class UsersService {
     for (let index = 0; index < include.length; index++) {
       if (include[index] == 'friends')
         user.friends = await this.get_friends(user.id);
-      else if (include[index] == 'blocked_users')
-        user.blocked_users = await this.get_blockeds(user.id);
+      else if (include[index] == 'blockedUsers')
+        user.blockedUsers = await this.get_blockeds(user.id);
       else if (include[index] == 'channels')
         user.channels = await this.get_channels(user.id);
       else if (include[index] == 'games')
@@ -72,8 +72,8 @@ export class UsersService {
     for (let index = 0; index < include.length; index++) {
       if (include[index] == 'friends')
         user.friends = await this.get_friends(user.id);
-      else if (include[index] == 'blocked_users')
-        user.blocked_users = await this.get_blockeds(user.id);
+      else if (include[index] == 'blockedUsers')
+        user.blockedUsers = await this.get_blockeds(user.id);
       else if (include[index] == 'channels')
         user.channels = await this.get_channels(user.id);
       else if (include[index] == 'games')
@@ -124,9 +124,9 @@ export class UsersService {
   async get_blockeds(id: number): Promise<BlockshipEntity[]> {
     try {
       const user = await this.usersRepository.findOneOrFail(id, {
-        relations: ['blocked_users'],
+        relations: ['blockedUsers'],
       });
-      return user.blocked_users;
+      return user.blockedUsers;
     } catch (err) {
       throw new NotFoundException();
     }

@@ -18,7 +18,7 @@ export class BlockshipEntity {
   @ApiProperty()
   @Column()
   userId: number;
-  @ManyToOne(() => UserEntity, (user) => user.blocked_users, {
+  @ManyToOne(() => UserEntity, (user) => user.blockedUsers, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'userId' })
