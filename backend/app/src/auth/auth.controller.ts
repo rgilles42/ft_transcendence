@@ -38,6 +38,12 @@ export class AuthController {
       path: configService.getJwtConfig().refreshToken.path,
     });
 
+    if (data.isNewUser) {
+      res.status(201);
+    } else {
+      res.status(200);
+    }
+
     return {
       access_token: data.access_token,
       refresh_token: data.refresh_token,
@@ -70,6 +76,12 @@ export class AuthController {
       sameSite: configService.getJwtConfig().refreshToken.sameSite,
       path: configService.getJwtConfig().refreshToken.path,
     });
+
+    if (data.isNewUser) {
+      res.status(201);
+    } else {
+      res.status(200);
+    }
 
     return {
       access_token: data.access_token,

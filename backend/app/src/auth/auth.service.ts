@@ -69,7 +69,9 @@ export class AuthService {
       'channels',
       'games',
     ]);
+    let isNewUser = false;
     if (!user) {
+      isNewUser = true;
       user = await this.usersService.create({
         login: req.body.login,
         username: req.body.login,
@@ -80,6 +82,7 @@ export class AuthService {
     return {
       ...tokens,
       user,
+      isNewUser,
     };
   }
 
@@ -91,7 +94,9 @@ export class AuthService {
       'channels',
       'games',
     ]);
+    let isNewUser = false;
     if (!user) {
+      isNewUser = true;
       user = await this.usersService.create({
         login: req.user.login,
         username: req.user.login,
@@ -102,6 +107,7 @@ export class AuthService {
     return {
       ...tokens,
       user,
+      isNewUser,
     };
   }
 

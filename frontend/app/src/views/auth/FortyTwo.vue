@@ -25,7 +25,11 @@ export default defineComponent({
         store.setTokens(response.data.access_token, response.data.refresh_token);
         store.setXsrfToken(response.data.xsrf_token);
         store.setUser(response.data.user);
-        router.replace('/');
+        if (response.status === 201) {
+          router.replace('/profile/me');
+        } else {
+          router.replace('/');
+        }
       });
     };
     loginFortyTwo(route.query.code.toString());

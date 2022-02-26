@@ -7,16 +7,25 @@
         <!-- slider Header -->
 
         <!-- Links -->
-        <div class="text-sm flex-none px-3 py-3">
+        <div class="text-sm px-3 py-3 h-full" :class="[groupedFriends.size <= 0 ? 'items-center flex' : 'flex-none']">
 
-          <template v-for="(group, groupIndex) in groupedFriends" :key="groupIndex">
+          <div v-if="groupedFriends.size <= 0">
+            <h3 class="uppercase tracking-wide font-semibold text-xs text-gray-500">Vous n'avez aucun amis... :'(</h3>
+
+            <ul class="mb-3 truncate">
+              <li class="py-1 rounded-sm mb-0.5 last:mb-0 group relative">
+                <img src="/noFriends.gif" alt="You don't have any friends" />
+              </li>
+            </ul>
+          </div>
+          <template v-else v-for="(group, groupIndex) in groupedFriends" :key="groupIndex">
             <h3 class="uppercase tracking-wide font-semibold text-xs text-gray-500">{{ translateGroupIndex(group[0]) }} — {{ group[1].length }}</h3>
 
             <ul class="mb-3 truncate">
               <li v-for="(friend, friendIndex) in group[1]" :key="friendIndex" class="py-1 rounded-sm mb-0.5 last:mb-0 group relative">
 
               <VMenu :distance="15" placement="left-start" :positioning-disabled="screenInfo.is('all')" class="friend-item" popperClass="friend-item-quick-view" :triggers="['click']">
-                <a href="##" class="nav-link m-0 block px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:bg-gray-700">
+                <div class="cursor-pointer m-0 block px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:bg-gray-700">
                   <div class="flex items-center">
                     <span class="flex-none"><AccountAvatar :user="friend" alt="avatar" class="w-8 h-8 mr-2 rounded-full" /></span>
                     <div class="ml-2">
@@ -24,7 +33,7 @@
                       <div v-if="friend.activity" class="text-xxs text-gray-500">{{ friend.activity }}</div>
                     </div>
                   </div>
-                </a>
+                </div>
 
                 <template #popper>
                   <ProfileQuickView :user="friend" class="" />
