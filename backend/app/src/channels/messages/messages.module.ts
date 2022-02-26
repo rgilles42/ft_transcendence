@@ -12,5 +12,6 @@ import { MessageEntity } from 'src/_entities/channel-message.entity';
     TypeOrmModule.forRoot(configService.getTypeOrmConfig()),
     TypeOrmModule.forFeature([MessageEntity]),
   ],
+  exports: [MessagesService],
 })
 export class MessagesModule {}
