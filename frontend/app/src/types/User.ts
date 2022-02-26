@@ -25,3 +25,10 @@ export default interface User {
 
   [propName: string]: any;
 };
+
+export const DEFAULT_USER: User = {
+  id: -1,
+  login: '',
+  username: '',
+  status: 0,
+}
