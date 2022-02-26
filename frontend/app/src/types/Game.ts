@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-extra-semi */
 /* eslint-disable semi */
+/* eslint-disable import/no-cycle */
 
 import User from './User';
 
@@ -19,3 +20,15 @@ export default interface Game {
 
   [propName: string]: any;
 };
+
+export const DEFAULT_USER_BLOCK: Game = {
+  id: -1,
+  player1Id: -1,
+  player2Id: -1,
+  player1Score: 0,
+  player2Score: 0,
+  powerUps: [],
+  map: 'default',
+  createdAt: new Date(),
+  endAt: new Date(),
+}

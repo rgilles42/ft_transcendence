@@ -18,3 +18,12 @@ export default interface ChannelMember {
 
   [propName: string]: any;
 };
+
+export const DEFAULT_CHANNEL_MEMBER: ChannelMember = {
+  id: -1,
+  channelId: -1,
+  userId: -1,
+  isAdmin: false,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+}

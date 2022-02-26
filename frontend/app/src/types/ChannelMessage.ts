@@ -18,3 +18,12 @@ export default interface ChannelMessage {
 
   [propName: string]: any;
 };
+
+export const DEFAULT_CHANNEL_MESSAGE: ChannelMessage = {
+  id: -1,
+  channelId: -1,
+  userId: -1,
+  content: '',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+}

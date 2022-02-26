@@ -15,3 +15,10 @@ export default interface UserBlock {
 
   [propName: string]: any;
 };
+
+export const DEFAULT_USER_BLOCK: UserBlock = {
+  id: -1,
+  userId: -1,
+  blockedId: -1,
+  createdAt: new Date(),
+}
