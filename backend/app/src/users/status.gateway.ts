@@ -37,7 +37,6 @@ export class StatusGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {}
 
   private logger: Logger = new Logger('StatusGateway');
-  private userSockets: Socket[] = [];
 
   /*
   The UserStatus object is as such: {id: number, newStatus: number}, with newStatus being either: 1 (connected), 2 (in game), or 0 (disconnecting)
@@ -69,7 +68,8 @@ export class StatusGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!user || !user.friends) {
       return [];
     }
-    return this.userSockets.filter((socket) => {
+    const sockets = await this.server.fetchSockets();
+    const friendsSocket = sockets.filter((socket) => {
       if (socket.data.user.id === user.id) {
         return false;
       }
@@ -79,6 +79,7 @@ export class StatusGateway implements OnGatewayConnection, OnGatewayDisconnect {
           socket.data.user.id === clientFriendship.userId,
       );
     });
+    return friendsSocket as unknown as Socket[];
   }
 
   createStatusMessage(socket: Socket) {
@@ -105,13 +106,8 @@ export class StatusGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('changeGameStatus')
   async changeGameStatus(client: Socket) {
     console.log(`Client Change Status: ${client.id}`);
-    const socketIndex = this.userSockets.findIndex(
-      (socket) => socket.id === client.id,
-    );
-    if (socketIndex > -1) {
-      client.data.user.status = client.data.user.status === 2 ? 1 : 2;
-      await this.sendMyStatusToFriend(client);
-    }
+    client.data.user.status = client.data.user.status === 2 ? 1 : 2;
+    await this.sendMyStatusToFriend(client);
   }
 
   async handleConnection(client: Socket) {
@@ -130,7 +126,6 @@ export class StatusGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
       user.status = 1;
       client.data.user = user;
-      this.userSockets.push(client);
       await this.sendFriendStatusToMe(client);
       await this.sendMyStatusToFriend(client);
     } catch (error) {
@@ -141,13 +136,7 @@ export class StatusGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleDisconnect(client: Socket) {
     console.log(`Client Disconnected: ${client.id}`);
-    const socketIndex = this.userSockets.findIndex(
-      (socket) => socket.id === client.id,
-    );
-    if (socketIndex > -1) {
-      client.data.user.status = 0;
-      this.userSockets.splice(socketIndex, 1);
-      await this.sendMyStatusToFriend(client);
-    }
+    client.data.user.status = 0;
+    await this.sendMyStatusToFriend(client);
   }
 }
