@@ -50,7 +50,7 @@ export class ChannelsController {
     @Request() req: any,
     @Body() createChannelData: createChannelDto,
   ): Promise<ChannelEntity> {
-    return this.channelsService.create(req.user.id, createChannelData);
+    return this.channelsService.create(req.user, createChannelData);
   }
 
   @ApiOkResponse({ type: ChannelEntity })

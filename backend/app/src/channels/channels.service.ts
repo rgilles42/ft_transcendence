@@ -47,26 +47,43 @@ export class ChannelsService {
     }
   }
 
-  async create(
-    ownerId: number,
-    createChannelData: createChannelDto,
-  ): Promise<ChannelEntity> {
-    try {
-      const newMember = new MemberEntity();
-      newMember.isAdmin = true;
-      newMember.user = await this.usersRepository.findOneOrFail(ownerId);
-      await this.membersRepository.save(newMember);
-      const newChannel = this.channelsRepository.create({
-        isPrivate: createChannelData.isPrivate,
-        password: createChannelData.password,
-      });
-      newChannel.owner = newMember.user;
-      newChannel.members = [newMember];
-      await this.channelsRepository.save(newChannel);
-      return newChannel;
-    } catch (err) {
-      throw new NotFoundException();
-    }
+  // async create(
+  //   ownerId: number,
+  //   createChannelData: createChannelDto,
+  // ): Promise<ChannelEntity> {
+  //   try {
+  //     const newMember = new MemberEntity();
+  //     newMember.isAdmin = true;
+  //     newMember.user = await this.usersRepository.findOneOrFail(ownerId);
+  //     await this.membersRepository.save(newMember);
+  //     const newChannel = this.channelsRepository.create({
+  //       isPrivate: createChannelData.isPrivate,
+  //       password: createChannelData.password,
+  //     });
+  //     newChannel.owner = newMember.user;
+  //     newChannel.members = [newMember];
+  //     await this.channelsRepository.save(newChannel);
+  //     return newChannel;
+  //   } catch (err) {
+  //     throw new NotFoundException();
+  //   }
+  // }
+
+  async create(owner: UserEntity, createChannelData: createChannelDto) {
+    const newChannel = this.channelsRepository.create({
+      isPrivate: createChannelData.isPrivate,
+      password: createChannelData.password,
+      ownerId: owner.id,
+    });
+    const savedChannel = await this.channelsRepository.save(newChannel);
+    const ownerMember = this.membersRepository.create({
+      channelId: savedChannel.id,
+      isAdmin: true,
+      userId: owner.id,
+    });
+    const newOwnerMember = await this.membersRepository.save(ownerMember);
+    savedChannel.members = [newOwnerMember];
+    return savedChannel;
   }
 
   async update(
@@ -241,7 +258,7 @@ export class ChannelsService {
         channel.ownerId === userId ||
         channel.members.some((member) => member.userId === userId)
       ) &&
-      (channel.isPrivate === true || userId !== memberData.newMemberId)
+      (channel.isPrivate === true || userId !== memberData.userId)
     )
       throw new UnauthorizedException();
     if (
@@ -250,22 +267,23 @@ export class ChannelsService {
         channel.members.some((member) => member.userId === userId)
       ) &&
       channel.password !== null &&
-      channel.password !== undefined &&
-      memberData.password !== channel.password
-    )
+      channel.password !== undefined
+    ) {
+      // && memberData.password !== channel.password
       throw new UnauthorizedException();
+    }
     const member = new MemberEntity();
     member.channel = channel;
-    member.userId = memberData.newMemberId;
+    member.userId = memberData.userId;
     if (
       (channel.ownerId === userId ||
         channel.members.some(
           (member) => member.userId === userId && member.isAdmin === true,
         )) &&
-      memberData.asAdmin !== undefined &&
-      memberData.asAdmin !== null
+      memberData.isAdmin !== undefined &&
+      memberData.isAdmin !== null
     )
-      member.isAdmin = memberData.asAdmin;
+      member.isAdmin = memberData.isAdmin;
     return await this.membersRepository.save(member);
   }
 }
