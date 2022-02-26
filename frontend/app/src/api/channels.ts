@@ -14,7 +14,7 @@ export default ($axios: AxiosInstance) => ({
   },
 
   createChannel(channelData: Channel) {
-    return $axios.post(`${AUTH_BASE}`, { channelData });
+    return $axios.post(`${AUTH_BASE}`, channelData);
   },
 
   getChannelById(channelId: Channel['id']) {

@@ -16,8 +16,11 @@ import ChatBox from '@/components/chat/ChatBox.vue';
 import { useStore } from '@/store';
 
 export default defineComponent({
-  name: 'Chat',
+  name: 'ChatId',
   components: { ChatBox },
+  props: {
+    requestChatId: Number,
+  },
   setup() {
     const store = useStore();
 
@@ -26,7 +29,7 @@ export default defineComponent({
     const chatData = ref<Channel>({
       id: 1,
       ownerId: 11,
-      type: false,
+      isPrivate: false,
       password: null,
       createdAt: new Date(),
       updatedAt: new Date(),

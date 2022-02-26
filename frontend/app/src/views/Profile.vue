@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-8">
+  <div>
     <template v-if="!user">
       <Loader></Loader>
     </template>

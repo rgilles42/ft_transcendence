@@ -4,8 +4,11 @@ import { useStore } from '../store/index';
 import Home from '../views/Home.vue';
 import Login from '../views/auth/Login.vue';
 import Logout from '../views/auth/Logout.vue';
+import FortyTwo from '../views/auth/FortyTwo.vue';
 import Profile from '../views/Profile.vue';
-import Chat from '../views/Chat.vue';
+import Chat from '../views/chat/index.vue';
+import ChatCreate from '../views/chat/create.vue';
+import ChatId from '../views/chat/_id.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -21,12 +24,30 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/auth/42/callback',
     name: 'FortyTwoCallback',
-    component: () => import(/* webpackChunkName: "fortyTwo" */ '../views/auth/FortyTwo.vue'),
+    component: FortyTwo,
   },
   {
     path: '/auth/logout',
     name: 'Logout',
     component: Logout,
+  },
+  {
+    path: '/profile/me',
+    name: 'MyProfile',
+    props: true,
+    component: Profile,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/profile/:requestUserId?',
+    name: 'Profile',
+    component: Profile,
+    props: true,
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: '/chat',
@@ -37,10 +58,19 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: '/profile/:requestUserId?',
-    name: 'Profile',
+    path: '/chat/create',
+    name: 'ChatCreate',
+    component: ChatCreate,
     props: true,
-    component: Profile,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/chat/:id',
+    name: 'ChatId',
+    component: ChatId,
+    props: true,
     meta: {
       requiresAuth: true,
     },
