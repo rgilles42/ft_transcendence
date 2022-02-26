@@ -10,7 +10,7 @@ import { FriendsModule } from './friends/friends.module';
 import { BlockedModule } from './blocked/blocked.module';
 import { GamesModule } from 'src/games/games.module';
 import { GameEntity } from 'src/_entities/game.entity';
-import { ActivityGateway } from './activity.gateway';
+import { StatusGateway } from './status.gateway';
 import { AuthModule } from 'src/auth/auth.module';
 import { StorageModule } from 'src/storage/storage.module';
 
@@ -30,7 +30,7 @@ import { StorageModule } from 'src/storage/storage.module';
     StorageModule,
   ],
   controllers: [UsersController],
-  providers: [UsersService, ActivityGateway],
+  providers: [UsersService, StatusGateway],
   exports: [UsersService],
 })
 export class UsersModule {}
