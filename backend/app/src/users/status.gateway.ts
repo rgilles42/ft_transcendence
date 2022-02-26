@@ -1,8 +1,10 @@
 import { configService } from 'src/config/config.service';
-import { Logger, UnauthorizedException } from '@nestjs/common';
+import { Logger, UnauthorizedException, UseGuards } from '@nestjs/common';
 import {
+  ConnectedSocket,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -11,6 +13,8 @@ import { Server, Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from './users.service';
 import { parse } from 'cookie';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @WebSocketGateway({
   namespace: 'usersStatus',
@@ -28,7 +32,9 @@ import { parse } from 'cookie';
     credentials: configService.getCorsConfig().credentials,
   },
 })
-export class StatusGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class StatusGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer() server: Server;
 
   constructor(
@@ -103,29 +109,32 @@ export class StatusGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // Socket Methods
 
-  @SubscribeMessage('changeGameStatus')
-  async changeGameStatus(client: Socket) {
-    console.log(`Client Change Status: ${client.id}`);
-    client.data.user.status = client.data.user.status === 2 ? 1 : 2;
-    await this.sendMyStatusToFriend(client);
+  afterInit() {
+    this.server.use(async (newClient, next) => {
+      try {
+        const cookies = parse(newClient.handshake.headers.cookie || '');
+        const access_token =
+          newClient.handshake.auth.access_token || cookies.access_token;
+        if (!access_token) {
+          throw new UnauthorizedException('No access_token provided.');
+        }
+        const payload = this.authService.verifyJwt(access_token);
+        const user = await this.usersService.findOne(payload.id);
+        if (!user) {
+          throw new UnauthorizedException('User not found');
+        }
+        newClient.data.user = user;
+        next();
+      } catch (err) {
+        next(err);
+      }
+    });
   }
 
-  async handleConnection(client: Socket) {
+  async handleConnection(@ConnectedSocket() client: Socket) {
     try {
       console.log(`Client Connected: ${client.id}`);
-      const cookies = parse(client.handshake.headers.cookie || '');
-      const access_token =
-        client.handshake.auth.access_token || cookies.access_token;
-      if (!access_token) {
-        throw new UnauthorizedException('No access_token provided.');
-      }
-      const payload = this.authService.verifyJwt(access_token);
-      const user = await this.usersService.findOne(payload.id);
-      if (!user) {
-        throw new UnauthorizedException('User not found');
-      }
-      user.status = 1;
-      client.data.user = user;
+      client.data.user.status = 1;
       await this.sendFriendStatusToMe(client);
       await this.sendMyStatusToFriend(client);
     } catch (error) {
@@ -134,9 +143,16 @@ export class StatusGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  async handleDisconnect(client: Socket) {
+  async handleDisconnect(@ConnectedSocket() client: Socket) {
     console.log(`Client Disconnected: ${client.id}`);
     client.data.user.status = 0;
+    await this.sendMyStatusToFriend(client);
+  }
+
+  @SubscribeMessage('changeGameStatus')
+  async changeGameStatus(@ConnectedSocket() client: Socket) {
+    console.log(`Client Change Status: ${client.id}`);
+    client.data.user.status = client.data.user.status === 2 ? 1 : 2;
     await this.sendMyStatusToFriend(client);
   }
 }
