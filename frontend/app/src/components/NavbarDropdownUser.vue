@@ -10,8 +10,8 @@
 
       <template #popper>
         <div class="py-1 rounded-md shadow-xs bg-gray-800">
-          <router-link v-close-popper to="/profile/me" class="nav-link block px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:bg-gray-700">Profil</router-link>
-          <router-link v-close-popper to="/auth/logout" class="nav-link block px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:bg-gray-700">Déconnexion</router-link>
+          <router-link v-close-popper :to="{ name: 'MyProfile' }" class="nav-link block px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:bg-gray-700">Profil</router-link>
+          <router-link v-close-popper :to="{ name: 'Logout' }" class="nav-link block px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:bg-gray-700">Déconnexion</router-link>
         </div>
       </template>
     </VDropdown>

@@ -16,7 +16,7 @@
 
             <li class="py-1 rounded-sm mb-0.5 last:mb-0">
               <router-link
-                to="/"
+                :to="{ name: 'Home' }"
                 class="nav-link m-0 block px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:bg-gray-700"
                 role="menuitem"
               >

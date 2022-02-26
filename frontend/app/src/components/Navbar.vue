@@ -18,11 +18,15 @@
 
       <div class="w-1/3 ml-auto flex flex-row-reverse nav-links">
         <template v-if="!currentUser">
-          <router-link to="/auth/login" class="nav-link">Connexion</router-link>
+          <router-link :to="{ name: 'Login' }" class="nav-link">Connexion</router-link>
         </template>
         <template v-else>
           <NavbarDropdownUser :user="currentUser" />
-          <MessagesPopover :user="currentUser" class="nav-link" />
+          <router-link :to="{ name: 'Chat' }" class="nav-link flex items-center px-1 text-sm transition duration-150 ease-in-out bg-gray-800 border-2 border-gray-700 rounded-full hover:bg-gray-700 focus:outline-none focus:shadow-solid">
+            <div class="w-6 h-6 rounded-full flex items-center justify-center">
+              <i class="fa-solid fa-comment fa-lg"></i>
+            </div>
+          </router-link>
 
           <button @click="toggleSlide" class="flex items-center px-1 text-sm transition duration-150 ease-in-out bg-gray-800 border-2 border-gray-700 rounded-full hover:bg-gray-700 focus:outline-none focus:shadow-solid">
             <div class="w-6 h-6 rounded-full flex items-center justify-center">
@@ -37,16 +41,20 @@
     <!-- Computer -->
     <div v-else class="hidden md:flex w-full mx-6 my-3">
       <div class="w-1/3 mr-auto flex flex-row nav-links">
-        <router-link to="/" class="nav-link">Accueil</router-link>
+        <router-link :to="{ name: 'Home' }" class="nav-link">Accueil</router-link>
       </div>
 
       <div class="w-1/3 ml-auto flex flex-row-reverse nav-links">
         <template v-if="!currentUser">
-          <router-link to="/auth/login" class="nav-link">Connexion</router-link>
+          <router-link :to="{ name: 'Login' }" class="nav-link">Connexion</router-link>
         </template>
         <template v-else>
           <NavbarDropdownUser :user="currentUser" />
-          <MessagesPopover :user="currentUser" class="nav-link" />
+          <router-link :to="{ name: 'Chat' }" class="nav-link flex items-center px-1 text-sm transition duration-150 ease-in-out bg-gray-800 border-2 border-gray-700 rounded-full hover:bg-gray-700 focus:outline-none focus:shadow-solid">
+            <div class="w-6 h-6 rounded-full flex items-center justify-center">
+              <i class="fa-solid fa-comment fa-lg"></i>
+            </div>
+          </router-link>
 
           <button @click="toggleSlide" class="flex items-center px-1 text-sm transition duration-150 ease-in-out bg-gray-800 border-2 border-gray-700 rounded-full hover:bg-gray-700 focus:outline-none focus:shadow-solid">
             <div class="w-6 h-6 rounded-full flex items-center justify-center">
@@ -72,13 +80,12 @@ import { defineComponent, ref, computed } from 'vue';
 import { useStore } from '@/store';
 import NavbarDropdownUser from './NavbarDropdownUser.vue';
 import NavigationSidebar from './NavigationSidebar.vue';
-import MessagesPopover from './MessagesPopover.vue';
 import FriendSlideOver from './FriendSlideOver.vue';
 
 export default defineComponent({
   name: 'Navbar',
   components: {
-    NavbarDropdownUser, NavigationSidebar, MessagesPopover, FriendSlideOver,
+    NavbarDropdownUser, NavigationSidebar, FriendSlideOver,
   },
   setup() {
     const store = useStore();

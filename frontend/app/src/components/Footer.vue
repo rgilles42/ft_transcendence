@@ -24,14 +24,14 @@
           <h5 class="text-xl uppercase text-shadow text-white">Liens utiles</h5>
           <ul class="mt-4 text-sm list-inside list-disc">
             <template v-if="!currentUser">
-              <li class="mb-1"><router-link to="/auth/login">Connexion</router-link></li>
+              <li class="mb-1"><router-link :to="{ name: 'Login' }">Connexion</router-link></li>
             </template>
             <template v-else>
               <li class="mb-1">
-                <router-link to="/profile/me">Profil</router-link>
+                <router-link :to="{ name: 'MyProfile' }">Profil</router-link>
               </li>
               <li class="mb-1">
-                <router-link to="/auth/logout">Déconnexion</router-link>
+                <router-link :to="{ name: 'Logout' }">Déconnexion</router-link>
               </li>
             </template>
           </ul>
