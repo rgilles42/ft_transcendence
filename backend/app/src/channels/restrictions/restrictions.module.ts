@@ -12,5 +12,6 @@ import { RestrictionEntity } from 'src/_entities/channel-restriction.entity';
     TypeOrmModule.forRoot(configService.getTypeOrmConfig()),
     TypeOrmModule.forFeature([RestrictionEntity]),
   ],
+  exports: [RestrictionsService],
 })
 export class RestrictionsModule {}

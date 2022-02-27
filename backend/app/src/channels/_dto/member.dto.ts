@@ -1,12 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsInt, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class memberDto {
-  @ApiProperty()
-  @IsInt()
-  @IsOptional()
-  channelId: number;
-
   @ApiProperty()
   @IsInt()
   @IsNotEmpty()
@@ -14,5 +9,11 @@ export class memberDto {
 
   @ApiProperty({ required: false })
   @IsBoolean()
+  @IsOptional()
   isAdmin?: boolean;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  password?: string;
 }
