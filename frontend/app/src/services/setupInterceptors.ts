@@ -22,6 +22,8 @@ const setupInterceptors = (): void => {
     (error) => Promise.reject(error),
   );
 
+  let retry = false;
+
   $axios.interceptors.response.use(
     (res) => res,
     async (err) => {
@@ -30,13 +32,15 @@ const setupInterceptors = (): void => {
       if (originalConfig.url !== '/auth/login' && err.response) {
         // Access Token was expired
         const currentRefreshToken = store.getRefreshToken;
-        if (err.response.status === 401 && currentRefreshToken && !store.getRefreshStatus) {
+        if (err.response.status === 401 && currentRefreshToken && !retry) {
           store.setRefreshStatusOn();
+          retry = true;
           try {
             const response = await api.auth.refreshToken(currentRefreshToken);
             store.setTokens(response.data.access_token, response.data.refresh_token);
             store.setXsrfToken(response.data.xsrf_token);
             store.setRefreshStatusOff();
+            retry = false;
             return $axios(originalConfig);
           } catch (_error) {
             store.logoutUser();

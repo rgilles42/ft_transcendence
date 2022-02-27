@@ -8,8 +8,8 @@
 
           <div class="px-6 py-4 grid md:grid-flow-col gap-4">
             <FormInput title="Nom du salon" name="title" id="title" v-model="newChannelData.title" :errors="errors" :required="true" />
-            <FormInput title="Activer le mot de passe" type="checkbox" v-model="newChannelData.isPasswordDisabled" :errors="errors" />
-            <FormInput title="Mot de passe" name="password" id="password" v-model="newChannelData.password" :errors="errors" :disabled="newChannelData.isPasswordDisabled" />
+            <FormInput title="Activer le mot de passe" type="checkbox" v-model="newChannelData.isPasswordEnabled" :errors="errors" />
+            <FormInput title="Mot de passe" type="password" name="password" id="password" v-model="newChannelData.password" :errors="errors" :disabled="!newChannelData.isPasswordEnabled" />
             <FormInput :title="`Type: ${newChannelData.isPrivate ? 'Privée' : 'Public'}`" type="checkbox" name="isPrivate" id="isPrivate" v-model="newChannelData.isPrivate" :errors="errors" />
           </div>
 
@@ -41,11 +41,11 @@ export default defineComponent({
   setup() {
     const router = useRouter();
 
-    const newChannelData = ref<Channel>({ ...DEFAULT_CHANNEL, isPasswordDisabled: true });
+    const newChannelData = ref<Channel>({ ...DEFAULT_CHANNEL, isPasswordEnabled: false });
     const errors = ref<any>({});
 
     const checkForm = () => {
-      if (newChannelData.value.isPasswordDisabled) {
+      if (!newChannelData.value.isPasswordEnabled) {
         newChannelData.value.password = null;
       }
       api.channels.createChannel(newChannelData.value)
