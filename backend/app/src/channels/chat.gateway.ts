@@ -1,4 +1,4 @@
-import { UnauthorizedException } from '@nestjs/common';
+import { forwardRef, Inject, UnauthorizedException } from '@nestjs/common';
 import {
   ConnectedSocket,
   OnGatewayConnection,
@@ -14,6 +14,8 @@ import { configService } from 'src/config/config.service';
 import { UsersService } from 'src/users/users.service';
 import { parse } from 'cookie';
 import { ChannelsService } from './channels.service';
+import { MessageEntity } from 'src/_entities/channel-message.entity';
+import { MemberEntity } from 'src/_entities/channel-member.entity';
 
 @WebSocketGateway({
   namespace: 'chat',
@@ -39,6 +41,7 @@ export class ChatGateway
   constructor(
     private authService: AuthService,
     private usersService: UsersService,
+    @Inject(forwardRef(() => ChannelsService))
     private channelsService: ChannelsService,
   ) {}
 
@@ -77,15 +80,36 @@ export class ChatGateway
     console.log(`Client Disconnected: ${client.id}`);
   }
 
+  @SubscribeMessage('sendMessage')
+  async sendMessage(client: Socket, channelId: number, messageContent: string) {
+    const message = new MessageEntity();
+    message.channelId = channelId;
+    message.content = messageContent;
+    message.userId = client.data.user.id;
+    try {
+      await this.channelsService.send_message(channelId, message.userId, {
+        content: messageContent,
+      });
+    } catch (err) {
+      throw err;
+    }
+    this.server.in(channelId.toString()).emit('newMessage', message);
+  }
+
   @SubscribeMessage('joinChannel')
   async onJoinChannel(client: Socket, channelId: number) {
-    const userChannels = await this.usersService.get_channels(client.data.user.id);
+    const userChannels = await this.usersService.get_channels(
+      client.data.user.id,
+    );
     if (userChannels.some((channel) => channel.id === channelId))
       client.join(channelId.toString());
-
   }
   @SubscribeMessage('leaveChannel')
-  async onLeaveChannel(client: Socket, roomID: number) {
+  async onLeaveChannel(client: Socket, channelId: number) {
+    client.leave(channelId.toString());
+  }
 
+  broadcastNewMember(newMember: MemberEntity) {
+    this.server.in(newMember.channelId.toString()).emit('newMember', newMember);
   }
 }
