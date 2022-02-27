@@ -1,3 +1,4 @@
+import { UsersService } from './../users/users.service';
 import {
   NotFoundException,
   Injectable,
@@ -36,10 +37,18 @@ export class ChannelsService {
     private membersService: MembersService,
     @Inject(forwardRef(() => ChatGateway))
     private chatGateway: ChatGateway,
+    private userService: UsersService,
   ) {}
 
-  findAll(): Promise<ChannelEntity[]> {
-    return this.channelsRepository.find();
+  findAll(include: string[] = []): Promise<ChannelEntity[]> {
+    const relations: string[] = [];
+    for (let index = 0; index < include.length; index++) {
+      if (include[index] == 'owner') relations.push('owner');
+      else if (include[index] == 'restrictions') relations.push('restrictions');
+      else if (include[index] == 'members') relations.push('members');
+      else if (include[index] == 'messages') relations.push('messages');
+    }
+    return this.channelsRepository.find({ relations });
   }
 
   async findOne(
@@ -244,7 +253,7 @@ export class ChannelsService {
     try {
       return (
         await this.channelsRepository.findOneOrFail(id, {
-          relations: ['members'],
+          relations: ['members', 'members.user'],
         })
       ).members;
     } catch (err) {
@@ -287,6 +296,9 @@ export class ChannelsService {
         channelId,
         memberData,
         allowSetMemberPerms,
+      );
+      newMember.user = await this.userService.findOne(
+        memberData.userId.toString(),
       );
       this.chatGateway.broadcastNewMember(newMember);
       return newMember;

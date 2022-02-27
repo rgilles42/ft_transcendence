@@ -42,8 +42,8 @@ export class ChannelsController {
 
   @ApiOkResponse({ type: ChannelEntity, isArray: true })
   @Get()
-  findAll(): Promise<ChannelEntity[]> {
-    return this.channelsService.findAll();
+  findAll(@Query('include') include = ''): Promise<ChannelEntity[]> {
+    return this.channelsService.findAll(include.split('+'));
   }
 
   @ApiCreatedResponse({ type: ChannelEntity })
