@@ -2,10 +2,10 @@ import { UsersService } from './../users/users.service';
 import {
   NotFoundException,
   Injectable,
-  UnauthorizedException,
   BadRequestException,
   Inject,
   forwardRef,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MemberEntity } from 'src/_entities/channel-member.entity';
@@ -119,7 +119,7 @@ export class ChannelsService {
         )
       )
     )
-      throw new UnauthorizedException();
+      throw new ForbiddenException();
     try {
       if (updateChannelData.title !== undefined)
         channel.title = updateChannelData.title;
@@ -154,7 +154,7 @@ export class ChannelsService {
         )
       )
     )
-      throw new UnauthorizedException();
+      throw new ForbiddenException();
     this.channelsRepository.delete(id);
     return channel;
   }
@@ -178,7 +178,7 @@ export class ChannelsService {
           restrictionType.MUTE)
     )
       return channel.messages;
-    else throw new UnauthorizedException();
+    else throw new ForbiddenException();
   }
 
   async send_message(
@@ -207,7 +207,7 @@ export class ChannelsService {
       } catch (err) {
         throw err;
       }
-    } else throw new UnauthorizedException();
+    } else throw new ForbiddenException();
   }
 
   async get_restrictions(id: number): Promise<RestrictionEntity[]> {
@@ -246,7 +246,7 @@ export class ChannelsService {
       } catch (err) {
         throw err;
       }
-    } else throw new UnauthorizedException();
+    } else throw new ForbiddenException();
   }
 
   async get_members(id: number): Promise<MemberEntity[]> {
@@ -280,7 +280,7 @@ export class ChannelsService {
           channel.password !== undefined &&
           channel.password !== memberData.password))
     )
-      throw new UnauthorizedException();
+      throw new ForbiddenException();
     let allowSetMemberPerms = false;
     if (
       (channel.ownerId === issuerId ||

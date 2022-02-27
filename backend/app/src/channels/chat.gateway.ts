@@ -1,4 +1,9 @@
-import { forwardRef, Inject, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  forwardRef,
+  Inject,
+  UnauthorizedException,
+} from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -73,7 +78,7 @@ export class ChatGateway
     try {
       console.log(`Client Connected: ${client.id}`);
     } catch (error) {
-      client.emit('Error', new UnauthorizedException(error));
+      client.emit('Error', new ForbiddenException(error));
       return client.disconnect();
     }
   }

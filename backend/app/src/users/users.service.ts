@@ -3,9 +3,9 @@ import {
   NotFoundException,
   Injectable,
   ImATeapotException,
-  UnauthorizedException,
   BadRequestException,
   InternalServerErrorException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BlockshipEntity } from 'src/_entities/users_blockship.entity';
@@ -141,7 +141,7 @@ export class UsersService {
     id: number,
     blockData: sendIdDto,
   ): Promise<BlockshipEntity> {
-    if (reqUser.id != id) throw new UnauthorizedException();
+    if (reqUser.id != id) throw new ForbiddenException();
     if (
       (await this.blockshipsRepository.findOne({
         where: { userId: id, blockedId: blockData.targetUserId },
@@ -190,7 +190,7 @@ export class UsersService {
     id: number,
     frienshipData: sendIdDto,
   ): Promise<FriendshipEntity> {
-    if (reqUser.id != id) throw new UnauthorizedException();
+    if (reqUser.id != id) throw new ForbiddenException();
     if (
       (await this.friendshipsRepository.findOne({
         where: { userId: id, friendId: frienshipData.targetUserId },

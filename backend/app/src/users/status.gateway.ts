@@ -1,5 +1,5 @@
 import { configService } from 'src/config/config.service';
-import { UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import {
   ConnectedSocket,
   OnGatewayConnection,
@@ -134,7 +134,7 @@ export class StatusGateway
       await this.sendFriendStatusToMe(client);
       await this.sendMyStatusToFriend(client);
     } catch (error) {
-      client.emit('Error', new UnauthorizedException(error));
+      client.emit('Error', new ForbiddenException(error));
       return client.disconnect();
     }
   }
