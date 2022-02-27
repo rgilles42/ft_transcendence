@@ -11,6 +11,9 @@ import { RestrictionEntity } from 'src/_entities/channel-restriction.entity';
 import { MessageEntity } from 'src/_entities/channel-message.entity';
 import { MemberEntity } from 'src/_entities/channel-member.entity';
 import { MembersModule } from './members/members.module';
+import { ChatGateway } from './chat.gateway';
+import { AuthModule } from 'src/auth/auth.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -25,8 +28,10 @@ import { MembersModule } from './members/members.module';
     RestrictionsModule,
     MessagesModule,
     MembersModule,
+    AuthModule,
+    UsersModule,
   ],
   controllers: [ChannelsController],
-  providers: [ChannelsService],
+  providers: [ChannelsService, ChatGateway],
 })
 export class ChannelsModule {}
