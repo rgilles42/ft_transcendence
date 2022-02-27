@@ -51,7 +51,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/chat',
-    name: 'Chat',
+    name: 'ChatList',
     component: Chat,
     meta: {
       requiresAuth: true,
@@ -67,7 +67,7 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: '/chat/:id',
+    path: '/chat/:requestChatId',
     name: 'ChatId',
     component: ChatId,
     props: true,

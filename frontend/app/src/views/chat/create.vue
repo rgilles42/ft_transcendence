@@ -7,6 +7,7 @@
         <div class="mb-4 p-4 bg-gray-700 bg-opacity-50 rounded flex-1">
 
           <div class="px-6 py-4 grid md:grid-flow-col gap-4">
+            <FormInput title="Nom du salon" name="name" id="name" v-model="newChannelData.name" :errors="errors" />
             <FormInput title="Activer le mot de passe" type="checkbox" v-model="newChannelData.isPasswordDisabled" :errors="errors" />
             <FormInput title="Mot de passe" name="password" id="password" v-model="newChannelData.password" :errors="errors" :disabled="newChannelData.isPasswordDisabled" />
             <FormInput :title="`Type: ${newChannelData.isPrivate ? 'Privée' : 'Public'}`" type="checkbox" name="isPrivate" id="isPrivate" v-model="newChannelData.isPrivate" :errors="errors" />
@@ -27,18 +28,17 @@
   </div>
 </template>
 <script lang="ts">
-import { useStore } from '@/store';
-import { computed, defineComponent, ref } from 'vue';
+import { defineComponent, ref } from 'vue';
 import api from '@/api';
 import Channel, { DEFAULT_CHANNEL } from '@/types/Channel';
+import { useRouter } from 'vue-router';
 import FormInput from '../../components/form/FormInput.vue';
 
 export default defineComponent({
   name: 'ChatCreation',
   components: { FormInput },
   setup() {
-    const store = useStore();
-    const currentUser = computed(() => store.getUser);
+    const router = useRouter();
 
     const newChannelData = ref<Channel>({ ...DEFAULT_CHANNEL, isPasswordDisabled: true });
     const errors = ref<any>({});
@@ -48,8 +48,8 @@ export default defineComponent({
         newChannelData.value.password = null;
       }
       api.channels.createChannel(newChannelData.value)
-        .then((response) => {
-          console.log(response);
+        .then(() => {
+          router.push({ name: 'ChatList' });
         })
         .catch((error) => {
           if (error.response.status === 400) {
@@ -60,7 +60,6 @@ export default defineComponent({
         });
     };
     return {
-      currentUser,
       newChannelData,
       checkForm,
       errors,

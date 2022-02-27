@@ -20,6 +20,11 @@ export const getChatTitle = (chatData: Channel | null | undefined, me?: User | n
   return title;
 };
 
+export const getChatMembers = (chatData: Channel | null | undefined) => {
+  if (!chatData || !chatData.members) return [];
+  return chatData.members;
+};
+
 export const getChatMessages = (chatData: Channel | null | undefined) => {
   if (!chatData || !chatData.messages) return [];
   return chatData.messages;
@@ -38,6 +43,18 @@ export const isUserMuted = (chatData: Channel | null | undefined, userId: User['
     if (restrictedUser.endAt === null) return true;
     return (compareAscDateFns(currentDate, restrictedUser.endAt) <= 0);
   });
+};
+
+export const isUserIsOwner = (chatData: Channel | null | undefined, userId: User['id'] | null | undefined) => {
+  if (userId === undefined || userId === null) return false;
+  if (!chatData) return false;
+  return (chatData.ownerId === userId);
+};
+
+export const isUserIsMember = (chatData: Channel | null | undefined, userId: User['id'] | null | undefined) => {
+  if (userId === undefined || userId === null) return false;
+  if (isUserIsOwner(chatData, userId)) return true;
+  return getChatMembers(chatData).some((members) => (userId === members.userId));
 };
 
 export default {

@@ -2,6 +2,7 @@ import Channel from '@/types/Channel';
 import ChannelMember from '@/types/ChannelMember';
 import ChannelMessage from '@/types/ChannelMessage';
 import ChannelRestriction from '@/types/ChannelRestriction';
+import User from '@/types/User';
 import { AxiosInstance } from 'axios';
 
 const AUTH_BASE = '/channels';
@@ -10,11 +11,15 @@ export default ($axios: AxiosInstance) => ({
 
   // Channels routes
   getChannels() {
-    return $axios.get(`${AUTH_BASE}`);
+    return $axios.get(`${AUTH_BASE}`, { params: { include: 'members+restictions' } });
   },
 
   createChannel(channelData: Channel) {
     return $axios.post(`${AUTH_BASE}`, channelData);
+  },
+
+  requestEnterInChannel(channelId: Channel['id'], userId: User['id'], password?: Channel['password']) {
+    return $axios.post(`${AUTH_BASE}/${channelId}/members`, { userId, password });
   },
 
   getChannelById(channelId: Channel['id']) {
