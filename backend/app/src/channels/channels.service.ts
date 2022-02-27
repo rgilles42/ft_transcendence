@@ -71,6 +71,7 @@ export class ChannelsService {
 
   async create(owner: UserEntity, createChannelData: createChannelDto) {
     const newChannel = this.channelsRepository.create({
+      title: createChannelData.title,
       isPrivate: createChannelData.isPrivate,
       password: createChannelData.password,
       ownerId: owner.id,
@@ -111,8 +112,10 @@ export class ChannelsService {
     )
       throw new UnauthorizedException();
     try {
-      if (updateChannelData.channelType !== undefined)
-        channel.isPrivate = updateChannelData.channelType;
+      if (updateChannelData.title !== undefined)
+        channel.title = updateChannelData.title;
+      if (updateChannelData.isPrivate !== undefined)
+        channel.isPrivate = updateChannelData.isPrivate;
       if (updateChannelData.newPassword !== undefined)
         channel.password = updateChannelData.newPassword;
       try {

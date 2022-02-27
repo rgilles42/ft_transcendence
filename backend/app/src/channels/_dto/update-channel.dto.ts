@@ -4,7 +4,11 @@ import { IsString } from 'class-validator';
 export class updateChannelDto {
   @ApiProperty({ required: false })
   @IsString()
-  channelType?: boolean;
+  title?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  isPrivate?: boolean;
 
   @ApiProperty({ required: false })
   @IsString()
