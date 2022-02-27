@@ -7,7 +7,6 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToOne,
   ManyToOne,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
@@ -30,7 +29,7 @@ export class MessageEntity {
   @ApiProperty()
   @Column({ nullable: false })
   userId: number;
-  @OneToOne(() => UserEntity, { onDelete: 'CASCADE' })
+  @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: UserEntity;
 

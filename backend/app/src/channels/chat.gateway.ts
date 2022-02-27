@@ -1,6 +1,7 @@
 import { forwardRef, Inject, UnauthorizedException } from '@nestjs/common';
 import {
   ConnectedSocket,
+  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   OnGatewayInit,
@@ -82,7 +83,12 @@ export class ChatGateway
   }
 
   @SubscribeMessage('sendMessage')
-  async sendMessage(client: Socket, channelId: number, messageContent: string) {
+  async sendMessage(
+    @ConnectedSocket() client: Socket,
+    @MessageBody('channelId') channelId: number,
+    @MessageBody('content') messageContent: string,
+  ) {
+    console.log(`sendMessage: ${client.id} ${channelId} <${messageContent}>`);
     const message = new MessageEntity();
     message.channelId = channelId;
     message.content = messageContent;
@@ -98,7 +104,11 @@ export class ChatGateway
   }
 
   @SubscribeMessage('joinChannel')
-  async onJoinChannel(client: Socket, channelId: number) {
+  async onJoinChannel(
+    @ConnectedSocket() client: Socket,
+    @MessageBody('channelId') channelId: number,
+  ) {
+    console.log(`onJoinChannel: ${client.id}`);
     const userChannels = await this.usersService.get_channels(
       client.data.user.id,
     );
