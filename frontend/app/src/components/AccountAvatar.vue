@@ -1,16 +1,18 @@
 <template>
   <img
-    v-if="user"
+    v-if="user && !isRefreshing"
     :src="avatarSrc"
-    @err="emit('err', $event)"
+    @error="emitError"
     />
 </template>
 
 <script lang="ts">
-import { defineComponent, watch, ref } from 'vue';
+import {
+  defineComponent, watch, ref, computed,
+} from 'vue';
 import User from '@/types/User';
-// import api from '@/api';
 import { configService } from '@/services/configService';
+import { useStore } from '@/store';
 
 export default defineComponent({
   name: 'AccountAvatar',
@@ -45,9 +47,18 @@ export default defineComponent({
       { immediate: true },
     );
 
+    const emitError = ($event: Event) => {
+      emit('error', $event);
+    };
+
+    const store = useStore();
+
+    const isRefreshing = computed(() => store.getRefreshStatus);
+
     return {
+      isRefreshing,
       avatarSrc,
-      emit,
+      emitError,
     };
   },
 });

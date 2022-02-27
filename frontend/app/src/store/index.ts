@@ -4,6 +4,7 @@ import User from '@/types/User';
 
 export const useStore = defineStore('main', {
   state: () => ({
+    refreshStatus: false,
     user: useStorage<User | null>('user', null, undefined, {
       serializer: {
         read: (v) => (v ? JSON.parse(v) : null),
@@ -17,6 +18,9 @@ export const useStore = defineStore('main', {
     },
   }),
   getters: {
+    getRefreshStatus(): boolean {
+      return this.refreshStatus;
+    },
     getUser(): User | null {
       return this.user;
     },
@@ -31,6 +35,12 @@ export const useStore = defineStore('main', {
     },
   },
   actions: {
+    setRefreshStatusOn() {
+      this.refreshStatus = true;
+    },
+    setRefreshStatusOff() {
+      this.refreshStatus = false;
+    },
     logoutUser() {
       this.user = null;
       this.tokens.accessToken = null;
