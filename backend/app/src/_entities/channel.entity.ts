@@ -38,7 +38,7 @@ export class ChannelEntity {
   owner: UserEntity;
 
   @ApiProperty({ type: () => [MemberEntity] })
-  @OneToMany(() => MemberEntity, (member) => member.channel, { eager: true })
+  @OneToMany(() => MemberEntity, (member) => member.channel)
   members: MemberEntity[];
 
   @ApiProperty({ type: () => [RestrictionEntity] })

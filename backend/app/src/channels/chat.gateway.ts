@@ -16,6 +16,7 @@ import { parse } from 'cookie';
 import { ChannelsService } from './channels.service';
 import { MessageEntity } from 'src/_entities/channel-message.entity';
 import { MemberEntity } from 'src/_entities/channel-member.entity';
+import { restrictionType } from 'src/_entities/channel-restriction.entity';
 
 @WebSocketGateway({
   namespace: 'chat',
@@ -90,10 +91,10 @@ export class ChatGateway
       await this.channelsService.send_message(channelId, message.userId, {
         content: messageContent,
       });
+      this.server.in(channelId.toString()).emit('newMessage', message);
     } catch (err) {
       throw err;
     }
-    this.server.in(channelId.toString()).emit('newMessage', message);
   }
 
   @SubscribeMessage('joinChannel')
@@ -101,7 +102,18 @@ export class ChatGateway
     const userChannels = await this.usersService.get_channels(
       client.data.user.id,
     );
-    if (userChannels.some((channel) => channel.id === channelId))
+    if (
+      userChannels.some((channel) => channel.id === channelId) &&
+      !(
+        await this.channelsService.findOne(client.data.user.id, channelId, [
+          'restrictions',
+        ])
+      ).restrictions.find(
+        (restriction) =>
+          restriction.userId === client.data.user.id &&
+          restriction.type === restrictionType.BAN,
+      )
+    )
       client.join(channelId.toString());
   }
   @SubscribeMessage('leaveChannel')
