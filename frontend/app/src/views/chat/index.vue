@@ -34,7 +34,8 @@
                 </div>
                 <ul v-else class="divide-y-2 divide-gray-600">
                   <li v-for="(chat, index) in chatList" :key="index" @click="onChannelClick(chat)" class="p-3 rounded-lg hover:bg-gray-600 hover:text-gray-200">
-                    <template v-if="chat.password !== null">
+                    <i v-if="chatUtils.isUserBanned(chat, currentUser?.id)" class="fa-solid fa-ban mr-2"></i>
+                    <template v-else-if="chat.password !== null">
                       <i v-if="chatUtils.isUserIsMember(chat, currentUser?.id)" class="fa-solid fa-lock-open mr-2"></i>
                       <i v-else class="fa-solid fa-lock mr-2"></i>
                     </template>

@@ -54,6 +54,18 @@ export const isUserMuted = (chatData: Channel | null | undefined, userId: User['
   const currentDate = new Date();
   return getChatRestrictions(chatData).some((restrictedUser) => {
     if ((userId !== restrictedUser.userId)) return false;
+    if (restrictedUser.type !== 0) return false;
+    if (restrictedUser.endAt === null) return true;
+    return (compareAscDateFns(currentDate, restrictedUser.endAt) <= 0);
+  });
+};
+
+export const isUserBanned = (chatData: Channel | null | undefined, userId: User['id'] | null | undefined) => {
+  if (userId === undefined || userId === null) return false;
+  const currentDate = new Date();
+  return getChatRestrictions(chatData).some((restrictedUser) => {
+    if ((userId !== restrictedUser.userId)) return false;
+    if (restrictedUser.type !== 1) return false;
     if (restrictedUser.endAt === null) return true;
     return (compareAscDateFns(currentDate, restrictedUser.endAt) <= 0);
   });
