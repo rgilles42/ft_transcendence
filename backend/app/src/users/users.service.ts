@@ -84,7 +84,11 @@ export class UsersService {
 
   async create(createUserData: createUserDto): Promise<UserEntity> {
     const newUser = this.usersRepository.create(createUserData);
-    await this.usersRepository.save(newUser);
+    try {
+      await this.usersRepository.save(newUser);
+    } catch (err) {
+      throw new BadRequestException();
+    }
     return newUser;
   }
 
@@ -150,7 +154,11 @@ export class UsersService {
       newBlockship.blockedUser = await this.usersRepository.findOneOrFail(
         blockData.targetUserId,
       );
-      await this.blockshipsRepository.save(newBlockship);
+      try {
+        await this.blockshipsRepository.save(newBlockship);
+      } catch (err) {
+        throw new BadRequestException();
+      }
       return newBlockship;
     } catch (err) {
       throw new NotFoundException();
@@ -198,7 +206,11 @@ export class UsersService {
       newFriendship.friend = await this.usersRepository.findOneOrFail(
         frienshipData.targetUserId,
       );
-      await this.friendshipsRepository.save(newFriendship);
+      try {
+        await this.friendshipsRepository.save(newFriendship);
+      } catch (err) {
+        throw new BadRequestException();
+      }
       return newFriendship;
     } catch (err) {
       throw new NotFoundException();

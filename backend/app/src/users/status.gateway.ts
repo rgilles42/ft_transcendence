@@ -1,5 +1,5 @@
 import { configService } from 'src/config/config.service';
-import { Logger, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 import {
   ConnectedSocket,
   OnGatewayConnection,
@@ -13,8 +13,6 @@ import { Server, Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from './users.service';
 import { parse } from 'cookie';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { AuthGuard } from '@nestjs/passport';
 
 @WebSocketGateway({
   namespace: 'usersStatus',
@@ -41,8 +39,6 @@ export class StatusGateway
     private authService: AuthService,
     private usersService: UsersService,
   ) {}
-
-  private logger: Logger = new Logger('StatusGateway');
 
   /*
   The UserStatus object is as such: {id: number, newStatus: number}, with newStatus being either: 1 (connected), 2 (in game), or 0 (disconnecting)

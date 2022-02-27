@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FriendshipEntity } from 'src/_entities/users_friendship.entity';
 import { Repository } from 'typeorm';
@@ -18,7 +18,11 @@ export class FriendsService {
     try {
       const friendship = await this.friendshipsRepository.findOneOrFail(id);
       friendship.status = true;
-      await this.friendshipsRepository.save(friendship);
+      try {
+        await this.friendshipsRepository.save(friendship);
+      } catch (err) {
+        throw new BadRequestException();
+      }
       return friendship;
     } catch (err) {
       throw new NotFoundException();

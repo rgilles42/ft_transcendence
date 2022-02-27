@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { ChannelsService } from './channels.service';
 import { ChannelEntity } from 'src/_entities/channel.entity';
@@ -18,6 +19,7 @@ import {
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { MessageEntity } from 'src/_entities/channel-message.entity';
@@ -53,11 +55,22 @@ export class ChannelsController {
     return this.channelsService.create(req.user, createChannelData);
   }
 
+  @ApiQuery({
+    name: 'include',
+    description:
+      "The relations to include to the channel object to return (owner, members, restrictions and/or messages (ex: 'members+restrictions')",
+    required: false,
+    type: String,
+  })
   @ApiOkResponse({ type: ChannelEntity })
   @ApiNotFoundResponse()
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<ChannelEntity> {
-    return this.channelsService.findOne(+id);
+  findOne(
+    @Request() req,
+    @Param('id') id: string,
+    @Query('include') include = '',
+  ): Promise<ChannelEntity> {
+    return this.channelsService.findOne(req.user.id, +id, include.split('+'));
   }
 
   @ApiOkResponse({ type: ChannelEntity })

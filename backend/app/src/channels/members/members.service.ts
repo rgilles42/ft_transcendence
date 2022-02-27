@@ -1,12 +1,11 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from 'src/users/users.service';
 import { MemberEntity } from 'src/_entities/channel-member.entity';
-import { ChannelEntity } from 'src/_entities/channel.entity';
 import { Repository } from 'typeorm';
 import { memberDto } from '../_dto/member.dto';
 
@@ -23,37 +22,25 @@ export class MembersService {
   }
 
   async create(
-    channel: ChannelEntity,
-    issuerId: number,
+    channelId: number,
     memberData: memberDto,
+    allowSetMemberPerms: boolean,
   ): Promise<MemberEntity> {
     try {
       await this.usersService.findOne(memberData.userId.toString());
     } catch (err) {
       throw new NotFoundException();
     }
-    if (
-      issuerId !== channel.ownerId &&
-      !channel.members.some((member) => issuerId === member.userId) &&
-      (channel.isPrivate === true ||
-        (channel.password !== null &&
-          channel.password !== undefined &&
-          channel.password !== memberData.password))
-    )
-      throw new UnauthorizedException();
     const member = new MemberEntity();
-    member.channelId = channel.id;
+    member.channelId = channelId;
     member.userId = memberData.userId;
-    if (
-      (channel.ownerId === issuerId ||
-        channel.members.some(
-          (member) => member.userId === issuerId && member.isAdmin === true,
-        )) &&
-      memberData.isAdmin !== undefined &&
-      memberData.isAdmin !== null
-    )
-      member.isAdmin = memberData.isAdmin;
-    return await this.membersRepository.save(member);
+    if (allowSetMemberPerms) member.isAdmin = memberData.isAdmin;
+    else member.isAdmin = false;
+    try {
+      return await this.membersRepository.save(member);
+    } catch (err) {
+      throw new BadRequestException();
+    }
   }
 
   async remove(id: number): Promise<MemberEntity> {
