@@ -1,3 +1,4 @@
+import ChannelMember from '@/types/ChannelMember';
 import ChannelMessage from '@/types/ChannelMessage';
 import {
   io, ManagerOptions, Socket, SocketOptions,
@@ -31,28 +32,44 @@ export default (baseUrl: string, options: Partial<ManagerOptions & SocketOptions
     return this.getInstance.disconnect();
   },
 
-  onConnectionFailed(cb: (err: Error) => void) {
-    return this.getInstance.on('connect_error', cb);
-  },
-
-  offConnectionFailed() {
-    return this.getInstance.off('connect_error');
-  },
-
   onConnectionSuccess(cb: () => void) {
     return this.getInstance.on('connect', cb);
   },
 
-  offConnectionSuccess() {
-    return this.getInstance.off('connect');
+  offConnectionSuccess(cb: () => void) {
+    return this.getInstance.off('connect', cb);
+  },
+
+  onConnectionFailed(cb: (err: Error) => void) {
+    return this.getInstance.on('connect_error', cb);
+  },
+
+  offConnectionFailed(cb: (err: Error) => void) {
+    return this.getInstance.off('connect_error', cb);
+  },
+
+  onDisconnected(cb: (reason: Socket.DisconnectReason) => void) {
+    return this.getInstance.on('disconnect', cb);
+  },
+
+  offDisconnected(cb: (reason: Socket.DisconnectReason) => void) {
+    return this.getInstance.off('disconnect', cb);
   },
 
   onNewMessage(cb: (args: ChannelMessage) => void) {
     return this.getInstance.on('newMessage', cb);
   },
 
-  offNewMessage() {
-    return this.getInstance.off('newMessage');
+  offNewMessage(cb: (args: ChannelMessage) => void) {
+    return this.getInstance.off('newMessage', cb);
+  },
+
+  onNewMember(cb: (args: ChannelMember) => void) {
+    return this.getInstance.on('newMember', cb);
+  },
+
+  offNewMember(cb: (args: ChannelMember) => void) {
+    return this.getInstance.off('newMember', cb);
   },
 
   emitNewMessage(channelId: ChannelMessage['id'], content: ChannelMessage['content']) {

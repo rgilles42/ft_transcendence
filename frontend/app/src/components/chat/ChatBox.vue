@@ -1,15 +1,13 @@
 <template>
-  <div v-if="chatData">
-    <div class="flex-1 p:2 sm:p-6 justify-between flex flex-col bg-gray-800">
-      <ChatHeader :chatTitle="chatData.title" />
-      <ChatMessages :messages="chatMessages" :me="me"></ChatMessages>
-      <ChatForm @submitMessage="sendMessage" :disabled="chatUtils.isUserMuted(chatData, me?.id)"></ChatForm>
-    </div>
+  <div v-if="chatData" class="flex flex-col flex-1 p-2 sm:p-6 justify-between bg-gray-800">
+    <ChatHeader :chatTitle="chatData.title" />
+    <ChatMessages :messages="chatMessages" :chatData="chatData" :me="me" ref="chatMessagesRef"></ChatMessages>
+    <ChatForm @submitMessage="sendMessage" :disabled="chatUtils.isUserMuted(chatData, me?.id)"></ChatForm>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
+import { defineComponent, computed, ref } from 'vue';
 import ChatMessages from '@/components/chat/ChatMessages.vue';
 import ChatForm from '@/components/chat/ChatForm.vue';
 import ChannelMessage from '@/types/ChannelMessage';
@@ -26,16 +24,32 @@ export default defineComponent({
     me: Object as () => User | null,
   },
   setup(props, { emit }) {
+    const chatMessagesRef = ref<any>(null);
+
+    const scrollToBottom = () => {
+      if (chatMessagesRef.value) {
+        chatMessagesRef.value.scrollToBottom();
+      }
+    };
+
     const sendMessage = (content: ChannelMessage['content']) => {
       emit('submitMessage', content);
     };
 
-    const chatMessages = computed(() => chatUtils.getChatMessages(props.chatData));
+    const chatMessages = computed(() => {
+      const messages = chatUtils.getChatMessages(props.chatData);
+      return messages.filter((message) => {
+        if (!props.me || !props.me.blockedUsers) return true;
+        return !props.me.blockedUsers.some((blocked) => blocked.blockedId === message.userId);
+      });
+    });
 
     return {
       sendMessage,
       chatUtils,
+      chatMessagesRef,
       chatMessages,
+      scrollToBottom,
     };
   },
 });

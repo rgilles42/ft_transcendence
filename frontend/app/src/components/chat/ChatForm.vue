@@ -1,25 +1,23 @@
 <template>
-  <div>
-    <div class="flex sm:items-center justify-between px-3 border-t border-gray-700">
-      <input
-        type="text"
-        placeholder="Message"
-        v-model.trim="newMessageContent"
-        @keyup.enter="submitMessage"
+  <div class="flex sm:items-center justify-between px-3 border-t border-gray-700">
+    <input
+      type="text"
+      placeholder="Message"
+      v-model.trim="newMessageContent"
+      @keyup.enter="submitMessage"
+      :disabled="disabled"
+      :class="[disabled ? 'pointer-events-none' : '']"
+      class="block w-full py-2 pl-4 m-3 rounded-full focus:outline-none"
+    />
+      <button
+        type="submit"
+        @click="submitMessage"
         :disabled="disabled"
-        :class="[disabled ? 'pointer-events-none' : '']"
-        class="block w-full py-2 pl-4 m-3 rounded-full focus:outline-none"
-      />
-        <button
-          type="submit"
-          @click="submitMessage"
-          :disabled="disabled"
-          :class="[disabled ? 'pointer-events-none bg-gray-500' : 'bg-blue-500 hover:bg-blue-400']"
-          class="inline-flex items-center justify-center rounded-full h-10 w-10 transition duration-500 ease-in-out text-white focus:outline-none"
-        >
-          <i class="fa-solid fa-paper-plane"></i>
-        </button>
-    </div>
+        :class="[disabled ? 'pointer-events-none bg-gray-500' : 'bg-blue-500 hover:bg-blue-400']"
+        class="inline-flex items-center justify-center rounded-full h-10 w-10 transition duration-500 ease-in-out text-white focus:outline-none"
+      >
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
   </div>
 </template>
 

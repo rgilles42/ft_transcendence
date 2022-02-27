@@ -30,20 +30,28 @@ export default (baseUrl: string, options: Partial<ManagerOptions & SocketOptions
     return this.getInstance.disconnect();
   },
 
-  onConnectionFailed(cb: (err: Error) => void) {
-    return this.getInstance.on('connect_error', cb);
-  },
-
-  offConnectionFailed() {
-    return this.getInstance.off('connect_error');
-  },
-
   onConnectionSuccess(cb: () => void) {
     return this.getInstance.on('connect', cb);
   },
 
-  offConnectionSuccess() {
-    return this.getInstance.off('connect');
+  offConnectionSuccess(cb: () => void) {
+    return this.getInstance.off('connect', cb);
+  },
+
+  onConnectionFailed(cb: (err: Error) => void) {
+    return this.getInstance.on('connect_error', cb);
+  },
+
+  offConnectionFailed(cb: (err: Error) => void) {
+    return this.getInstance.off('connect_error', cb);
+  },
+
+  onDisconnected(cb: (reason: Socket.DisconnectReason) => void) {
+    return this.getInstance.on('disconnect', cb);
+  },
+
+  offDisconnected(cb: (reason: Socket.DisconnectReason) => void) {
+    return this.getInstance.off('disconnect', cb);
   },
 
   onUsersStatusUpdate(cb: (args: [{ id: number, newStatus: number }]) => void) {

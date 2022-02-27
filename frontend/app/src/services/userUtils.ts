@@ -2,6 +2,13 @@ import UserBlock from '@/types/UserBlock';
 import UserFriend from '@/types/UserFriend';
 import User from '@/types/User';
 
+export const isSameUserById = (currentUser: User | null, userId: User['id'] | null): boolean => {
+  if (!currentUser || userId === undefined || userId === null) {
+    return false;
+  }
+  return currentUser.id === userId;
+};
+
 export const isSameUser = (currentUser: User | null, user: User | null): boolean => {
   if (!currentUser || !user) {
     return false;

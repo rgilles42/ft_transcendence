@@ -8,37 +8,42 @@
           <h1 class="font-bold text-xl mb-2">Liste des discutions</h1>
           <div class="text-base">
 
-            <Modal :openStatus="modalData.isOpen" @close="closeModal()">
-              <template v-slot:title>Veuillez entrer le mot de passe:</template>
-              <template v-slot:content>
-                <FormInput title="Mot de passe" type="password" v-model="modalData.password" :errors="modalData.errors" />
-              </template>
-              <template v-slot:actions>
-                <button @click="closeModal()" class="bg-orange-900 hover:bg-orange-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-sm rounded-lg tracking-wider">Annuler</button>
-                <button @click="closeModal(false)" class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-sm rounded-lg tracking-wider">Ce connecter</button>
-              </template>
-            </Modal>
+            <template v-if="!chatList">
+              <Loader />
+            </template>
+            <template v-else>
+              <Modal :openStatus="modalData.isOpen" @close="closeModal()">
+                <template v-slot:title>Veuillez entrer le mot de passe:</template>
+                <template v-slot:content>
+                  <FormInput title="Mot de passe" type="password" v-model="modalData.password" :errors="modalData.errors" />
+                </template>
+                <template v-slot:actions>
+                  <button @click="closeModal()" class="bg-orange-900 hover:bg-orange-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-sm rounded-lg tracking-wider">Annuler</button>
+                  <button @click="closeModal(false)" class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-sm rounded-lg tracking-wider">Ce connecter</button>
+                </template>
+              </Modal>
 
-            <div class="mt-4 mb-4 w-full rounded-lg" :class="[chatList.length <= 0 ? 'justify-center text-center flex' : 'bg-gray-700 shadow-lg']">
+              <div class="mt-4 mb-4 w-full rounded-lg" :class="[chatList.length <= 0 ? 'justify-center text-center flex' : 'bg-gray-700 shadow-lg']">
 
-              <div v-if="chatList.length <= 0">
-                <h3 class="tracking-wide font-semibold text-lg">Il n'y a aucune conversation... :'(</h3>
+                <div v-if="chatList.length <= 0">
+                  <h3 class="tracking-wide font-semibold text-lg">Il n'y a aucune conversation... :'(</h3>
 
-                <div class="py-1 mb-0.5">
-                  <img src="noOne.gif" alt="Is there anybody out there?" />
+                  <div class="py-1 mb-0.5">
+                    <img src="noOne.gif" alt="Is there anybody out there?" />
+                  </div>
                 </div>
+                <ul v-else class="divide-y-2 divide-gray-600">
+                  <li v-for="(chat, index) in chatList" :key="index" @click="onChannelClick(chat)" class="p-3 rounded-lg hover:bg-gray-600 hover:text-gray-200">
+                    <template v-if="chat.password !== null">
+                      <i v-if="chatUtils.isUserIsMember(chat, currentUser?.id)" class="fa-solid fa-lock-open mr-2"></i>
+                      <i v-else class="fa-solid fa-lock mr-2"></i>
+                    </template>
+                    <i v-else class="fa-solid fa-door-open mr-2"></i>
+                    {{ chat.title }}
+                  </li>
+                </ul>
               </div>
-              <ul v-else class="divide-y-2 divide-gray-600">
-                <li v-for="(chat, index) in chatList" :key="index" @click="onChannelClick(chat)" class="p-3 rounded-lg hover:bg-gray-600 hover:text-gray-200">
-                  <template v-if="chat.password !== null">
-                    <i v-if="chatUtils.isUserIsMember(chat, currentUser?.id)" class="fa-solid fa-lock-open mr-2"></i>
-                    <i v-else class="fa-solid fa-lock mr-2"></i>
-                  </template>
-                  <i v-else class="fa-solid fa-door-open mr-2"></i>
-                  {{ chat.title }}
-                </li>
-              </ul>
-            </div>
+            </template>
 
           </div>
         </div>
@@ -68,16 +73,17 @@ import Channel from '@/types/Channel';
 import { computed, defineComponent, ref } from 'vue';
 import Modal from '@/components/Modal.vue';
 import FormInput from '@/components/form/FormInput.vue';
+import Loader from '@/components/Loader.vue';
 
 export default defineComponent({
   name: 'ChatList',
-  components: { Modal, FormInput },
+  components: { Modal, FormInput, Loader },
   setup() {
     const router = useRouter();
     const store = useStore();
     const currentUser = computed(() => store.getUser);
 
-    const chatList = ref<Channel[]>([]);
+    const chatList = ref<Channel[] | undefined>();
 
     const getAllChannels = () => {
       api.channels.getChannels()
