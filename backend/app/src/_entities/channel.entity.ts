@@ -22,6 +22,10 @@ export class ChannelEntity {
 
   @ApiProperty()
   @Column()
+  title: string;
+
+  @ApiProperty()
+  @Column()
   isPrivate: boolean;
 
   @ApiProperty()
