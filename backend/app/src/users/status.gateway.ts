@@ -1,5 +1,5 @@
 import { configService } from 'src/config/config.service';
-import { UnauthorizedException, UseGuards } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 import {
   ConnectedSocket,
   OnGatewayConnection,
@@ -13,8 +13,6 @@ import { Server, Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from './users.service';
 import { parse } from 'cookie';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { AuthGuard } from '@nestjs/passport';
 
 @WebSocketGateway({
   namespace: 'usersStatus',

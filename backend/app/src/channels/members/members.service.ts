@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -53,7 +54,11 @@ export class MembersService {
       memberData.isAdmin !== null
     )
       member.isAdmin = memberData.isAdmin;
-    return await this.membersRepository.save(member);
+    try {
+      return await this.membersRepository.save(member);
+    } catch (err) {
+      throw new BadRequestException();
+    }
   }
 
   async remove(id: number): Promise<MemberEntity> {

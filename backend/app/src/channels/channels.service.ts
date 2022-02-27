@@ -2,6 +2,9 @@ import {
   NotFoundException,
   Injectable,
   UnauthorizedException,
+  BadRequestException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MemberEntity } from 'src/_entities/channel-member.entity';
@@ -13,6 +16,7 @@ import {
 import { ChannelEntity } from 'src/_entities/channel.entity';
 import { UserEntity } from 'src/_entities/user.entity';
 import { Repository } from 'typeorm';
+import { ChatGateway } from './chat.gateway';
 import { MembersService } from './members/members.service';
 import { MessagesService } from './messages/messages.service';
 import { RestrictionsService } from './restrictions/restrictions.service';
@@ -30,6 +34,8 @@ export class ChannelsService {
     private messagesService: MessagesService,
     private restrictionsService: RestrictionsService,
     private membersService: MembersService,
+    @Inject(forwardRef(() => ChatGateway))
+    private chatGateway: ChatGateway,
   ) {}
 
   findAll(): Promise<ChannelEntity[]> {
@@ -53,7 +59,12 @@ export class ChannelsService {
       password: createChannelData.password,
       ownerId: owner.id,
     });
-    const savedChannel = await this.channelsRepository.save(newChannel);
+    let savedChannel: ChannelEntity;
+    try {
+      savedChannel = await this.channelsRepository.save(newChannel);
+    } catch (err) {
+      throw new BadRequestException();
+    }
     await this.membersService.create(savedChannel, owner.id, {
       isAdmin: true,
       userId: owner.id,
@@ -86,7 +97,11 @@ export class ChannelsService {
         channel.isPrivate = updateChannelData.channelType;
       if (updateChannelData.newPassword !== undefined)
         channel.password = updateChannelData.newPassword;
-      await this.channelsRepository.save(channel);
+      try {
+        await this.channelsRepository.save(channel);
+      } catch (err) {
+        throw new BadRequestException();
+      }
       return this.channelsRepository.findOneOrFail(id);
     } catch (err) {
       throw new NotFoundException();
@@ -222,7 +237,13 @@ export class ChannelsService {
       throw new NotFoundException();
     }
     try {
-      return await this.membersService.create(channel, issuerId, memberData);
+      const newMember = await this.membersService.create(
+        channel,
+        issuerId,
+        memberData,
+      );
+      this.chatGateway.broadcastNewMember(newMember);
+      return newMember;
     } catch (err) {
       throw err;
     }

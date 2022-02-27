@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GameEntity } from 'src/_entities/game.entity';
 import { UserEntity } from 'src/_entities/user.entity';
@@ -40,7 +40,11 @@ export class GamesService {
       newGame.player1score = createGameData.player1Score;
     if (createGameData.player2Score !== undefined)
       newGame.player2score = createGameData.player2Score;
-    await this.gamesRepository.save(newGame);
+    try {
+      await this.gamesRepository.save(newGame);
+    } catch (err){
+      throw new BadRequestException();
+    }
     return newGame;
   }
 
