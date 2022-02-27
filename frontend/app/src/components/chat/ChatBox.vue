@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div v-if="chatData">
     <div class="flex-1 p:2 sm:p-6 justify-between flex flex-col bg-gray-800">
-      <ChatHeader :chatTitle="chatTitle" />
+      <ChatHeader :chatTitle="chatData.title" />
       <ChatMessages :messages="chatMessages" :me="me"></ChatMessages>
       <ChatForm @submitMessage="sendMessage" :disabled="chatUtils.isUserMuted(chatData, me?.id)"></ChatForm>
     </div>
@@ -31,12 +31,10 @@ export default defineComponent({
     };
 
     const chatMessages = computed(() => chatUtils.getChatMessages(props.chatData));
-    const chatTitle = computed(() => chatUtils.getChatTitle(props.chatData, props.me));
 
     return {
       sendMessage,
       chatUtils,
-      chatTitle,
       chatMessages,
     };
   },

@@ -35,7 +35,7 @@
                     <i v-else class="fa-solid fa-lock mr-2"></i>
                   </template>
                   <i v-else class="fa-solid fa-door-open mr-2"></i>
-                  {{ chatUtils.getChatTitle(chat, currentUser) }}
+                  {{ chat.title }}
                 </li>
               </ul>
             </div>
@@ -61,13 +61,13 @@
 
 <script lang="ts">
 import * as chatUtils from '@/services/chatUtils';
+import api from '@/api';
 import { useStore } from '@/store';
 import { useRouter } from 'vue-router';
 import Channel from '@/types/Channel';
 import { computed, defineComponent, ref } from 'vue';
 import Modal from '@/components/Modal.vue';
 import FormInput from '@/components/form/FormInput.vue';
-import api from '@/api';
 
 export default defineComponent({
   name: 'ChatList',

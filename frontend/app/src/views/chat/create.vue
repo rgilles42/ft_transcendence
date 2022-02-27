@@ -7,7 +7,7 @@
         <div class="mb-4 p-4 bg-gray-700 bg-opacity-50 rounded flex-1">
 
           <div class="px-6 py-4 grid md:grid-flow-col gap-4">
-            <FormInput title="Nom du salon" name="name" id="name" v-model="newChannelData.name" :errors="errors" />
+            <FormInput title="Nom du salon" name="title" id="title" v-model="newChannelData.title" :errors="errors" :required="true" />
             <FormInput title="Activer le mot de passe" type="checkbox" v-model="newChannelData.isPasswordDisabled" :errors="errors" />
             <FormInput title="Mot de passe" name="password" id="password" v-model="newChannelData.password" :errors="errors" :disabled="newChannelData.isPasswordDisabled" />
             <FormInput :title="`Type: ${newChannelData.isPrivate ? 'Privée' : 'Public'}`" type="checkbox" name="isPrivate" id="isPrivate" v-model="newChannelData.isPrivate" :errors="errors" />

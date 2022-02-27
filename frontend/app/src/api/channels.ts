@@ -11,7 +11,7 @@ export default ($axios: AxiosInstance) => ({
 
   // Channels routes
   getChannels() {
-    return $axios.get(`${AUTH_BASE}`, { params: { include: 'members+restictions' } });
+    return $axios.get(`${AUTH_BASE}`, { params: { include: 'members+restrictions' } });
   },
 
   createChannel(channelData: Channel) {
@@ -23,7 +23,7 @@ export default ($axios: AxiosInstance) => ({
   },
 
   getChannelById(channelId: Channel['id']) {
-    return $axios.get(`${AUTH_BASE}/${channelId}`);
+    return $axios.get(`${AUTH_BASE}/${channelId}`, { params: { include: 'members+restrictions+messages' } });
   },
 
   getChannelMembersById(channelId: Channel['id']) {

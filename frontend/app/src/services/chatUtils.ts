@@ -1,24 +1,6 @@
 import Channel from '@/types/Channel';
 import User from '@/types/User';
 import { compareAscDateFns } from './formater';
-import * as userUtils from './userUtils';
-
-export const getChatTitle = (chatData: Channel | null | undefined, me?: User | null | undefined) => {
-  if (!chatData || !chatData.members) return '';
-  let title = '';
-  chatData.members.forEach((member) => {
-    if (!userUtils.isSameUser(me || null, member.user || null)) {
-      if (member.user) {
-        if (title.length <= 0) {
-          title = `${member.user.username}`;
-        } else {
-          title += `, ${member.user.username}`;
-        }
-      }
-    }
-  });
-  return title;
-};
 
 export const getChatMembers = (chatData: Channel | null | undefined) => {
   if (!chatData || !chatData.members) return [];
@@ -58,7 +40,6 @@ export const isUserIsMember = (chatData: Channel | null | undefined, userId: Use
 };
 
 export default {
-  getChatTitle,
   getChatMessages,
   getChatRestrictions,
 };

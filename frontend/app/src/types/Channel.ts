@@ -10,6 +10,7 @@ import User from './User';
 export default interface Channel {
   id: number;
   ownerId: number;
+  title: string;
   isPrivate: boolean;
   password: string | null;
   createdAt: Date;
@@ -26,6 +27,7 @@ export default interface Channel {
 export const DEFAULT_CHANNEL: Channel = {
   id: -1,
   ownerId: -1,
+  title: '',
   isPrivate: false,
   password: null,
   createdAt: new Date(),
