@@ -243,7 +243,11 @@ export class ChannelsService {
       )
     ) {
       try {
-        return await this.restrictionsService.create(channelId, restrData);
+        const newRestriction = await this.restrictionsService.create(
+          channelId,
+          restrData,
+        );
+        return newRestriction;
       } catch (err) {
         throw err;
       }
@@ -301,10 +305,6 @@ export class ChannelsService {
         memberData,
         allowSetMemberPerms,
       );
-      newMember.user = await this.userService.findOne(
-        memberData.userId.toString(),
-      );
-      this.chatGateway.broadcastNewMember(newMember);
       return newMember;
     } catch (err) {
       throw err;

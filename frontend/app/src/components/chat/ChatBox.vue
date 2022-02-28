@@ -58,9 +58,16 @@ export default defineComponent({
       }, 1000);
     };
 
-    if (isUserMuted.value) {
-      mutedLoop();
-    }
+    watch(
+      () => props.chatData?.restrictions,
+      () => {
+        isUserMuted.value = chatUtils.isUserMuted(props.chatData, props.me?.id);
+        if (isUserMuted.value) {
+          mutedLoop();
+        }
+      },
+      { immediate: true, deep: true },
+    );
 
     return {
       sendMessage,

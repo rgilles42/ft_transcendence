@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { RestrictionEntity } from 'src/_entities/channel-restriction.entity';
 import { Repository } from 'typeorm';
+import { ChatGateway } from '../chat.gateway';
 import { restrictionDto } from '../_dto/restriction.dto';
 
 @Injectable()
@@ -13,6 +14,7 @@ export class RestrictionsService {
   constructor(
     @InjectRepository(RestrictionEntity)
     private restrictionRepository: Repository<RestrictionEntity>,
+    private chatGateway: ChatGateway,
   ) {}
 
   findAll(): Promise<RestrictionEntity[]> {
@@ -29,7 +31,9 @@ export class RestrictionsService {
     restriction.type = restrData.type;
     restriction.endAt = restrData.endAt;
     try {
-      return await this.restrictionRepository.save(restriction);
+      const newRestriction = await this.restrictionRepository.save(restriction);
+      this.chatGateway.broadcastNewRestriction(newRestriction);
+      return newRestriction;
     } catch (err) {
       throw new BadRequestException();
     }
@@ -39,6 +43,7 @@ export class RestrictionsService {
     try {
       const restriction = await this.restrictionRepository.findOneOrFail(id);
       this.restrictionRepository.delete(id);
+      this.chatGateway.broadcastDeleteRestriction(restriction);
       return restriction;
     } catch (err) {
       throw new NotFoundException();

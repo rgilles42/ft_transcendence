@@ -22,7 +22,10 @@ import { parse } from 'cookie';
 import { ChannelsService } from './channels.service';
 import { MessageEntity } from 'src/_entities/channel-message.entity';
 import { MemberEntity } from 'src/_entities/channel-member.entity';
-import { restrictionType } from 'src/_entities/channel-restriction.entity';
+import {
+  restrictionType,
+  RestrictionEntity,
+} from 'src/_entities/channel-restriction.entity';
 
 @WebSocketGateway({
   namespace: 'chat',
@@ -102,7 +105,6 @@ export class ChatGateway
       await this.channelsService.send_message(channelId, message.userId, {
         content: messageContent,
       });
-      this.server.in(channelId.toString()).emit('newMessage', message);
     } catch (err) {
       throw err;
     }
@@ -136,7 +138,49 @@ export class ChatGateway
     client.leave(channelId.toString());
   }
 
+  broadcastNewMessage(newMessage: MessageEntity) {
+    this.server
+      .in(newMessage.channelId.toString())
+      .emit('newMessage', newMessage);
+  }
+
   broadcastNewMember(newMember: MemberEntity) {
     this.server.in(newMember.channelId.toString()).emit('newMember', newMember);
+  }
+  async broadcastDeleteMember(deletedMember: MemberEntity) {
+    const sockets = await this.server
+      .in(deletedMember.channelId.toString())
+      .fetchSockets();
+    const deletedClient = sockets.find(
+      (sock) => sock.data.user.id === deletedMember.userId,
+    );
+    if (deletedClient) {
+      deletedClient.disconnect();
+    }
+    this.server
+      .in(deletedMember.channelId.toString())
+      .emit('deletedMember', deletedMember.id);
+  }
+
+  async broadcastNewRestriction(newRestriction: RestrictionEntity) {
+    if (newRestriction.type === 1) {
+      const sockets = await this.server
+        .in(newRestriction.channelId.toString())
+        .fetchSockets();
+      const deletedClient = sockets.find(
+        (sock) => sock.data.user.id === newRestriction.userId,
+      );
+      if (deletedClient) {
+        deletedClient.disconnect();
+      }
+    }
+    this.server
+      .in(newRestriction.channelId.toString())
+      .emit('newRestriction', newRestriction);
+  }
+  broadcastDeleteRestriction(deletedRestriction: RestrictionEntity) {
+    this.server
+      .in(deletedRestriction.channelId.toString())
+      .emit('deletedRestriction', deletedRestriction.id);
   }
 }

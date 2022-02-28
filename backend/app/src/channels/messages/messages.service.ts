@@ -1,7 +1,12 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MessageEntity } from 'src/_entities/channel-message.entity';
 import { Repository } from 'typeorm';
+import { ChatGateway } from '../chat.gateway';
 import { messageDto } from '../_dto/message.dto';
 
 @Injectable()
@@ -9,6 +14,7 @@ export class MessagesService {
   constructor(
     @InjectRepository(MessageEntity)
     private messagesRepository: Repository<MessageEntity>,
+    private chatGateway: ChatGateway,
   ) {}
 
   findAll(): Promise<MessageEntity[]> {
@@ -25,7 +31,9 @@ export class MessagesService {
       message.channelId = channelId;
       message.userId = userId;
       message.content = messageData.content;
-      return await this.messagesRepository.save(message);
+      const newMessage = await this.messagesRepository.save(message);
+      this.chatGateway.broadcastNewMessage(message);
+      return newMessage;
     } catch (err) {
       throw new BadRequestException();
     }

@@ -63,6 +63,7 @@ import Loader from '@/components/Loader.vue';
 import ChatBox from '@/components/chat/ChatBox.vue';
 import * as chatUtils from '@/services/chatUtils';
 import Modal from '@/components/Modal.vue';
+import ChannelRestriction from '@/types/ChannelRestriction';
 
 export default defineComponent({
   name: 'ChatId',
@@ -110,6 +111,42 @@ export default defineComponent({
       chatData.value.members.push(newMessage);
     };
 
+    const onDeletedMember = (deletedMembers: ChannelMember['id']) => {
+      if (!chatData.value) {
+        return;
+      }
+      if (!chatData.value.members) {
+        chatData.value.members = [];
+      }
+      const index = chatData.value.members.findIndex((find) => find.id === deletedMembers);
+      if (index > -1) {
+        chatData.value.members.splice(index, 1);
+      }
+    };
+
+    const onNewRestriction = (newRestriction: ChannelRestriction) => {
+      if (!chatData.value) {
+        return;
+      }
+      if (!chatData.value.restrictions) {
+        chatData.value.restrictions = [];
+      }
+      chatData.value.restrictions.push(newRestriction);
+    };
+
+    const onDeletedRestriction = (deletedRestriction: ChannelRestriction['id']) => {
+      if (!chatData.value) {
+        return;
+      }
+      if (!chatData.value.restrictions) {
+        chatData.value.restrictions = [];
+      }
+      const index = chatData.value.restrictions.findIndex((find) => find.id === deletedRestriction);
+      if (index > -1) {
+        chatData.value.restrictions.splice(index, 1);
+      }
+    };
+
     const onConnectionSuccess = () => {
       if (!chatData.value) {
         return;
@@ -120,6 +157,9 @@ export default defineComponent({
     const disconnectSocket = (errOrReason?: Socket.DisconnectReason | Error) => {
       webSocketsApi.chat.offNewMessage(onNewMessage);
       webSocketsApi.chat.offNewMember(onNewMember);
+      webSocketsApi.chat.offDeletedMember(onDeletedMember);
+      webSocketsApi.chat.offNewRestriction(onNewRestriction);
+      webSocketsApi.chat.offDeletedRestriction(onDeletedRestriction);
       webSocketsApi.chat.offConnectionSuccess(onConnectionSuccess);
       webSocketsApi.chat.offConnectionFailed(disconnectSocket);
       webSocketsApi.chat.offDisconnected(disconnectSocket);
@@ -133,6 +173,9 @@ export default defineComponent({
     const initChatSocket = () => {
       webSocketsApi.chat.onNewMessage(onNewMessage);
       webSocketsApi.chat.onNewMember(onNewMember);
+      webSocketsApi.chat.onDeletedMember(onDeletedMember);
+      webSocketsApi.chat.onNewRestriction(onNewRestriction);
+      webSocketsApi.chat.onDeletedRestriction(onDeletedRestriction);
       webSocketsApi.chat.onConnectionSuccess(onConnectionSuccess);
       webSocketsApi.chat.onConnectionFailed(disconnectSocket);
       webSocketsApi.chat.onDisconnected(disconnectSocket);

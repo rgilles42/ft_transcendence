@@ -33,5 +33,6 @@ import { UsersModule } from 'src/users/users.module';
   ],
   controllers: [ChannelsController],
   providers: [ChannelsService, ChatGateway],
+  exports: [ChatGateway],
 })
 export class ChannelsModule {}

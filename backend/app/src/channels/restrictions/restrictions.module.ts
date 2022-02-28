@@ -1,4 +1,5 @@
-import { Module } from '@nestjs/common';
+import { ChannelsModule } from './../channels.module';
+import { forwardRef, Module } from '@nestjs/common';
 import { RestrictionsController } from './restrictions.controller';
 import { RestrictionsService } from './restrictions.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -11,6 +12,7 @@ import { RestrictionEntity } from 'src/_entities/channel-restriction.entity';
   imports: [
     TypeOrmModule.forRoot(configService.getTypeOrmConfig()),
     TypeOrmModule.forFeature([RestrictionEntity]),
+    forwardRef(() => ChannelsModule),
   ],
   exports: [RestrictionsService],
 })

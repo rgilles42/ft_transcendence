@@ -1,3 +1,4 @@
+import ChannelRestriction from '@/types/ChannelRestriction';
 import ChannelMember from '@/types/ChannelMember';
 import ChannelMessage from '@/types/ChannelMessage';
 import {
@@ -70,6 +71,30 @@ export default (baseUrl: string, options: Partial<ManagerOptions & SocketOptions
 
   offNewMember(cb: (args: ChannelMember) => void) {
     return this.getInstance.off('newMember', cb);
+  },
+
+  onDeletedMember(cb: (args: ChannelMember['id']) => void) {
+    return this.getInstance.on('deletedMember', cb);
+  },
+
+  offDeletedMember(cb: (args: ChannelMember['id']) => void) {
+    return this.getInstance.off('deletedMember', cb);
+  },
+
+  onNewRestriction(cb: (args: ChannelRestriction) => void) {
+    return this.getInstance.on('newRestriction', cb);
+  },
+
+  offNewRestriction(cb: (args: ChannelRestriction) => void) {
+    return this.getInstance.off('newRestriction', cb);
+  },
+
+  onDeletedRestriction(cb: (args: ChannelRestriction['id']) => void) {
+    return this.getInstance.on('deletedRestriction', cb);
+  },
+
+  offDeletedRestriction(cb: (args: ChannelRestriction['id']) => void) {
+    return this.getInstance.off('deletedRestriction', cb);
   },
 
   emitNewMessage(channelId: ChannelMessage['id'], content: ChannelMessage['content']) {
