@@ -17,6 +17,33 @@
       </template>
 
     </section>
+
+    <Modal :openStatus="isModalOpen" @close="closeModal()">
+      <template v-slot:title>Voulez-vous supprimer ce salon ?</template>
+      <template v-slot:actions>
+        <button @click="closeModal()" class="bg-orange-900 hover:bg-orange-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-sm rounded-lg tracking-wider">Annuler</button>
+        <button @click="closeModal(false)" class="bg-red-900 hover:bg-red-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-sm rounded-lg tracking-wider">Supprimer ce salon</button>
+      </template>
+    </Modal>
+
+    <div v-if="chatData && true" class="fixed bottom-10 right-10 group">
+        <router-link
+          :to="{ name: 'ChatIdEdit', params: { requestChatId: chatData.id } }"
+          class=" rounded-full h-14 w-14 flex items-center justify-center no-underline hover:no-underline text-white"
+          role="menuitem"
+          :class="[chatUtils.isUserIsAdmin(chatData, currentUser?.id) ? 'bg-blue-500' : 'pointer-events-none bg-gray-500']"
+        >
+          <i class="fas fa-pen"></i>
+        </router-link>
+      <ul class="group-hover:opacity-100 absolute bottom-12 left-0 right-0 opacity-0 duration-200">
+        <li v-if="chatUtils.isUserIsOwner(chatData, currentUser?.id)" class="block mb-4 transform">
+          <button @click="openModal" class="transform scale-50 group-hover:scale-100 group-hover:-translate-y-4 transition duration-200 m-auto bg-red-500 rounded-full h-10 w-10 flex items-center justify-center focus:outline-none text-white shadow">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </li>
+      </ul>
+    </div>
+
   </div>
 </template>
 
@@ -24,29 +51,33 @@
 import {
   defineComponent, ref, computed, onBeforeUnmount, nextTick,
 } from 'vue';
-import api from '@/api';
-import Channel from '@/types/Channel';
-import ChannelMessage from '@/types/ChannelMessage';
-import ChatBox from '@/components/chat/ChatBox.vue';
+import { Socket } from 'socket.io-client';
 import { useStore } from '@/store';
 import { useRouter } from 'vue-router';
+import api from '@/api';
 import webSocketsApi from '@/websocketsApi';
-import Loader from '@/components/Loader.vue';
+import Channel from '@/types/Channel';
+import ChannelMessage from '@/types/ChannelMessage';
 import ChannelMember from '@/types/ChannelMember';
-import { Socket } from 'socket.io-client';
+import Loader from '@/components/Loader.vue';
+import ChatBox from '@/components/chat/ChatBox.vue';
+import * as chatUtils from '@/services/chatUtils';
+import Modal from '@/components/Modal.vue';
 
 export default defineComponent({
   name: 'ChatId',
-  components: { ChatBox, Loader },
+  components: { ChatBox, Loader, Modal },
   props: {
     requestChatId: String,
   },
   setup(props) {
-    const store = useStore();
     const router = useRouter();
+    const store = useStore();
     const currentUser = computed(() => store.getUser);
     const chatData = ref<Channel | undefined>();
     const chatBoxRef = ref<any>();
+
+    // Socket channel methods
 
     const sendMessage = (content: ChannelMessage['content']) => {
       if (!chatData.value || !chatData.value.messages) return;
@@ -108,6 +139,34 @@ export default defineComponent({
     };
     initChatSocket();
 
+    // Delete channel methods
+
+    const deleteChannel = () => {
+      if (!currentUser.value || !chatData.value || !chatUtils.isUserIsOwner(chatData.value, currentUser.value.id)) {
+        return;
+      }
+      api.channels.deleteChannelById(chatData.value.id)
+        .then(() => {
+          router.replace({ name: 'ChatList' });
+        });
+    };
+
+    const isModalOpen = ref(false);
+
+    const openModal = () => {
+      isModalOpen.value = true;
+    };
+
+    const closeModal = (canceled = true) => {
+      isModalOpen.value = false;
+      if (canceled) {
+        return;
+      }
+      deleteChannel();
+    };
+
+    // Get channel data methods
+
     const getChannelData = (channelId: Channel['id']) => {
       api.channels.getChannelById(channelId)
         .then((response) => {
@@ -131,10 +190,17 @@ export default defineComponent({
     }
 
     return {
-      sendMessage,
+      // Utils
+      chatUtils,
+      // Utils
       chatData,
       currentUser,
       chatBoxRef,
+      sendMessage,
+      // Delete Channel
+      isModalOpen,
+      openModal,
+      closeModal,
     };
   },
 });

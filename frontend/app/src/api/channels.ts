@@ -39,7 +39,7 @@ export default ($axios: AxiosInstance) => ({
   },
 
   editChannelById(channelId: Channel['id'], channelData: Channel) {
-    return $axios.patch(`${AUTH_BASE}/${channelId}`, { channelData });
+    return $axios.patch(`${AUTH_BASE}/${channelId}`, channelData);
   },
 
   deleteChannelById(channelId: Channel['id']) {
@@ -47,12 +47,12 @@ export default ($axios: AxiosInstance) => ({
   },
 
   // Channel's members routes
-  addChannelMembers(channelId: Channel['id'], memberData: ChannelMember) {
-    return $axios.post(`${AUTH_BASE}/${channelId}/members`, { memberData });
+  addChannelMembers(channelId: Channel['id'], memberUsername: string) {
+    return $axios.post(`${AUTH_BASE}/${channelId}/members`, memberUsername);
   },
 
-  editChannelMembers(memberId: ChannelMember['id'], memberData: ChannelMember) {
-    return $axios.patch(`${AUTH_BASE}/members/${memberId}`, { memberData });
+  editChannelMembers(memberId: ChannelMember['id'], isAdmin: ChannelMember['isAdmin']) {
+    return $axios.patch(`${AUTH_BASE}/members/${memberId}`, { isAdmin });
   },
 
   deleteChannelMembersById(memberId: ChannelMember['id']) {
@@ -73,8 +73,8 @@ export default ($axios: AxiosInstance) => ({
   },
 
   // Channel's restrictions routes
-  addChannelRestrictions(channelId: Channel['id'], restrictionData: ChannelRestriction) {
-    return $axios.post(`${AUTH_BASE}/${channelId}/restrictions`, { restrictionData });
+  addChannelRestrictions(channelId: Channel['id'], userId: User['id'], type: ChannelRestriction['type'], endAt?: ChannelRestriction['endAt']) {
+    return $axios.post(`${AUTH_BASE}/${channelId}/restrictions`, { userId, type, endAt });
   },
 
   editChannelRestrictions(restrictionId: ChannelRestriction['id'], restrictionData: ChannelRestriction) {

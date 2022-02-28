@@ -15,7 +15,7 @@
               <Modal :openStatus="modalData.isOpen" @close="closeModal()">
                 <template v-slot:title>Veuillez entrer le mot de passe:</template>
                 <template v-slot:content>
-                  <FormInput title="Mot de passe" type="password" v-model="modalData.password" :errors="modalData.errors" />
+                  <FormInput title="Mot de passe" name="password" type="password" v-model="modalData.password" :errors="modalData.errors" />
                 </template>
                 <template v-slot:actions>
                   <button @click="closeModal()" class="bg-orange-900 hover:bg-orange-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-sm rounded-lg tracking-wider">Annuler</button>
@@ -39,6 +39,7 @@
                       <i v-if="chatUtils.isUserIsMember(chat, currentUser?.id)" class="fa-solid fa-lock-open mr-2"></i>
                       <i v-else class="fa-solid fa-lock mr-2"></i>
                     </template>
+                    <i v-else-if="chat.isPrivate" class="fa-solid fa-eye-slash mr-2"></i>
                     <i v-else class="fa-solid fa-door-open mr-2"></i>
                     {{ chat.title }}
                   </li>
@@ -155,6 +156,10 @@ export default defineComponent({
     };
 
     const onChannelClick = (channel: Channel) => {
+      if (chatUtils.isUserBanned(channel, currentUser.value?.id)) {
+        alert('Vous êtes bannis de ce salon!');
+        return;
+      }
       if (modalData.value.isOpen && channel.password !== null) {
         return;
       }

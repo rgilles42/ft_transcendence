@@ -1,4 +1,13 @@
-import { Controller, Delete, Get, Param, UseGuards } from '@nestjs/common';
+import { updateMemberDto } from './../_dto/update-member.dto';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiNotFoundResponse,
@@ -20,6 +29,16 @@ export class MembersController {
   @Get()
   findAll(): Promise<MemberEntity[]> {
     return this.membersService.findAll();
+  }
+
+  @ApiOkResponse({ type: MemberEntity })
+  @ApiNotFoundResponse()
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateMemberDto: updateMemberDto,
+  ): Promise<MemberEntity> {
+    return this.membersService.update(+id, updateMemberDto);
   }
 
   @ApiOkResponse({ type: MemberEntity })

@@ -18,7 +18,7 @@
           </span>
 
           <div class="px-6 py-4 grid md:grid-flow-col gap-4 text-center">
-            <button class="bg-green-800 p-3 w-full focus:no-border">Créer un salon de discution</button>
+            <button class="bg-green-900 hover:bg-green-800 p-3 w-full focus:no-border">Créer un salon de discution</button>
           </div>
 
         </div>

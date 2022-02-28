@@ -43,6 +43,17 @@ export const isUserIsOwner = (chatData: Channel | null | undefined, userId: User
   return (chatData.ownerId === userId);
 };
 
+export const isUserIsAdmin = (chatData: Channel | null | undefined, userId: User['id'] | null | undefined) => {
+  if (userId === undefined || userId === null) return false;
+  if (!chatData) return false;
+  if (isUserIsOwner(chatData, userId)) return true;
+  const member = getMember(chatData, userId);
+  if (!member) {
+    return false;
+  }
+  return member.isAdmin;
+};
+
 export const isUserIsMember = (chatData: Channel | null | undefined, userId: User['id'] | null | undefined) => {
   if (userId === undefined || userId === null) return false;
   if (isUserIsOwner(chatData, userId)) return true;

@@ -8,6 +8,7 @@ import { UsersService } from 'src/users/users.service';
 import { MemberEntity } from 'src/_entities/channel-member.entity';
 import { Repository } from 'typeorm';
 import { memberDto } from '../_dto/member.dto';
+import { updateMemberDto } from './../_dto/update-member.dto';
 
 @Injectable()
 export class MembersService {
@@ -43,11 +44,29 @@ export class MembersService {
     }
   }
 
+  async update(
+    id: number,
+    updateMemberDto: updateMemberDto,
+  ): Promise<MemberEntity> {
+    let member: MemberEntity;
+    try {
+      member = await this.membersRepository.findOneOrFail(id);
+    } catch (err) {
+      throw new NotFoundException();
+    }
+    member.isAdmin = updateMemberDto.isAdmin;
+    try {
+      return await this.membersRepository.save(member);
+    } catch (err) {
+      throw new BadRequestException();
+    }
+  }
+
   async remove(id: number): Promise<MemberEntity> {
     try {
-      const message = await this.membersRepository.findOneOrFail(id);
+      const member = await this.membersRepository.findOneOrFail(id);
       this.membersRepository.delete(id);
-      return message;
+      return member;
     } catch (err) {
       throw new NotFoundException();
     }

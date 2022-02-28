@@ -25,9 +25,9 @@ export class RestrictionsService {
   ): Promise<RestrictionEntity> {
     const restriction = new RestrictionEntity();
     restriction.channelId = channelId;
-    restriction.userId = restrData.targetUserId;
+    restriction.userId = restrData.userId;
     restriction.type = restrData.type;
-    restriction.endAt = restrData.endDate;
+    restriction.endAt = restrData.endAt;
     try {
       return await this.restrictionRepository.save(restriction);
     } catch (err) {

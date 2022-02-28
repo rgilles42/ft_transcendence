@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsString, IsBoolean, IsOptional } from 'class-validator';
 
 export class updateChannelDto {
   @ApiProperty({ required: false })
@@ -7,10 +7,11 @@ export class updateChannelDto {
   title?: string;
 
   @ApiProperty({ required: false })
-  @IsString()
+  @IsBoolean()
   isPrivate?: boolean;
 
   @ApiProperty({ required: false })
+  @IsOptional()
   @IsString()
-  newPassword?: string;
+  password: string | null;
 }

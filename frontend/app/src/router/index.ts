@@ -8,7 +8,8 @@ import FortyTwo from '../views/auth/FortyTwo.vue';
 import Profile from '../views/Profile.vue';
 import Chat from '../views/chat/index.vue';
 import ChatCreate from '../views/chat/create.vue';
-import ChatId from '../views/chat/_id.vue';
+import ChatId from '../views/chat/_id/index.vue';
+import ChatIdEdit from '../views/chat/_id/edit.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -70,6 +71,15 @@ const routes: Array<RouteRecordRaw> = [
     path: '/chat/:requestChatId',
     name: 'ChatId',
     component: ChatId,
+    props: true,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/chat/:requestChatId/edit',
+    name: 'ChatIdEdit',
+    component: ChatIdEdit,
     props: true,
     meta: {
       requiresAuth: true,

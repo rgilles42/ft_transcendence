@@ -46,7 +46,7 @@ export class RestrictionEntity {
   type: restrictionType;
 
   @ApiProperty()
-  @Column()
+  @Column({ nullable: true })
   endAt: Date;
 
   @ApiProperty()

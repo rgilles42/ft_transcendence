@@ -1,4 +1,3 @@
-import { UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNotEmpty } from 'class-validator';
 

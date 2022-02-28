@@ -28,12 +28,9 @@ import { messageDto } from './_dto/message.dto';
 import { restrictionDto } from './_dto/restriction.dto';
 import { MemberEntity } from 'src/_entities/channel-member.entity';
 import { memberDto } from './_dto/member.dto';
-import { ValidationPipe } from '@nestjs/common';
-import { UsePipes } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @ApiTags('channels')
-@UsePipes(new ValidationPipe())
 @Controller('channels')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('access_token')

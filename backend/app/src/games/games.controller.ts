@@ -1,5 +1,3 @@
-import { ValidationPipe } from '@nestjs/common';
-import { UsePipes } from '@nestjs/common';
 import {
   Body,
   Controller,
@@ -21,7 +19,6 @@ import { GamesService } from './games.service';
 import { createGameDto } from './_dto/create-game.dto';
 
 @ApiTags('games')
-@UsePipes(new ValidationPipe())
 @ApiBearerAuth('access_token')
 @UseGuards(JwtAuthGuard)
 @Controller('games')

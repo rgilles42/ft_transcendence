@@ -39,6 +39,14 @@ export default defineComponent({
   setup(props, { emit }) {
     const currentValue = ref(props.modelValue);
 
+    watch(
+      () => props.modelValue,
+      () => {
+        currentValue.value = props.modelValue;
+      },
+      { immediate: true },
+    );
+
     const getCurrentErrors = () => {
       const errors: string[] = [];
       if (!props.errors || !props.name || !props.errors[props.name]) {

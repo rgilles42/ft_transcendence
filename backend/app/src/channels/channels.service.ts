@@ -118,20 +118,21 @@ export class ChannelsService {
           (member) => member.userId === userId && member.isAdmin === true,
         )
       )
-    )
+    ) {
       throw new ForbiddenException();
+    }
+    if (updateChannelData.title !== undefined)
+      channel.title = updateChannelData.title;
+    if (updateChannelData.isPrivate !== undefined)
+      channel.isPrivate = updateChannelData.isPrivate;
+    if (updateChannelData.password !== undefined)
+      channel.password = updateChannelData.password;
     try {
-      if (updateChannelData.title !== undefined)
-        channel.title = updateChannelData.title;
-      if (updateChannelData.isPrivate !== undefined)
-        channel.isPrivate = updateChannelData.isPrivate;
-      if (updateChannelData.newPassword !== undefined)
-        channel.password = updateChannelData.newPassword;
-      try {
-        await this.channelsRepository.save(channel);
-      } catch (err) {
-        throw new BadRequestException();
-      }
+      await this.channelsRepository.save(channel);
+    } catch (err) {
+      throw new BadRequestException();
+    }
+    try {
       return this.channelsRepository.findOneOrFail(id);
     } catch (err) {
       throw new NotFoundException();
@@ -279,8 +280,11 @@ export class ChannelsService {
         (channel.password !== null &&
           channel.password !== undefined &&
           channel.password !== memberData.password))
-    )
-      throw new ForbiddenException();
+    ) {
+      throw new BadRequestException({
+        errors: { password: ['Mot de passe incorrect!'] },
+      });
+    }
     let allowSetMemberPerms = false;
     if (
       (channel.ownerId === issuerId ||
