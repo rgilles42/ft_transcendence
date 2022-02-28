@@ -10,6 +10,9 @@ import Chat from '../views/chat/index.vue';
 import ChatCreate from '../views/chat/create.vue';
 import ChatId from '../views/chat/_id/index.vue';
 import ChatIdEdit from '../views/chat/_id/edit.vue';
+import GameIndex from '../views/game/index.vue';
+import GamePlay from '../views/game/play.vue';
+import GameSpectator from '../views/game/spectator.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -85,14 +88,30 @@ const routes: Array<RouteRecordRaw> = [
       requiresAuth: true,
     },
   },
-  // {
-  //   path: '/about',
-  //   name: 'About',
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
-  // },
+  {
+    path: '/game',
+    name: 'GameIndex',
+    component: GameIndex,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/game/play',
+    name: 'GamePlay',
+    component: GamePlay,
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/game/spectator',
+    name: 'GameSpectator',
+    component: GameSpectator,
+    meta: {
+      requiresAuth: true,
+    },
+  },
 ];
 
 const router = createRouter({

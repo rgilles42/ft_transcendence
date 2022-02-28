@@ -26,6 +26,30 @@
               </router-link >
             </li>
 
+            <li class="py-1 rounded-sm mb-0.5 last:mb-0">
+              <router-link
+                :to="{ name: 'ChatList' }"
+                class="nav-link m-0 block px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:bg-gray-700"
+                role="menuitem"
+              >
+                <div class="flex flex-grow">
+                  <span class="text-sm font-medium">Chat</span>
+                </div>
+              </router-link >
+            </li>
+
+            <li class="py-1 rounded-sm mb-0.5 last:mb-0">
+              <router-link
+                :to="{ name: 'GameIndex' }"
+                class="nav-link m-0 block px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out hover:bg-gray-700 focus:outline-none focus:bg-gray-700"
+                role="menuitem"
+              >
+                <div class="flex flex-grow">
+                  <span class="text-sm font-medium">Pong !</span>
+                </div>
+              </router-link >
+            </li>
+
           </ul>
 
         </div>

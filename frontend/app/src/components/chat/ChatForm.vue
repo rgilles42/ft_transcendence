@@ -1,5 +1,5 @@
 <template>
-  <div class="flex sm:items-center justify-between px-3 border-t border-gray-700">
+  <div class="flex items-center justify-between px-3 border-t border-gray-700">
     <input
       type="text"
       placeholder="Message"
