@@ -53,11 +53,27 @@ export class GamesService {
     return newGame;
   }
 
+  async updateScore(
+    id: number,
+    player1score: number,
+    player2score: number,
+  ): Promise<void> {
+    try {
+      await this.gamesRepository.findOneOrFail(id);
+      await this.gamesRepository.update(id, {
+        player1score,
+        player2score,
+      });
+    } catch (err) {
+      throw new NotFoundException();
+    }
+  }
+
   async remove(id: number): Promise<GameEntity> {
     try {
-      const user = await this.gamesRepository.findOneOrFail(id);
+      const game = await this.gamesRepository.findOneOrFail(id);
       this.gamesRepository.delete(id);
-      return user;
+      return game;
     } catch (err) {
       throw new NotFoundException();
     }
