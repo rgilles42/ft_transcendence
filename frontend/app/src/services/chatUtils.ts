@@ -1,6 +1,6 @@
 import Channel from '@/types/Channel';
 import User from '@/types/User';
-import { compareAscDateFns } from './formater';
+import { compareAscDateFns, parseDate } from './formater';
 
 export const getChatMembers = (chatData: Channel | null | undefined) => {
   if (!chatData || !chatData.members) return [];
@@ -67,7 +67,7 @@ export const isUserMuted = (chatData: Channel | null | undefined, userId: User['
     if ((userId !== restrictedUser.userId)) return false;
     if (restrictedUser.type !== 0) return false;
     if (restrictedUser.endAt === null) return true;
-    return (compareAscDateFns(currentDate, restrictedUser.endAt) <= 0);
+    return (compareAscDateFns(currentDate, parseDate(restrictedUser.endAt)) <= 0);
   });
 };
 
@@ -78,7 +78,7 @@ export const isUserBanned = (chatData: Channel | null | undefined, userId: User[
     if ((userId !== restrictedUser.userId)) return false;
     if (restrictedUser.type !== 1) return false;
     if (restrictedUser.endAt === null) return true;
-    return (compareAscDateFns(currentDate, restrictedUser.endAt) <= 0);
+    return (compareAscDateFns(currentDate, parseDate(restrictedUser.endAt)) <= 0);
   });
 };
 

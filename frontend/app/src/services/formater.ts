@@ -44,7 +44,7 @@ export const parseDate = (date: any): Date => {
     // For timestamp date
     newDate = new Date(newDate * 1000);
   }
-  if (!isValidDate(date)) {
+  if (!isValidDate(newDate)) {
     // Default return date if date is not valid
     newDate = new Date();
   }

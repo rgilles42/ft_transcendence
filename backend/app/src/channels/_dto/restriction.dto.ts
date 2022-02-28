@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsInt, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class restrictionDto {
   @ApiProperty()
@@ -13,7 +13,6 @@ export class restrictionDto {
   type: number;
 
   @ApiProperty({ type: Date })
-  @IsDate()
   @IsOptional()
   endAt?: Date | null;
 }

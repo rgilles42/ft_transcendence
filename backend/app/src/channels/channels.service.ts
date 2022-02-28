@@ -197,7 +197,7 @@ export class ChannelsService {
     }
     if (
       channel.members.some((member) => member.userId === userId) &&
-      !channel.restrictions.some((restr) => restr.user.id === userId)
+      !channel.restrictions.some((restr) => restr.userId === userId)
     ) {
       try {
         return await this.messagesService.create(

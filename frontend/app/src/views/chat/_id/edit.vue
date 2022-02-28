@@ -117,6 +117,7 @@
                     </template>
                   </FormSelect>
                   <FormSelect title="Sanction" v-model="restrictChannelMemberTypeData" :options="restrictTypes" required/>
+                  <Datepicker v-model="restrictChannelMemberEndAtData" :dark="true" />
                 </div>
 
                 <span v-if="restrictChannelMemberDataErrors.global && restrictChannelMemberDataErrors.global.length > 0" class="flex items-center font-medium tracking-wide text-red-500 text-xs ml-1">
@@ -326,6 +327,7 @@ export default defineComponent({
 
     const restrictChannelMemberData = ref<ChannelMember>({ ...DEFAULT_CHANNEL_MEMBER });
     const restrictChannelMemberTypeData = ref(restrictTypes[0]);
+    const restrictChannelMemberEndAtData = ref<Date | null>(null);
     const restrictChannelMemberDataErrors = ref<any>({});
 
     const restrictChannelMember = () => {
@@ -337,7 +339,7 @@ export default defineComponent({
         return;
       }
       const type = restrictTypes.findIndex((find) => find === restrictChannelMemberTypeData.value);
-      api.channels.addChannelRestrictions(editChannelData.value.id, restrictChannelMemberData.value.userId, type, null)
+      api.channels.addChannelRestrictions(editChannelData.value.id, restrictChannelMemberData.value.userId, type, restrictChannelMemberEndAtData.value)
         .then(() => {
           router.push({ name: 'ChatId', params: { id: props.requestChatId } });
         })
@@ -403,6 +405,7 @@ export default defineComponent({
       restrictTypes,
       restrictChannelMemberData,
       restrictChannelMemberTypeData,
+      restrictChannelMemberEndAtData,
       restrictChannelMemberDataErrors,
       restrictChannelMember,
       // Delete Restrict channel Member

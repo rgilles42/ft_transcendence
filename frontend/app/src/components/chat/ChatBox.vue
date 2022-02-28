@@ -2,12 +2,14 @@
   <div v-if="chatData" class="flex flex-col flex-1 p-2 sm:p-6 justify-between bg-gray-800">
     <ChatHeader :chatTitle="chatData.title" />
     <ChatMessages :messages="chatMessages" :chatData="chatData" :me="me" ref="chatMessagesRef"></ChatMessages>
-    <ChatForm @submitMessage="sendMessage" :disabled="chatUtils.isUserMuted(chatData, me?.id)"></ChatForm>
+    <ChatForm @submitMessage="sendMessage" :disabled="isUserMuted"></ChatForm>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref } from 'vue';
+import {
+  defineComponent, computed, ref, watch,
+} from 'vue';
 import ChatMessages from '@/components/chat/ChatMessages.vue';
 import ChatForm from '@/components/chat/ChatForm.vue';
 import ChannelMessage from '@/types/ChannelMessage';
@@ -44,12 +46,29 @@ export default defineComponent({
       });
     });
 
+    const isUserMuted = ref(chatUtils.isUserMuted(props.chatData, props.me?.id));
+
+    const mutedLoop = () => {
+      let mutedInterval: number | null = setInterval(() => {
+        isUserMuted.value = chatUtils.isUserMuted(props.chatData, props.me?.id);
+        if (mutedInterval !== null && !isUserMuted.value) {
+          clearInterval(mutedInterval);
+          mutedInterval = null;
+        }
+      }, 1000);
+    };
+
+    if (isUserMuted.value) {
+      mutedLoop();
+    }
+
     return {
       sendMessage,
       chatUtils,
       chatMessagesRef,
       chatMessages,
       scrollToBottom,
+      isUserMuted,
     };
   },
 });
