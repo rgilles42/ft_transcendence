@@ -37,7 +37,7 @@ export class GameEntity {
 
   @ApiProperty()
   @Column()
-  player1score: number;
+  player1Score: number;
 
   @ApiProperty()
   @Column({ nullable: false })
@@ -48,13 +48,13 @@ export class GameEntity {
 
   @ApiProperty()
   @Column()
-  player2score: number;
+  player2Score: number;
 
   @ApiProperty({ type: () => Date })
   @CreateDateColumn()
   createdAt: Date;
 
   @ApiProperty({ type: () => Date })
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @Column()
+  endAt: Date;
 }

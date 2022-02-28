@@ -26,9 +26,9 @@ export default ($axios: AxiosInstance) => ({
 
   getUserByComplex(userComplex: User['id'] | User['username']) {
     if (!Number.isNaN(+userComplex)) {
-      return $axios.get(`${USERS_BASE}/${+userComplex}`);
+      return $axios.get(`${USERS_BASE}/${+userComplex}`, { params: { include: 'games' } });
     }
-    return $axios.get(`${USERS_BASE}/${userComplex}`);
+    return $axios.get(`${USERS_BASE}/${userComplex}`, { params: { include: 'games' } });
   },
 
   getMyUser() {

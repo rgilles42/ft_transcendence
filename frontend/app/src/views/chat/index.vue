@@ -29,7 +29,7 @@
                   <h3 class="tracking-wide font-semibold text-lg">Il n'y a aucune conversation... :'(</h3>
 
                   <div class="py-1 mb-0.5">
-                    <img src="noOne.gif" alt="Is there anybody out there?" />
+                    <img src="/noOne.gif" alt="Is there anybody out there?" />
                   </div>
                 </div>
                 <ul v-else class="divide-y-2 divide-gray-600">

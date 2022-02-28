@@ -37,9 +37,9 @@ export class GamesService {
       createGameData.player2Id,
     );
     if (createGameData.player1Score !== undefined)
-      newGame.player1score = createGameData.player1Score;
+      newGame.player1Score = createGameData.player1Score;
     if (createGameData.player2Score !== undefined)
-      newGame.player2score = createGameData.player2Score;
+      newGame.player2Score = createGameData.player2Score;
     try {
       await this.gamesRepository.save(newGame);
     } catch (err){

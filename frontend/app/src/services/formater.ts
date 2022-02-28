@@ -4,7 +4,9 @@ import {
   parseISO as parseISODateFns,
   isEqual as isEqualDateFns,
   compareAsc as compareAscDateFns,
+  formatDistance as formatDistanceDateFns,
 } from 'date-fns';
+import { fr } from 'date-fns/esm/locale';
 
 export const numberFormatter = new Intl.NumberFormat('en-US', {
   minimumFractionDigits: 0,
@@ -52,6 +54,7 @@ export const parseDate = (date: any): Date => {
 };
 
 export const formatDate = (date: any, format: string): string => formatDateFns(parseDate(date), format);
+export const formatDistance = (date: any, baseDate: any, options?: any): string => formatDistanceDateFns(parseDate(date), parseDate(baseDate), { locale: fr, ...options });
 
 export {
   formatDateFns,
@@ -59,6 +62,7 @@ export {
   parseISODateFns,
   isEqualDateFns,
   compareAscDateFns,
+  formatDistanceDateFns,
 };
 
 export default {
@@ -73,4 +77,6 @@ export default {
   parseISODateFns,
   isEqualDateFns,
   compareAscDateFns,
+  formatDistance,
+  formatDistanceDateFns,
 };
