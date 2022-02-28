@@ -10,23 +10,19 @@ import {
 } from 'typeorm';
 import { UserEntity } from './user.entity';
 
-export enum gameType {
-  NORMAL = 0,
-  ENHANCED = 1,
-}
-
 @Entity({ name: 'games' })
 export class GameEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({ enum: gameType })
-  @Column({
-    type: 'enum',
-    enum: gameType,
-  })
-  type: gameType;
+  @ApiProperty()
+  @Column()
+  map: string;
+
+  @ApiProperty()
+  @Column('text', { array: true, default: [] })
+  powerUps: string[];
 
   @ApiProperty()
   @Column({ nullable: false })

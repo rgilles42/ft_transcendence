@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GameEntity } from 'src/_entities/game.entity';
 import { UserEntity } from 'src/_entities/user.entity';
@@ -29,7 +33,8 @@ export class GamesService {
   }
   async create(createGameData: createGameDto): Promise<GameEntity> {
     const newGame = new GameEntity();
-    newGame.type = createGameData.type;
+    newGame.map = createGameData.map;
+    newGame.powerUps = createGameData.powerUps;
     newGame.player1 = await this.usersRepository.findOneOrFail(
       createGameData.player1Id,
     );
@@ -42,7 +47,7 @@ export class GamesService {
       newGame.player2score = createGameData.player2Score;
     try {
       await this.gamesRepository.save(newGame);
-    } catch (err){
+    } catch (err) {
       throw new BadRequestException();
     }
     return newGame;
