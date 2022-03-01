@@ -15,6 +15,7 @@ USER root
 
 # Init
 RUN apk update --no-cache && apk upgrade --no-cache
+RUN apk add openssl --no-cache
 
 WORKDIR /home/node
 
@@ -25,6 +26,12 @@ COPY ./app/ app/
 WORKDIR /home/node/app/
 RUN npm install
 RUN npm run build
+
+
+RUN mkdir -p /etc/ssl/private/
+RUN mkdir -p /etc/ssl/certs/
+RUN openssl req -newkey rsa:4096 -x509 -days 365 -nodes -keyout /etc/ssl/private/key.pem -out /etc/ssl/certs/cert.pem -subj "/C=FR/ST=Paris/L=Paris/O=42Paris/OU=School/CN=localhost"
+
 
 # Redirect port
 EXPOSE 3000

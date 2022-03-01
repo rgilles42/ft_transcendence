@@ -1,5 +1,5 @@
 import { configService } from 'src/config/config.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/_entities/user.entity';
 import { Repository } from 'typeorm';
@@ -59,6 +59,11 @@ export class TwoFactorAuthService {
   }
 
   public async verifyTwoFaCode(code: string, user: UserEntity) {
+    if (user.twoFactorAuthSecret === undefined || user.twoFactorAuthSecret === null) {
+      throw new BadRequestException({
+        errors: { code: ['You must generate the QR code before!'] },
+      });
+    }
     return authenticator.verify({
       token: code,
       secret: user.twoFactorAuthSecret,

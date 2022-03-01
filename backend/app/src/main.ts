@@ -5,9 +5,22 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import { validationFilter } from './validations/validation.filter';
 import { validationPipe } from './validations/validation.pipe';
+import * as fs from 'fs';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+
+  let httpsOptions = undefined;
+
+  if (configService.isProduction()) {
+    httpsOptions = {
+      key: fs.readFileSync('/etc/ssl/private/key.pem'),
+      cert: fs.readFileSync('/etc/ssl/certs/cert.pem'),
+    }
+  }
+
+  const app = await NestFactory.create(AppModule, {
+    httpsOptions,
+  });
 
   app.enableCors(configService.getCorsConfig());
 
