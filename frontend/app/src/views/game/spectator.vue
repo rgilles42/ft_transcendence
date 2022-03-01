@@ -2,10 +2,12 @@
   <div v-if="!gameData">
     <Loader />
   </div>
-  <div v-else>
+  <div v-else class="container mx-auto minInherit">
     <div class="w-full bg-gray-800">
       <div class="text-center">{{ gameData.entity?.player1Score }} - {{ gameData.entity?.player2Score }}</div>
-      <canvas ref="gameCanvas" class="m-auto" width="500" height="500"></canvas>
+      <div>
+        <canvas ref="gameCanvas" class="m-auto" :width="screenInfo.w * 0.5" :height="screenInfo.h* 0.5"></canvas>
+      </div>
     </div>
   </div>
 </template>
@@ -19,6 +21,7 @@ import { Socket } from 'socket.io-client';
 import { GameObject } from '@/types/Game';
 import { useRouter } from 'vue-router';
 import Loader from '@/components/Loader.vue';
+import { screenInfo } from '@/services/screenBreakPoint';
 
 export default defineComponent({
   name: 'GameSpectator',
@@ -116,7 +119,14 @@ export default defineComponent({
     return {
       gameCanvas,
       gameData,
+      screenInfo,
     };
   },
 });
 </script>
+
+<style scoped>
+  .minInherit {
+    min-height: inherit;
+  }
+</style>
