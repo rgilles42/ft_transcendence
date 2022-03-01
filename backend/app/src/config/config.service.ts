@@ -1,4 +1,5 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { StorageOptions } from '@squareboat/nest-storage';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
@@ -20,12 +21,28 @@ class ConfigService {
     return this;
   }
 
+  public getAppName() {
+    return this.getValue('APP_NAME', false);
+  }
+
   public getAppEnv() {
     return this.getValue('APP_ENV', false);
   }
 
   public isProduction() {
     return ['production', 'prod'].includes(this.getAppEnv());
+  }
+
+  public getCorsConfig() {
+    return {
+      origin: [
+        'http://localhost:8080',
+        'http://127.0.0.1:8080',
+        'https://localhost:8080',
+        'https://127.0.0.1:8080',
+      ],
+      credentials: true,
+    };
   }
 
   public getTypeOrmConfig(): TypeOrmModuleOptions {
@@ -38,7 +55,7 @@ class ConfigService {
       username: this.getValue('DB_USERNAME'),
       password: this.getValue('DB_PASSWORD'),
 
-      entities: ['dist/entities/**/*.entity.{ts,js}'],
+      entities: ['dist/_entities/**/*.entity.{ts,js}'],
 
       migrationsTableName: 'migrations',
 
@@ -48,7 +65,47 @@ class ConfigService {
         migrationsDir: 'src/migrations',
       },
 
-      ssl: this.isProduction(),
+      ssl: false, // this.isProduction(),
+      synchronize: !this.isProduction(),
+    };
+  }
+
+  public getFortyTwoStrategyConfig() {
+    return {
+      clientID: this.getValue('FORTY_TWO_CLIENT_ID'),
+      clientSecret: this.getValue('FORTY_TWO_CLIENT_SECRET_ID'),
+      callbackURL: 'http://127.0.0.1:3000/auth/42/callback',
+    };
+  }
+
+  public getJwtConfig() {
+    return {
+      secret: this.getValue('JWT_SECRET'),
+      accessToken: {
+        maxAge: 60 * 60 * 1, // 1 hour
+        httpOnly: true,
+        secure: true,
+        sameSite: 'None',
+      },
+      refreshToken: {
+        maxAge: 60 * 60 * 24 * 30, // 30 days
+        httpOnly: true,
+        secure: true,
+        sameSite: 'None',
+        path: '/auth/refresh',
+      },
+    };
+  }
+
+  public getStorageConfig(): StorageOptions {
+    return {
+      default: 'local',
+      disks: {
+        local: {
+          driver: 'local',
+          basePath: './uploads/', // fully qualified path of the folder
+        },
+      },
     };
   }
 }

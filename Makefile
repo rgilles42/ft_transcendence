@@ -18,7 +18,7 @@ COMPOSE_FILE	=	${COMPOSE_DIR}/docker-compose.yml
 
 COMPOSE_CMD		=	-f ${COMPOSE_FILE}
 
-ENV_FILE		=	${COMPOSE_DIR}/.env
+ENV_FILE		=	.env
 
 ifneq (,$(wildcard ${ENV_FILE}))
  include ${ENV_FILE}
@@ -104,6 +104,9 @@ initEnv: ## Create the .env and fill default fields (Warning: this will overwrit
 	@sed -i 's|£POSTGRES_DB|${POSTGRES_DB}|g' ${ENV_FILE}
 	@sed -i 's|£POSTGRES_USER|${POSTGRES_USER}|g' ${ENV_FILE}
 	@sed -i 's|£POSTGRES_PASSWORD|${POSTGRES_PASSWORD}|g' ${ENV_FILE}
+
+	@cp ./backend/app/.env.example ./backend/app/.env
+	@cp ./frontend/app/.env.example ./frontend/app/.env
 
 	@echo "${_CYAN}Don't forget to manualy change .env values${_END}"
 	@echo "${_BLUE}[Init .env done!]${_END}"

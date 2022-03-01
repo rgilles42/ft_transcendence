@@ -18,13 +18,17 @@ RUN apk update --no-cache && apk upgrade --no-cache
 
 WORKDIR /home/node
 
+RUN npm install @nestjs/cli -g
+
 # NestJS Setup
 COPY ./app/ app/
 WORKDIR /home/node/app/
 RUN npm install
+RUN npm run build
 
 # Redirect port
 EXPOSE 3000
 
 # Start
-ENTRYPOINT ["npm", "run", "start:prod"]
+COPY ./tools/ ./tools/
+ENTRYPOINT ["/bin/sh", "tools/entrypoint.sh"]
