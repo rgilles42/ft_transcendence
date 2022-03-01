@@ -1,26 +1,9 @@
-import { ValidationPipe } from '@nestjs/common';
-import { UsePipes } from '@nestjs/common';
 import { Controller, Delete, Get, Param, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiCreatedResponse,
-  ApiOkResponse,
-  ApiTags,
-} from '@nestjs/swagger';
 import { JwtTwoFaAuthGuard } from 'src/auth/guards/jwt-2fa-auth.guard';
 import { GameEntity } from 'src/_entities/game.entity';
 import { GamesService } from './games.service';
+
 @ApiTags('games')
 @ApiBearerAuth('access_token')
 @UseGuards(JwtTwoFaAuthGuard)
