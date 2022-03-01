@@ -235,8 +235,8 @@ export class GameGateway
           Math.random() * 0.2 - 0.1,
           Math.random() * 0.2 - 0.1,
         );
-        game.ball.xSpeed = normalisedSpeed.x;
-        game.ball.ySpeed = normalisedSpeed.y;
+        game.ball.xSpeed = 0.1 * normalisedSpeed.x;
+        game.ball.ySpeed = 0.1 * normalisedSpeed.y;
         game.state = GameState.RUNNING;
       }
     } else if (game.state === GameState.RUNNING) {
@@ -262,8 +262,10 @@ export class GameGateway
             hitPosGradient < 0 ? -(1 + hitPosGradient) : -(1 - hitPosGradient),
             hitPosGradient,
           );
-          game.ball.xSpeed = (1 + hitPosGradient) * normalisedSpeed.x;
-          game.ball.ySpeed = (1 + hitPosGradient) * normalisedSpeed.y;
+          game.ball.xSpeed =
+            (1 + Math.abs(hitPosGradient)) * 0.1 * normalisedSpeed.x;
+          game.ball.ySpeed =
+            (1 + Math.abs(hitPosGradient)) * 0.1 * normalisedSpeed.y;
         } else {
           game.entity.player1score++;
           game.ball.xPos = 0.5;
@@ -272,8 +274,8 @@ export class GameGateway
             Math.random() * 0.1,
             Math.random() * 0.2 - 0.1,
           );
-          game.ball.xSpeed = normalisedSpeed.x;
-          game.ball.ySpeed = normalisedSpeed.y;
+          game.ball.xSpeed = 0.1 * normalisedSpeed.x;
+          game.ball.ySpeed = 0.1 * normalisedSpeed.y;
         }
       }
       if (game.ball.xPos - game.ball.size / 2 <= 0) {
@@ -288,8 +290,10 @@ export class GameGateway
             hitPosGradient < 0 ? 1 + hitPosGradient : 1 - hitPosGradient,
             hitPosGradient,
           );
-          game.ball.xSpeed = (1 + hitPosGradient) * normalisedSpeed.x;
-          game.ball.ySpeed = (1 + hitPosGradient) * normalisedSpeed.y;
+          game.ball.xSpeed =
+            (1 + Math.abs(hitPosGradient)) * 0.1 * normalisedSpeed.x;
+          game.ball.ySpeed =
+            (1 + Math.abs(hitPosGradient)) * 0.1 * normalisedSpeed.y;
         } else {
           game.entity.player2score++;
           game.ball.xPos = 0.5;
@@ -298,8 +302,8 @@ export class GameGateway
             Math.random() * -0.1,
             Math.random() * 0.2 - 0.1,
           );
-          game.ball.xSpeed = normalisedSpeed.x;
-          game.ball.ySpeed = normalisedSpeed.y;
+          game.ball.xSpeed = 0.1 * normalisedSpeed.x;
+          game.ball.ySpeed = 0.1 * normalisedSpeed.y;
         }
       }
       this.server.in(game.entity.id.toString()).emit('updateGame', game);
