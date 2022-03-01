@@ -55,14 +55,14 @@ export class GamesService {
 
   async updateScore(
     id: number,
-    player1score: number,
-    player2score: number,
+    player1Score: number,
+    player2Score: number,
   ): Promise<void> {
     try {
       await this.gamesRepository.findOneOrFail(id);
       await this.gamesRepository.update(id, {
-        player1score,
-        player2score,
+        player1Score,
+        player2Score,
       });
     } catch (err) {
       throw new NotFoundException();

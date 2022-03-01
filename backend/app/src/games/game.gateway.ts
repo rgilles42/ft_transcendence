@@ -267,7 +267,7 @@ export class GameGateway
           game.ball.ySpeed =
             (1 + Math.abs(hitPosGradient)) * 0.1 * normalisedSpeed.y;
         } else {
-          game.entity.player1score++;
+          game.entity.player1Score++;
           game.ball.xPos = 0.5;
           game.ball.yPos = Math.random();
           const normalisedSpeed = normalise(
@@ -295,7 +295,7 @@ export class GameGateway
           game.ball.ySpeed =
             (1 + Math.abs(hitPosGradient)) * 0.1 * normalisedSpeed.y;
         } else {
-          game.entity.player2score++;
+          game.entity.player2Score++;
           game.ball.xPos = 0.5;
           game.ball.yPos = Math.random();
           const normalisedSpeed = normalise(
@@ -307,7 +307,7 @@ export class GameGateway
         }
       }
       this.server.in(game.entity.id.toString()).emit('updateGame', game);
-      if (game.entity.player1score == 11 || game.entity.player2score == 11)
+      if (game.entity.player1Score == 11 || game.entity.player2Score == 11)
         game.state = GameState.FINISHED;
     }
   }
@@ -352,8 +352,8 @@ export class GameGateway
     }, 16);
     await this.gamesService.updateScore(
       newGame.id,
-      gameObject.entity.player1score,
-      gameObject.entity.player2score,
+      gameObject.entity.player1Score,
+      gameObject.entity.player2Score,
     );
     this.server.in(newGame.id.toString()).disconnectSockets(true);
   }
