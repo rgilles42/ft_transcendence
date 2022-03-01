@@ -34,7 +34,6 @@ export class GamesService {
   async create(createGameData: createGameDto): Promise<GameEntity> {
     const newGame = new GameEntity();
     newGame.map = createGameData.map;
-    newGame.powerUps = createGameData.powerUps;
     newGame.player1 = await this.usersRepository.findOneOrFail(
       createGameData.player1Id,
     );

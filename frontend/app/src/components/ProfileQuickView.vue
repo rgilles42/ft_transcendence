@@ -9,7 +9,7 @@
         <p v-if="user.activity" class="text-base text-gray-400 font-normal">{{ user.activity }}</p>
       </div>
       <button @click="sendPrivateMessage" class="btn bg-green-900 p-2 rounded-sm text-white mb-2">Envoyer un message</button>
-      <button class="btn bg-orange-900 p-2 rounded-sm text-white">Provoquer en duel !</button>
+      <button @click="sendGameInvitation" class="btn bg-orange-900 p-2 rounded-sm text-white">Provoquer en duel !</button>
     </div>
   </div>
 </template>
@@ -19,6 +19,7 @@ import { defineComponent } from 'vue';
 import User from '@/types/User';
 import api from '@/api';
 import { useRouter } from 'vue-router';
+import websocketsApi from '@/websocketsApi';
 import AccountAvatar from './AccountAvatar.vue';
 
 export default defineComponent({
@@ -29,6 +30,7 @@ export default defineComponent({
   },
   setup(props) {
     const router = useRouter();
+
     const sendPrivateMessage = () => {
       if (!props.user) {
         return;
@@ -39,8 +41,17 @@ export default defineComponent({
         });
     };
 
+    const sendGameInvitation = () => {
+      if (!props.user) {
+        return;
+      }
+      websocketsApi.usersStatus.emitInvitationForGame(props.user.id, 'Pong Original');
+      router.push({ name: 'GameList' });
+    };
+
     return {
       sendPrivateMessage,
+      sendGameInvitation,
     };
   },
 });

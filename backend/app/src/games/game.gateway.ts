@@ -101,7 +101,7 @@ export class GameGateway
           throw new UnauthorizedException('User not found');
         }
         newClient.data.user = user;
-        newClient.data.desiredGameParams = { map: '', powerUps: [] };
+        newClient.data.desiredGameParams = { map: '' };
         next();
       } catch (err) {
         next(err);
@@ -163,7 +163,6 @@ export class GameGateway
     @ConnectedSocket() client: Socket,
     @MessageBody('invitingPlayerId') invitingPlayerId: number,
     @MessageBody('map') map: string,
-    @MessageBody('powerUps') powerUps: string[],
   ) {
     const results = (await this.server.fetchSockets()).filter(
       (socket) => socket.data.user.id === invitingPlayerId,
@@ -171,7 +170,7 @@ export class GameGateway
     if (results.length === 0) {
       throw new BadRequestException('Inviting user is disconnected');
     }
-    this.launchGame(results[0], client, map, powerUps);
+    this.launchGame(results[0], client, map);
   }
 
   equalsIgnoreOrder(a: any[], b: any[]) {
@@ -185,23 +184,17 @@ export class GameGateway
     return true;
   }
 
-  evalGameParams(
-    requestedParams: { map: string; powerUps: string[] },
-    param: { map: string; powerUps: string[] },
-  ) {
-    if (requestedParams.map !== param.map) {
-      return false;
-    }
-    return this.equalsIgnoreOrder(requestedParams.powerUps, param.powerUps);
+  evalGameParams(requestedParams: { map: string }, param: { map: string }) {
+    return requestedParams.map === param.map;
   }
 
   @SubscribeMessage('joinMatchmaking')
   async joinMatchmaking(
     @ConnectedSocket() client: Socket,
     @MessageBody('map') map: string,
-    @MessageBody('powerUps') powerUps: string[],
   ) {
-    client.data.desiredGameParams = { map, powerUps };
+    console.log(`client join Mathing ${client.id}`);
+    client.data.desiredGameParams = { map };
     client.join('lobby');
     const waitingClients = await this.server.in('lobby').fetchSockets();
     const matches = waitingClients.filter(
@@ -215,7 +208,7 @@ export class GameGateway
     if (matches.length > 0) {
       client.leave('lobby');
       matches[0].leave('lobby');
-      this.launchGame(matches[0], client, map, powerUps);
+      this.launchGame(matches[0], client, map);
     }
   }
 
@@ -288,39 +281,45 @@ export class GameGateway
   }
 
   async gameLoop(game: GameObject) {
+    let defaultRacketSpeed = 0.01;
+    let defaultBallSpeed = 0.05;
+
+    if (game.entity.map === 'Expert') {
+      defaultRacketSpeed = 0.008;
+      defaultBallSpeed = 0.08;
+    }
+
     if (game.state === GameState.STARTING) {
       if (game.player1Ready && game.player2Ready) {
         game.ball.size = 0.02;
         game.ball.xPos = 0.5;
         game.ball.yPos = Math.random();
         const normalisedSpeed = normalise(
-          Math.random() * 0.2 - 0.1,
-          Math.random() * 0.2 - 0.1,
+          Math.random() * 0.2 - 0.05,
+          Math.random() * 0.2 - 0.05,
         );
-        game.ball.xSpeed = 0.1 * normalisedSpeed.x;
-        game.ball.ySpeed = 0.1 * normalisedSpeed.y;
+        game.ball.xSpeed = defaultBallSpeed * normalisedSpeed.x;
+        game.ball.ySpeed = defaultBallSpeed * normalisedSpeed.y;
         game.state = GameState.RUNNING;
       }
     } else if (game.state === GameState.RUNNING) {
       game.ball.xPos += game.ball.xSpeed * 0.17;
       game.ball.yPos += game.ball.ySpeed * 0.17;
 
-      const racketSpeed = 0.01;
-
       // Left movement
-      if (game.leftGoDown && game.leftRacketPos + racketSpeed <= 1) {
-        game.leftRacketPos += racketSpeed;
+      if (game.leftGoDown && game.leftRacketPos + defaultRacketSpeed <= 1) {
+        game.leftRacketPos += defaultRacketSpeed;
       }
-      if (game.leftGoUp && game.leftRacketPos - racketSpeed >= 0) {
-        game.leftRacketPos -= racketSpeed;
+      if (game.leftGoUp && game.leftRacketPos - defaultRacketSpeed >= 0) {
+        game.leftRacketPos -= defaultRacketSpeed;
       }
 
       // Right movement
-      if (game.rightGoDown && game.rightRacketPos + racketSpeed <= 1) {
-        game.rightRacketPos += racketSpeed;
+      if (game.rightGoDown && game.rightRacketPos + defaultRacketSpeed <= 1) {
+        game.rightRacketPos += defaultRacketSpeed;
       }
-      if (game.rightGoUp && game.rightRacketPos - racketSpeed >= 0) {
-        game.rightRacketPos -= racketSpeed;
+      if (game.rightGoUp && game.rightRacketPos - defaultRacketSpeed >= 0) {
+        game.rightRacketPos -= defaultRacketSpeed;
       }
 
       if (game.ball.yPos + game.ball.size / 2 >= 1) {
@@ -338,7 +337,8 @@ export class GameGateway
         ) {
           game.ball.xPos = 1 - game.ball.size / 2;
           const hitPosGradient =
-            (game.ball.yPos - game.rightRacketPos) / (game.racketLen / 2);
+            ((game.ball.yPos - game.rightRacketPos) / (game.racketLen / 2)) *
+            0.25;
           const normalisedSpeed = normalise(
             hitPosGradient < 0 ? -(1 + hitPosGradient) : -(1 - hitPosGradient),
             hitPosGradient,
@@ -355,8 +355,8 @@ export class GameGateway
             Math.random() * 0.1,
             Math.random() * 0.2 - 0.1,
           );
-          game.ball.xSpeed = 0.1 * normalisedSpeed.x;
-          game.ball.ySpeed = 0.1 * normalisedSpeed.y;
+          game.ball.xSpeed = defaultBallSpeed * normalisedSpeed.x;
+          game.ball.ySpeed = defaultBallSpeed * normalisedSpeed.y;
         }
       }
       if (game.ball.xPos - game.ball.size / 2 <= 0) {
@@ -366,15 +366,20 @@ export class GameGateway
         ) {
           game.ball.xPos = 0 + game.ball.size / 2;
           const hitPosGradient =
-            (game.ball.yPos - game.leftRacketPos) / (game.racketLen / 2);
+            ((game.ball.yPos - game.leftRacketPos) / (game.racketLen / 2)) *
+            0.25;
           const normalisedSpeed = normalise(
             hitPosGradient < 0 ? 1 + hitPosGradient : 1 - hitPosGradient,
             hitPosGradient,
           );
           game.ball.xSpeed =
-            (1 + Math.abs(hitPosGradient)) * 0.1 * normalisedSpeed.x;
+            (1 + Math.abs(hitPosGradient)) *
+            defaultBallSpeed *
+            normalisedSpeed.x;
           game.ball.ySpeed =
-            (1 + Math.abs(hitPosGradient)) * 0.1 * normalisedSpeed.y;
+            (1 + Math.abs(hitPosGradient)) *
+            defaultBallSpeed *
+            normalisedSpeed.y;
         } else {
           game.entity.player2Score++;
           game.ball.xPos = 0.5;
@@ -383,8 +388,8 @@ export class GameGateway
             Math.random() * -0.1,
             Math.random() * 0.2 - 0.1,
           );
-          game.ball.xSpeed = 0.1 * normalisedSpeed.x;
-          game.ball.ySpeed = 0.1 * normalisedSpeed.y;
+          game.ball.xSpeed = defaultBallSpeed * normalisedSpeed.x;
+          game.ball.ySpeed = defaultBallSpeed * normalisedSpeed.y;
         }
       }
       this.server.in(game.entity.id.toString()).emit('updateGame', game);
@@ -408,7 +413,6 @@ export class GameGateway
     player1: RemoteSocket<DefaultEventsMap, any>,
     player2: Socket,
     map: string,
-    powerUps: string[],
   ) {
     let newGame: GameEntity;
     try {
@@ -418,7 +422,6 @@ export class GameGateway
         player1Score: 0,
         player2Score: 0,
         map,
-        powerUps,
       });
     } catch (err) {
       throw err;

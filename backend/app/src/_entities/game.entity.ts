@@ -20,10 +20,6 @@ export class GameEntity {
   map: string;
 
   @ApiProperty()
-  @Column('text', { array: true, default: [] })
-  powerUps: string[];
-
-  @ApiProperty()
   @Column({ nullable: false })
   player1Id: number;
   @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })

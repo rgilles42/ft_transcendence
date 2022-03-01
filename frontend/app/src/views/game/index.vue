@@ -7,11 +7,14 @@
           <div class="mb-4 p-4 bg-gray-700 bg-opacity-50 rounded flex-1">
             <div class="px-6 py-4">
               <h1 class="font-bold text-xl mb-2">Liste des parties de Pong en cours!</h1>
-              <button :disabled="isFindingGame" @click="enterInMatchmaking" class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
-                Chercher une partie
-              </button>
+              <div class="px-6 py-4 grid md:grid-flow-col gap-4">
+                <FormSelect title="Mode de jeu" v-model="isFindingGame.map" :options="mapTypes" :disabled="isFindingGame.isSearching" />
+                <button :disabled="isFindingGame.isSearching" @click="enterInMatchmaking" class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-xs rounded-full tracking-wider">
+                  Chercher une partie
+                </button>
+              </div>
               <div class="text-base">
-                <template v-if="!gameList || isFindingGame">
+                <template v-if="!gameList || isFindingGame.isSearching">
                   <Loader />
                 </template>
                 <template v-else>
@@ -36,9 +39,6 @@
                           <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider uppercase">
                             Map
                           </th>
-                          <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider uppercase">
-                            Power-Up
-                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -56,9 +56,6 @@
                             </td>
                             <td class="py-4 px-6 text-sm whitespace-nowrap">
                               {{ game.entity.map ? game.entity.map : 'Pong Original' }}
-                            </td>
-                            <td class="py-4 px-6 text-sm whitespace-nowrap">
-                              {{ game.entity.powerUps ? game.entity.powerUps.join(', ') : 'Aucun' }}
                             </td>
                             </template>
                         </tr>
@@ -83,15 +80,21 @@ import websocketApi from '@/websocketsApi';
 import { Socket } from 'socket.io-client';
 import {
   computed,
-  defineComponent, onBeforeUnmount, onMounted, ref,
+  defineComponent, onBeforeUnmount, ref, watch,
 } from 'vue';
 import { useRouter } from 'vue-router';
 import Loader from '@/components/Loader.vue';
 import { useStore } from '@/store';
+import FormSelect from '@/components/form/FormSelect.vue';
 
 export default defineComponent({
   name: 'GameList',
-  setup() {
+  components: { Loader, FormSelect },
+  props: {
+    startGameId: String,
+    startGameMap: String,
+  },
+  setup(props) {
     const router = useRouter();
     const gameList = ref<GameObject[]>([]);
 
@@ -105,7 +108,15 @@ export default defineComponent({
       gameList.value = games;
     };
 
-    const isFindingGame = ref(false);
+    const mapTypes = [
+      'Original',
+      'Expert',
+    ];
+
+    const isFindingGame = ref({
+      map: mapTypes[0],
+      isSearching: false,
+    });
     const onGameStarted = (game: GameObject) => {
       if (game.entity) {
         websocketApi.game.disconnect();
@@ -114,12 +125,11 @@ export default defineComponent({
     };
 
     const enterInMatchmaking = () => {
-      if (isFindingGame.value) {
+      if (isFindingGame.value.isSearching) {
         return;
       }
-      isFindingGame.value = true;
-      websocketApi.game.onGameStarted(onGameStarted);
-      websocketApi.game.emitJoinMatchmaking('default', []);
+      isFindingGame.value.isSearching = true;
+      websocketApi.game.emitJoinMatchmaking(isFindingGame.value.map);
     };
 
     const unsubscribeEvents = (errOrReason?: Socket.DisconnectReason | Error) => {
@@ -127,9 +137,7 @@ export default defineComponent({
       websocketApi.game.offConnectionFailed(unsubscribeEvents);
       websocketApi.game.offDisconnected(unsubscribeEvents);
       websocketApi.game.offActiveGames(onActiveGames);
-      if (isFindingGame.value) {
-        websocketApi.game.offGameStarted(onGameStarted);
-      }
+      websocketApi.game.offGameStarted(onGameStarted);
       websocketApi.game.disconnect();
       if (errOrReason !== undefined) {
         router.replace({ name: 'Home' });
@@ -140,11 +148,12 @@ export default defineComponent({
       websocketApi.game.onConnectionFailed(unsubscribeEvents);
       websocketApi.game.onDisconnected(unsubscribeEvents);
       websocketApi.game.onActiveGames(onActiveGames);
+      websocketApi.game.onGameStarted(onGameStarted);
     };
     subscribeEvents();
-    onMounted(() => {
-      websocketApi.game.connect();
-    });
+
+    websocketApi.game.connect();
+
     onBeforeUnmount(() => {
       unsubscribeEvents();
     });
@@ -159,13 +168,23 @@ export default defineComponent({
       }
     };
 
+    watch(
+      () => props.startGameId && props.startGameMap,
+      () => {
+        if (props.startGameId !== undefined && props.startGameMap !== undefined) {
+          websocketApi.game.emitAcceptInvit(+props.startGameId, props.startGameMap);
+        }
+      },
+      { immediate: true },
+    );
+
     return {
+      mapTypes,
       gameList,
       isFindingGame,
       enterInMatchmaking,
       spectateGame,
     };
   },
-  components: { Loader },
 });
 </script>

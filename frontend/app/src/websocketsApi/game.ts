@@ -87,12 +87,12 @@ export default (baseUrl: string, options: Partial<ManagerOptions & SocketOptions
     return this.getInstance.emit('observeGame', { gameId });
   },
 
-  emitAcceptInvit(invitingPlayerId: number, map: string, powerUps: string[]) {
-    return this.getInstance.emit('acceptInvit', { invitingPlayerId, map, powerUps });
+  emitAcceptInvit(invitingPlayerId: number, map: string) {
+    return this.getInstance.emit('acceptInvit', { invitingPlayerId, map });
   },
 
-  emitJoinMatchmaking(map: string, powerUps: string[]) {
-    return this.getInstance.emit('joinMatchmaking', { map, powerUps });
+  emitJoinMatchmaking(map: string) {
+    return this.getInstance.emit('joinMatchmaking', { map });
   },
 
   emitKeyDown(gameId: Game['id'], direction: number) {

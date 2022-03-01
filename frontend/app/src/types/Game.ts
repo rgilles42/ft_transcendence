@@ -10,7 +10,6 @@ export default interface Game {
   player2Id: number;
   player1Score: number;
   player2Score: number;
-  powerUps: string[];
   map: string;
   createdAt: Date;
   endAt: Date | null;
@@ -48,8 +47,7 @@ export const DEFAULT_GAME: Game = {
   player2Id: -1,
   player1Score: 0,
   player2Score: 0,
-  powerUps: [],
-  map: 'default',
+  map: 'Pong Original',
   createdAt: new Date(),
   endAt: null,
 }

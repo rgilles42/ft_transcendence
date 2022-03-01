@@ -1,6 +1,10 @@
 <template>
-  <div>
+  <div v-if="!gameData">
+    <Loader />
+  </div>
+  <div v-else>
     <div class="w-full bg-gray-800">
+      <div class="text-center">{{ gameData.entity?.player1Score }} - {{ gameData.entity?.player2Score }}</div>
       <canvas ref="gameCanvas" class="m-auto" width="500" height="500"></canvas>
     </div>
   </div>
@@ -14,9 +18,11 @@ import websocketApi from '@/websocketsApi';
 import { Socket } from 'socket.io-client';
 import { GameObject } from '@/types/Game';
 import { useRouter } from 'vue-router';
+import Loader from '@/components/Loader.vue';
 
 export default defineComponent({
   name: 'GameSpectator',
+  components: { Loader },
   props: {
     requestGameId: String,
   },
@@ -109,6 +115,7 @@ export default defineComponent({
 
     return {
       gameCanvas,
+      gameData,
     };
   },
 });

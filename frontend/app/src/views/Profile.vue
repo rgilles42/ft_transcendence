@@ -158,9 +158,6 @@
                           <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider uppercase">
                             Map
                           </th>
-                          <th scope="col" class="py-3 px-6 text-xs font-medium tracking-wider uppercase">
-                            Power-Up
-                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -183,9 +180,6 @@
                           </td>
                           <td class="py-4 px-6 text-sm whitespace-nowrap">
                             {{ game.map ? game.map : 'Pong Original' }}
-                          </td>
-                          <td class="py-4 px-6 text-sm whitespace-nowrap">
-                            {{ game.powerUps ? game.powerUps.join(', ') : 'Aucun' }}
                           </td>
                         </tr>
                       </tbody>

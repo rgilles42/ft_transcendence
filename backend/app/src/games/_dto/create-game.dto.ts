@@ -8,10 +8,6 @@ export class createGameDto {
   map: string;
 
   @ApiProperty()
-  @IsNotEmpty()
-  powerUps: string[];
-
-  @ApiProperty()
   @IsInt()
   @IsNotEmpty()
   player1Id: number;

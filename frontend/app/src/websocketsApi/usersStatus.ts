@@ -59,12 +59,24 @@ export default (baseUrl: string, options: Partial<ManagerOptions & SocketOptions
     return this.getInstance.on('usersStatusUpdate', cb);
   },
 
-  offUsersStatusUpdate() {
-    return this.getInstance.off('usersStatusUpdate');
+  offUsersStatusUpdate(cb: (args: [{ id: number, newStatus: number }]) => void) {
+    return this.getInstance.off('usersStatusUpdate', cb);
   },
 
   emitNewStatus(newStatus: User['status']) {
     return this.getInstance.emit('changeStatus', { newStatus });
+  },
+
+  onInvitGame(cb: (userId: User['id'], map: string) => void) {
+    return this.getInstance.on('invitedInGame', cb);
+  },
+
+  offInvitGame(cb: (userId: User['id'], map: string) => void) {
+    return this.getInstance.off('invitedInGame', cb);
+  },
+
+  emitInvitationForGame(userId: User['id'], map: string) {
+    return this.getInstance.emit('sendGameInvitation', { userId, map });
   },
 
 });

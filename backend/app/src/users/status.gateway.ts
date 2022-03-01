@@ -63,6 +63,10 @@ export class StatusGateway
 
   // Utils Methods
 
+  async getServerSockets() {
+    return (await this.server.fetchSockets()) as unknown as Socket[];
+  }
+
   async getFriendsSockets(client: Socket) {
     const user = await this.usersService.findOne(
       client.data.user.id.toString(),
@@ -71,7 +75,7 @@ export class StatusGateway
     if (!user || !user.friends) {
       return [];
     }
-    const sockets = await this.server.fetchSockets();
+    const sockets = await this.getServerSockets();
     const friendsSocket = sockets.filter((socket) => {
       if (socket.data.user.id === user.id) {
         return false;
@@ -82,7 +86,7 @@ export class StatusGateway
           socket.data.user.id === clientFriendship.userId,
       );
     });
-    return friendsSocket as unknown as Socket[];
+    return friendsSocket;
   }
 
   createStatusMessage(socket: Socket) {
@@ -154,5 +158,19 @@ export class StatusGateway
     console.log(`Client Change Status: ${client.id}`);
     client.data.user.status = newStatus;
     await this.sendMyStatusToFriend(client);
+  }
+
+  @SubscribeMessage('sendGameInvitation')
+  async sendGameInvitation(
+    @ConnectedSocket() client: Socket,
+    @MessageBody('userId') userId: number,
+    @MessageBody('map') map: string,
+  ) {
+    console.log(`Client invit: ${client.id}`);
+    const sockets = await this.getServerSockets();
+    const invited = sockets.find((find) => find.data.user.id === userId);
+    if (invited) {
+      invited.emit('invitedInGame', client.data.user.id, map);
+    }
   }
 }
