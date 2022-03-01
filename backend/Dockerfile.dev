@@ -18,6 +18,8 @@ RUN apk update --no-cache && apk upgrade --no-cache
 
 WORKDIR /home/node
 
+RUN npm install @nestjs/cli -g
+
 # Redirect port
 EXPOSE 3000
 

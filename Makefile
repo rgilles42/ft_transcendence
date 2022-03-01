@@ -96,14 +96,17 @@ initServices: ## Shutdown default nginx & postgresql for prevent used port error
 initEnv: ## Create the .env and fill default fields (Warning: this will overwrite the current .env)
 	@echo "${_BLUE}[Init .env with defaults values..]${_END}"
 	@cp ${ENV_FILE}.example ${ENV_FILE}
-	sed -i 's|£PROJECT_NAME|${COMPOSE_PROJECT_NAME}|g' ${ENV_FILE}
-	sed -i 's|£BONUS|${BONUS}|g' ${ENV_FILE}
-	sed -i 's|£DOMAIN_NAME|${DOMAIN_NAME}|g' ${ENV_FILE}
-	sed -i 's|£DOMAIN_TARGET|${DOMAIN_TARGET}|g' ${ENV_FILE}
+	@sed -i 's|£PROJECT_NAME|${COMPOSE_PROJECT_NAME}|g' ${ENV_FILE}
+	@sed -i 's|£BONUS|${BONUS}|g' ${ENV_FILE}
+	@sed -i 's|£DOMAIN_NAME|${DOMAIN_NAME}|g' ${ENV_FILE}
+	@sed -i 's|£DOMAIN_TARGET|${DOMAIN_TARGET}|g' ${ENV_FILE}
 
-	sed -i 's|£POSTGRES_DB|${POSTGRES_DB}|g' ${ENV_FILE}
-	sed -i 's|£POSTGRES_USER|${POSTGRES_USER}|g' ${ENV_FILE}
-	sed -i 's|£POSTGRES_PASSWORD|${POSTGRES_PASSWORD}|g' ${ENV_FILE}
+	@sed -i 's|£POSTGRES_DB|${POSTGRES_DB}|g' ${ENV_FILE}
+	@sed -i 's|£POSTGRES_USER|${POSTGRES_USER}|g' ${ENV_FILE}
+	@sed -i 's|£POSTGRES_PASSWORD|${POSTGRES_PASSWORD}|g' ${ENV_FILE}
+
+	@cp ./backend/app/.env.example ./backend/app/.env
+	@cp ./frontend/app/.env.example ./frontend/app/.env
 
 	@echo "${_CYAN}Don't forget to manualy change .env values${_END}"
 	@echo "${_BLUE}[Init .env done!]${_END}"

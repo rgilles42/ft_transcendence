@@ -65,7 +65,7 @@ class ConfigService {
         migrationsDir: 'src/migrations',
       },
 
-      ssl: this.isProduction(),
+      ssl: false, // this.isProduction(),
       synchronize: !this.isProduction(),
     };
   }
@@ -82,7 +82,7 @@ class ConfigService {
     return {
       secret: this.getValue('JWT_SECRET'),
       accessToken: {
-        maxAge: 60 * 15, // 15 minutes
+        maxAge: 60 * 60 * 1, // 1 hour
         httpOnly: true,
         secure: true,
         sameSite: 'None',
