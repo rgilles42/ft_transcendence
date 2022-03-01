@@ -68,7 +68,7 @@
 
 <script lang="ts">
 import {
-  defineComponent, ref, computed, onBeforeUnmount, nextTick,
+  defineComponent, ref, computed, onBeforeUnmount, nextTick, watch,
 } from 'vue';
 import { Socket } from 'socket.io-client';
 import { useStore } from '@/store';
@@ -94,7 +94,7 @@ export default defineComponent({
     const router = useRouter();
     const store = useStore();
     const currentUser = computed(() => store.getUser);
-    const chatData = ref<Channel | undefined>();
+    const chatData = ref<Channel | null>(null);
     const chatBoxRef = ref<any>();
 
     // Socket channel methods
@@ -199,7 +199,6 @@ export default defineComponent({
       webSocketsApi.chat.onConnectionFailed(disconnectSocket);
       webSocketsApi.chat.onDisconnected(disconnectSocket);
     };
-    initChatSocket();
 
     // Delete channel methods
 
@@ -246,28 +245,43 @@ export default defineComponent({
     };
 
     // Get channel data methods
-
-    const getChannelData = (channelId: Channel['id']) => {
+    const fetchChannelData = (channelId: Channel['id']) => new Promise<Channel | null>((resolve) => {
       api.channels.getChannelById(channelId)
-        .then((response) => {
-          chatData.value = response.data;
-          webSocketsApi.chat.connect();
+        .then((response: { data: Channel | null; }) => resolve(response.data))
+        .catch(() => resolve(null));
+    });
 
-          nextTick(() => {
-            if (chatBoxRef.value) {
-              chatBoxRef.value.scrollToBottom();
+    watch(
+      () => props.requestChatId,
+      () => {
+        if (props.requestChatId === undefined) {
+          router.replace({ name: 'ChatList' });
+          return;
+        }
+        fetchChannelData(+props.requestChatId)
+          .then((fetchChat) => {
+            chatData.value = fetchChat;
+
+            disconnectSocket();
+            initChatSocket();
+            webSocketsApi.chat.connect();
+
+            nextTick(() => {
+              if (chatBoxRef.value) {
+                chatBoxRef.value.scrollToBottom();
+              }
+            });
+          })
+          .finally(() => {
+            if (!chatData.value) {
+              router.replace({ name: 'ChatList' });
             }
           });
-        })
-        .catch(() => {
-          router.replace({ name: 'ChatList' });
-        });
-    };
-    if (props.requestChatId === undefined) {
-      router.replace({ name: 'ChatList' });
-    } else {
-      getChannelData(+props.requestChatId);
-    }
+      },
+      // fetch the data when the view is created and the data is
+      // already being observed
+      { immediate: true },
+    );
 
     return {
       // Utils

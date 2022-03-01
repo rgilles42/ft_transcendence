@@ -22,6 +22,10 @@ export default ($axios: AxiosInstance) => ({
     return $axios.post(`${AUTH_BASE}/${channelId}/members`, { userId, password });
   },
 
+  requestAccessPrivate(userId: User['id']) {
+    return $axios.post(`${AUTH_BASE}/private`, { userId });
+  },
+
   getChannelById(channelId: Channel['id']) {
     return $axios.get(`${AUTH_BASE}/${channelId}`, { params: { include: 'members+restrictions+messages' } });
   },

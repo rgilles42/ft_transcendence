@@ -10,6 +10,7 @@ import {
   UseGuards,
   Request,
   Query,
+  NotFoundException,
 } from '@nestjs/common';
 import { ChannelsService } from './channels.service';
 import { ChannelEntity } from 'src/_entities/channel.entity';
@@ -41,7 +42,10 @@ export class ChannelsController {
 
   @ApiOkResponse({ type: ChannelEntity, isArray: true })
   @Get()
-  findAll(@GetUser() user: UserEntity, @Query('include') include = ''): Promise<ChannelEntity[]> {
+  findAll(
+    @GetUser() user: UserEntity,
+    @Query('include') include = '',
+  ): Promise<ChannelEntity[]> {
     return this.channelsService.findAll(user, include.split('+'));
   }
 
@@ -52,6 +56,15 @@ export class ChannelsController {
     @Body() createChannelData: createChannelDto,
   ): Promise<ChannelEntity> {
     return this.channelsService.create(req.user, createChannelData);
+  }
+
+  @ApiCreatedResponse({ type: ChannelEntity })
+  @Post('private')
+  createPrivateMessage(
+    @Request() req: any,
+    @Body('userId') userId: number,
+  ): Promise<ChannelEntity> {
+    return this.channelsService.createPrivate(req.user, userId);
   }
 
   @ApiQuery({

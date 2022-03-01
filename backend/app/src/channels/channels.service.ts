@@ -1,3 +1,4 @@
+import { ChannelEntity } from './../_entities/channel.entity';
 import { UsersService } from './../users/users.service';
 import {
   NotFoundException,
@@ -14,7 +15,6 @@ import {
   RestrictionEntity,
   restrictionType,
 } from 'src/_entities/channel-restriction.entity';
-import { ChannelEntity } from 'src/_entities/channel.entity';
 import { UserEntity } from 'src/_entities/user.entity';
 import { Repository } from 'typeorm';
 import { ChatGateway } from './chat.gateway';
@@ -124,10 +124,70 @@ export class ChannelsService {
     return safe;
   }
 
-  isAdmin(userId: number, members: ChannelEntity['members']): boolean {
-    return members.some(
+  async createPrivate(owner: UserEntity, userId: UserEntity['id']) {
+    let user;
+    try {
+      user = await this.userService.findOne(userId.toString(), ['channels']);
+    } catch {
+      throw new NotFoundException();
+    }
+    const newChannelName = `MP ${owner.username} ${user.username}`;
+    const channel = user.channels.find((find) => find.title === newChannelName);
+    if (channel) {
+      let findChannel;
+      try {
+        findChannel = await this.channelsRepository.findOne({
+          id: channel.id,
+        });
+      } catch {
+        throw new NotFoundException();
+      }
+      const safe: any = findChannel;
+      safe.hasPassword = false;
+      if (safe.password) safe.hasPassword = true;
+      delete safe.password;
+      return safe;
+    }
+    const newChannel = this.channelsRepository.create({
+      title: newChannelName,
+      isPrivate: true,
+      ownerId: owner.id,
+    });
+    let savedChannel: ChannelEntity;
+    try {
+      savedChannel = await this.channelsRepository.save(newChannel);
+    } catch (err) {
+      throw new BadRequestException();
+    }
+    await this.add_member(savedChannel.id, owner.id, {
+      isAdmin: true,
+      userId: owner.id,
+    });
+    await this.add_member(savedChannel.id, owner.id, {
+      isAdmin: true,
+      userId: user.id,
+    });
+    const safe: any = savedChannel;
+    safe.hasPassword = false;
+    if (safe.password) safe.hasPassword = true;
+    delete safe.password;
+    return safe;
+  }
+
+  isOwner(userId: number, channel: ChannelEntity) {
+    return channel.ownerId === userId;
+  }
+
+  isAdmin(userId: number, channel: ChannelEntity): boolean {
+    if (this.isOwner(userId, channel)) return true;
+    return channel.members.some(
       (member) => member.userId === userId && member.isAdmin === true,
     );
+  }
+
+  isMember(userId: number, channel: ChannelEntity): boolean {
+    if (this.isOwner(userId, channel)) return true;
+    return channel.members.some((member) => member.userId === userId);
   }
 
   async update(
@@ -143,7 +203,7 @@ export class ChannelsService {
     } catch (err) {
       throw new NotFoundException();
     }
-    if (!this.isAdmin(userId, channel.members)) {
+    if (!this.isAdmin(userId, channel)) {
       throw new ForbiddenException();
     }
     if (updateChannelData.title !== undefined)
@@ -178,7 +238,7 @@ export class ChannelsService {
     } catch (err) {
       throw new NotFoundException();
     }
-    if (!this.isAdmin(userId, channel.members)) throw new ForbiddenException();
+    if (!this.isAdmin(userId, channel)) throw new ForbiddenException();
     this.channelsRepository.delete(id);
     const safe: any = channel;
     safe.hasPassword = false;
@@ -263,7 +323,7 @@ export class ChannelsService {
     } catch (err) {
       throw new NotFoundException();
     }
-    if (this.isAdmin(issuerId, channel.members)) {
+    if (this.isAdmin(issuerId, channel)) {
       try {
         const newRestriction = await this.restrictionsService.create(
           channelId,
@@ -310,7 +370,7 @@ export class ChannelsService {
         }
       }
     }
-    if (!channel.members.some((member) => issuerId === member.userId)) {
+    if (!this.isMember(issuerId, channel)) {
       if (channel.isPrivate === true) {
         throw new BadRequestException({
           errors: { isPrivate: ['Le channel est privé!'] },
@@ -325,10 +385,7 @@ export class ChannelsService {
       }
     }
     let allowSetMemberPerms = false;
-    if (
-      this.isAdmin(issuerId, channel.members) &&
-      memberData.isAdmin !== undefined
-    )
+    if (this.isAdmin(issuerId, channel) && memberData.isAdmin !== undefined)
       allowSetMemberPerms = true;
     try {
       const newMember = await this.membersService.create(
