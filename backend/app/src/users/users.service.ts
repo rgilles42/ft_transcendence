@@ -39,7 +39,7 @@ export class UsersService {
     return safe;
   }
 
-  async findOne(id: string, include: string[] = []): Promise<any> {
+  async findOne(id: string, include: string[] = [], deleteTwoFactor = true): Promise<any> {
     let user: UserEntity;
     try {
       if (isNaN(Number(id))) throw new ImATeapotException();
@@ -63,7 +63,9 @@ export class UsersService {
       else if (include[index] == 'games')
         user.games = await this.get_games(user.id);
     }
-    delete user.twoFactorAuthSecret;
+    if (deleteTwoFactor) {
+      delete user.twoFactorAuthSecret;
+    }
     return user;
   }
 

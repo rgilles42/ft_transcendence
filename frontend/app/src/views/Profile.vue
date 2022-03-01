@@ -445,7 +445,7 @@ export default defineComponent({
         })
         .catch((error) => {
           if (error.response.status === 400) {
-            disable2FaErrors.value = error.response.data.errors || {};
+            enable2FaErrors.value = error.response.data.errors || {};
           } else {
             console.warn(error.response.data.message);
           }

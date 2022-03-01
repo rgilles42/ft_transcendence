@@ -39,7 +39,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     // if (req.headers['x-xsrf-token'] !== payload.xsrfToken) {
     //   throw new UnauthorizedException('Invalid xsrf token');
     // }
-    const user = await this.usersService.findOne(payload.id);
+    const user = await this.usersService.findOne(payload.id, [], false);
     if (!user) {
       throw new UnauthorizedException('User not found');
     }

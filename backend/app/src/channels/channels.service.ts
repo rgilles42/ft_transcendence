@@ -101,12 +101,12 @@ export class ChannelsService {
     const newChannel = this.channelsRepository.create({
       title: createChannelData.title,
       isPrivate: createChannelData.isPrivate,
-      password:
-        createChannelData.password === undefined
-          ? undefined
-          : bcrypt.hashSync(createChannelData.password, 10),
+      password: null,
       ownerId: owner.id,
     });
+    if (createChannelData.password !== undefined && createChannelData.password !== null) {
+      newChannel.password = bcrypt.hashSync(createChannelData.password, 10);
+    }
     let savedChannel: ChannelEntity;
     try {
       savedChannel = await this.channelsRepository.save(newChannel);
@@ -210,8 +210,13 @@ export class ChannelsService {
       channel.title = updateChannelData.title;
     if (updateChannelData.isPrivate !== undefined)
       channel.isPrivate = updateChannelData.isPrivate;
-    if (updateChannelData.password !== undefined)
-      channel.password = bcrypt.hashSync(updateChannelData.password, 10);
+    if (updateChannelData.password !== undefined) {
+      if (updateChannelData.password !== null) {
+        channel.password = bcrypt.hashSync(updateChannelData.password, 10);
+      } else {
+        channel.password = null;
+      }
+    }
     try {
       await this.channelsRepository.save(channel);
     } catch (err) {

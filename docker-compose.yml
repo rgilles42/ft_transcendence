@@ -39,6 +39,8 @@ services:
             - POSTGRES_PASSWORD
         ports:
             - 3000:3000
+        volumes:
+            - backend-uploads-data:/home/node/app/uploads
 
     postgres:
         container_name: postgres
@@ -68,5 +70,6 @@ networks:
         driver: bridge
 
 volumes:
+    backend-uploads-data:
     postgres-data:
 
