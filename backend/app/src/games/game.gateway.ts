@@ -199,7 +199,7 @@ export class GameGateway
     const waitingClients = await this.server.in('lobby').fetchSockets();
     const matches = waitingClients.filter(
       (socket) =>
-        socket.id !== client.id &&
+        socket.id !== client.id && socket.data.user.id !== client.data.user.id &&
         this.evalGameParams(
           socket.data.desiredGameParams,
           client.data.desiredGameParams,

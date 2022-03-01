@@ -35,7 +35,7 @@
                 <ul v-else class="divide-y-2 divide-gray-600">
                   <li v-for="(chat, index) in chatList" :key="index" @click="onChannelClick(chat)" class="p-3 rounded-lg hover:bg-gray-600 hover:text-gray-200">
                     <i v-if="chatUtils.isUserBanned(chat, currentUser?.id)" class="fa-solid fa-ban mr-2"></i>
-                    <template v-else-if="chat.password !== null">
+                    <template v-else-if="chat.hasPassword">
                       <i v-if="chatUtils.isUserIsMember(chat, currentUser?.id)" class="fa-solid fa-lock-open mr-2"></i>
                       <i v-else class="fa-solid fa-lock mr-2"></i>
                     </template>
@@ -160,10 +160,10 @@ export default defineComponent({
         alert('Vous êtes bannis de ce salon!');
         return;
       }
-      if (modalData.value.isOpen && channel.password !== null) {
+      if (modalData.value.isOpen && channel.hasPassword) {
         return;
       }
-      if (!modalData.value.isOpen && channel.password !== null && !chatUtils.isUserIsMember(channel, currentUser.value?.id)) {
+      if (!modalData.value.isOpen && channel.hasPassword && !chatUtils.isUserIsMember(channel, currentUser.value?.id)) {
         openModal(channel);
         return;
       }

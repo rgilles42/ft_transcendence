@@ -208,7 +208,7 @@ export default defineComponent({
             isLoad.value = true;
             editChannelData.value = { ...editChannelData.value, ...response.data };
             editChannelData.value.channelType = channelTypes[editChannelData.value.isPrivate ? 1 : 0];
-            editChannelData.value.isPasswordEnabled = editChannelData.value.password !== null;
+            editChannelData.value.isPasswordEnabled = editChannelData.value.hasPassword;
           }
         })
         .catch(() => {
