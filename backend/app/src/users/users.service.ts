@@ -32,11 +32,14 @@ export class UsersService {
     private storageService: StorageService,
   ) {}
 
-  findAll(): Promise<UserEntity[]> {
-    return this.usersRepository.find();
+  async findAll(): Promise<any[]> {
+    const users = await this.usersRepository.find();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const safe = users.map(({ twoFactorAuthSecret, ...toKeep }) => toKeep);
+    return safe;
   }
 
-  async findOne(id: string, include: string[] = []): Promise<UserEntity> {
+  async findOne(id: string, include: string[] = []): Promise<any> {
     let user: UserEntity;
     try {
       if (isNaN(Number(id))) throw new ImATeapotException();
@@ -60,6 +63,7 @@ export class UsersService {
       else if (include[index] == 'games')
         user.games = await this.get_games(user.id);
     }
+    delete user.twoFactorAuthSecret;
     return user;
   }
 
@@ -79,16 +83,18 @@ export class UsersService {
       else if (include[index] == 'games')
         user.games = await this.get_games(user.id);
     }
+    delete user.twoFactorAuthSecret;
     return user;
   }
 
-  async create(createUserData: createUserDto): Promise<UserEntity> {
+  async create(createUserData: createUserDto): Promise<any> {
     const newUser = this.usersRepository.create(createUserData);
     try {
       await this.usersRepository.save(newUser);
     } catch (err) {
       throw new BadRequestException();
     }
+    delete newUser.twoFactorAuthSecret;
     return newUser;
   }
 
@@ -112,13 +118,15 @@ export class UsersService {
       throw new InternalServerErrorException();
     }
     user = await this.usersRepository.findOne(id);
+    delete user.twoFactorAuthSecret;
     return user;
   }
 
-  async remove(id: number): Promise<UserEntity> {
+  async remove(id: number): Promise<any> {
     try {
       const user = await this.usersRepository.findOneOrFail(id);
       this.usersRepository.delete(id);
+      delete user.twoFactorAuthSecret;
       return user;
     } catch (err) {
       throw new NotFoundException();

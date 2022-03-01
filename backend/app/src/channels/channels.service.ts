@@ -26,6 +26,7 @@ import { memberDto } from './_dto/member.dto';
 import { messageDto } from './_dto/message.dto';
 import { restrictionDto } from './_dto/restriction.dto';
 import { updateChannelDto } from './_dto/update-channel.dto';
+import bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChannelsService {
@@ -40,10 +41,7 @@ export class ChannelsService {
     private userService: UsersService,
   ) {}
 
-  async findAll(
-    user: UserEntity,
-    include: string[] = [],
-  ): Promise<ChannelEntity[]> {
+  async findAll(user: UserEntity, include: string[] = []): Promise<any[]> {
     const relations: string[] = [];
     for (let index = 0; index < include.length; index++) {
       if (include[index] == 'owner') relations.push('owner');
@@ -52,18 +50,27 @@ export class ChannelsService {
     }
     relations.push('members');
     const channels = await this.channelsRepository.find({ relations });
-    return channels.filter((channel) => {
+    const filteredChannels: any[] = channels.filter((channel) => {
       if (!channel.isPrivate) return true;
       if (!channel.members) return false;
       return channel.members.some((member) => member.userId === user.id);
     });
+    filteredChannels.forEach((element) => {
+      element.hasPassword = false;
+      if (element.password) element.hasPassword = true;
+    });
+    const safe = filteredChannels.map(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      ({ password: string, ...toKeep }) => toKeep,
+    );
+    return safe;
   }
 
   async findOne(
     userId: number,
     id: number,
     include: string[] = [],
-  ): Promise<ChannelEntity> {
+  ): Promise<any> {
     try {
       const channel = await this.channelsRepository.findOneOrFail(id);
       for (let index = 0; index < include.length; index++) {
@@ -80,7 +87,11 @@ export class ChannelsService {
         else if (include[index] == 'messages')
           channel.messages = await this.get_messages(channel.id, userId);
       }
-      return channel;
+      const safe: any = channel;
+      safe.hasPassword = false;
+      if (safe.password) safe.hasPassword = true;
+      delete safe.password;
+      return safe;
     } catch (err) {
       throw new NotFoundException();
     }
@@ -90,7 +101,10 @@ export class ChannelsService {
     const newChannel = this.channelsRepository.create({
       title: createChannelData.title,
       isPrivate: createChannelData.isPrivate,
-      password: createChannelData.password,
+      password:
+        createChannelData.password === undefined
+          ? undefined
+          : bcrypt.hashSync(createChannelData.password, 10),
       ownerId: owner.id,
     });
     let savedChannel: ChannelEntity;
@@ -103,7 +117,17 @@ export class ChannelsService {
       isAdmin: true,
       userId: owner.id,
     });
-    return savedChannel;
+    const safe: any = savedChannel;
+    safe.hasPassword = false;
+    if (safe.password) safe.hasPassword = true;
+    delete safe.password;
+    return safe;
+  }
+
+  isAdmin(userId: number, members: ChannelEntity['members']): boolean {
+    return members.some(
+      (member) => member.userId === userId && member.isAdmin === true,
+    );
   }
 
   async update(
@@ -119,14 +143,7 @@ export class ChannelsService {
     } catch (err) {
       throw new NotFoundException();
     }
-    if (
-      !(
-        channel.ownerId === userId ||
-        channel.members.some(
-          (member) => member.userId === userId && member.isAdmin === true,
-        )
-      )
-    ) {
+    if (!this.isAdmin(userId, channel.members)) {
       throw new ForbiddenException();
     }
     if (updateChannelData.title !== undefined)
@@ -134,18 +151,24 @@ export class ChannelsService {
     if (updateChannelData.isPrivate !== undefined)
       channel.isPrivate = updateChannelData.isPrivate;
     if (updateChannelData.password !== undefined)
-      channel.password = updateChannelData.password;
+      channel.password = bcrypt.hashSync(updateChannelData.password, 10);
     try {
       await this.channelsRepository.save(channel);
     } catch (err) {
       throw new BadRequestException();
     }
     try {
-      return this.channelsRepository.findOneOrFail(id);
+      const savedChannel = await this.channelsRepository.findOneOrFail(id);
+      const safe: any = savedChannel;
+      safe.hasPassword = false;
+      if (safe.password) safe.hasPassword = true;
+      delete safe.password;
+      return safe;
     } catch (err) {
       throw new NotFoundException();
     }
   }
+
   async remove(id: number, userId: number): Promise<ChannelEntity> {
     let channel: ChannelEntity;
     try {
@@ -155,17 +178,13 @@ export class ChannelsService {
     } catch (err) {
       throw new NotFoundException();
     }
-    if (
-      !(
-        channel.ownerId === userId ||
-        channel.members.some(
-          (member) => member.userId === userId && member.isAdmin === true,
-        )
-      )
-    )
-      throw new ForbiddenException();
+    if (!this.isAdmin(userId, channel.members)) throw new ForbiddenException();
     this.channelsRepository.delete(id);
-    return channel;
+    const safe: any = channel;
+    safe.hasPassword = false;
+    if (safe.password) safe.hasPassword = true;
+    delete safe.password;
+    return safe;
   }
 
   async get_messages(
@@ -244,12 +263,7 @@ export class ChannelsService {
     } catch (err) {
       throw new NotFoundException();
     }
-    if (
-      channel.ownerId === issuerId ||
-      channel.members.some(
-        (member) => member.userId === issuerId && member.isAdmin === true,
-      )
-    ) {
+    if (this.isAdmin(issuerId, channel.members)) {
       try {
         const newRestriction = await this.restrictionsService.create(
           channelId,
@@ -285,26 +299,35 @@ export class ChannelsService {
     } catch (err) {
       throw new NotFoundException();
     }
-    if (
-      issuerId !== channel.ownerId &&
-      !channel.members.some((member) => issuerId === member.userId) &&
-      (channel.isPrivate === true ||
-        (channel.password !== null &&
-          channel.password !== undefined &&
-          channel.password !== memberData.password))
-    ) {
-      throw new BadRequestException({
-        errors: { password: ['Mot de passe incorrect!'] },
-      });
+    if (memberData.userId === undefined) {
+      if (memberData.username !== undefined && memberData.username !== null) {
+        try {
+          memberData.userId = (
+            await this.userService.findOne(memberData.username)
+          ).id;
+        } catch (err) {
+          throw err;
+        }
+      }
+    }
+    if (!channel.members.some((member) => issuerId === member.userId)) {
+      if (channel.isPrivate === true) {
+        throw new BadRequestException({
+          errors: { isPrivate: ['Le channel est privé!'] },
+        });
+      } else if (
+        channel.password &&
+        channel.password !== bcrypt.hashSync(memberData.password, 10)
+      ) {
+        throw new BadRequestException({
+          errors: { password: ['Mot de passe incorrect!'] },
+        });
+      }
     }
     let allowSetMemberPerms = false;
     if (
-      (channel.ownerId === issuerId ||
-        channel.members.some(
-          (member) => member.userId === issuerId && member.isAdmin === true,
-        )) &&
-      memberData.isAdmin !== undefined &&
-      memberData.isAdmin !== null
+      this.isAdmin(issuerId, channel.members) &&
+      memberData.isAdmin !== undefined
     )
       allowSetMemberPerms = true;
     try {

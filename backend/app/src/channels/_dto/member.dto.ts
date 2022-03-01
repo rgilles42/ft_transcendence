@@ -10,8 +10,13 @@ import {
 export class memberDto {
   @ApiProperty()
   @IsInt()
-  @IsNotEmpty()
-  userId: number;
+  @IsOptional()
+  userId?: number;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  username?: string;
 
   @ApiProperty({ required: false })
   @IsBoolean()
