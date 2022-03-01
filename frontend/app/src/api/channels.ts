@@ -48,7 +48,7 @@ export default ($axios: AxiosInstance) => ({
 
   // Channel's members routes
   addChannelMembers(channelId: Channel['id'], memberUsername: string) {
-    return $axios.post(`${AUTH_BASE}/${channelId}/members`, memberUsername);
+    return $axios.post(`${AUTH_BASE}/${channelId}/members`, { username: memberUsername });
   },
 
   editChannelMembers(memberId: ChannelMember['id'], isAdmin: ChannelMember['isAdmin']) {

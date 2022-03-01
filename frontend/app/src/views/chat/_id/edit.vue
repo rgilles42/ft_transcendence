@@ -56,7 +56,7 @@
                 </span>
 
                 <div class="px-6 py-4 grid md:grid-flow-col gap-4 text-center">
-                  <button class="p-3 w-full focus:no-border bg-green-900 hover:bg-green-800">Ajouter ce membre</button>
+                  <button class="p-3 w-full focus:no-border bg-green-900 hover:bg-green-800">Ajouter cet utilisateur</button>
                 </div>
               </form>
             </template>
