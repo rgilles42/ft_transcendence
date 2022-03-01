@@ -29,12 +29,22 @@ class ConfigService {
     return this.getValue('APP_ENV', false);
   }
 
+  public getAppUrl() {
+    const apiUrl = this.getValue('APP_URL', false);
+    return apiUrl.replace(new RegExp('[/]+$'), '');
+  }
+
+  public getFrontUrl() {
+    const apiUrl = this.getValue('FRONT_URL', false);
+    return apiUrl.replace(new RegExp('[/]+$'), '');
+  }
+
   public isProduction() {
     return ['production', 'prod'].includes(this.getAppEnv());
   }
 
   public getCorsConfig() {
-    return {
+    const corsConfig = {
       origin: [
         'http://localhost:8080',
         'http://127.0.0.1:8080',
@@ -43,6 +53,10 @@ class ConfigService {
       ],
       credentials: true,
     };
+    if (this.getFrontUrl() !== undefined) {
+      corsConfig.origin.push(this.getFrontUrl());
+    }
+    return corsConfig;
   }
 
   public getTypeOrmConfig(): TypeOrmModuleOptions {
@@ -74,7 +88,7 @@ class ConfigService {
     return {
       clientID: this.getValue('FORTY_TWO_CLIENT_ID'),
       clientSecret: this.getValue('FORTY_TWO_CLIENT_SECRET_ID'),
-      callbackURL: 'http://127.0.0.1:3000/auth/42/callback',
+      callbackURL: `${this.getAppUrl()}/auth/42/callback`,
     };
   }
 
@@ -117,6 +131,7 @@ const configService = new ConfigService(process.env).ensureValues([
   'DB_DATABASE',
   'DB_USERNAME',
   'DB_PASSWORD',
+  'APP_URL',
 ]);
 
 export { configService };

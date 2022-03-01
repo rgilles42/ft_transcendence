@@ -344,9 +344,9 @@ export class GameGateway
             hitPosGradient,
           );
           game.ball.xSpeed =
-            (1 + Math.abs(hitPosGradient)) * 0.1 * normalisedSpeed.x;
+            (1 + Math.abs(hitPosGradient)) * defaultBallSpeed * normalisedSpeed.x;
           game.ball.ySpeed =
-            (1 + Math.abs(hitPosGradient)) * 0.1 * normalisedSpeed.y;
+            (1 + Math.abs(hitPosGradient)) * defaultBallSpeed * normalisedSpeed.y;
         } else {
           game.entity.player1Score++;
           game.ball.xPos = 0.5;
