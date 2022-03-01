@@ -1,3 +1,4 @@
+import { UserEntity } from 'src/_entities/user.entity';
 import {
   Controller,
   Get,
@@ -29,6 +30,7 @@ import { restrictionDto } from './_dto/restriction.dto';
 import { MemberEntity } from 'src/_entities/channel-member.entity';
 import { memberDto } from './_dto/member.dto';
 import { JwtTwoFaAuthGuard } from 'src/auth/guards/jwt-2fa-auth.guard';
+import { GetUser } from 'src/auth/decorators/get-user.decorator';
 
 @ApiTags('channels')
 @Controller('channels')
@@ -39,8 +41,8 @@ export class ChannelsController {
 
   @ApiOkResponse({ type: ChannelEntity, isArray: true })
   @Get()
-  findAll(@Query('include') include = ''): Promise<ChannelEntity[]> {
-    return this.channelsService.findAll(include.split('+'));
+  findAll(@GetUser() user: UserEntity, @Query('include') include = ''): Promise<ChannelEntity[]> {
+    return this.channelsService.findAll(user, include.split('+'));
   }
 
   @ApiCreatedResponse({ type: ChannelEntity })

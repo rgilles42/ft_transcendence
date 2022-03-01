@@ -19,26 +19,45 @@
     </section>
 
     <Modal :openStatus="isModalOpen" @close="closeModal()">
-      <template v-slot:title>Voulez-vous supprimer ce salon ?</template>
+      <template v-slot:title>
+        <template v-if="chatUtils.isUserIsOwner(chatData, currentUser?.id)">
+          Voulez-vous supprimer ce salon ?
+        </template>
+        <template v-else>
+          Voulez-vous quitter ce salon ?
+        </template>
+      </template>
       <template v-slot:actions>
         <button @click="closeModal()" class="bg-orange-900 hover:bg-orange-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-sm rounded-lg tracking-wider">Annuler</button>
-        <button @click="closeModal(false)" class="bg-red-900 hover:bg-red-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-sm rounded-lg tracking-wider">Supprimer ce salon</button>
+        <button @click="closeModal(false)" class="bg-red-900 hover:bg-red-800 transition duration-100 ease-in-out text-white focus:outline-none p-2 text-sm rounded-lg tracking-wider">
+          <template v-if="chatUtils.isUserIsOwner(chatData, currentUser?.id)">
+            Supprimer ce salon
+          </template>
+          <template v-else>
+            Quitter ce salon
+          </template>
+        </button>
       </template>
     </Modal>
 
     <div v-if="chatData && true" class="fixed bottom-10 right-10 group">
-        <router-link
-          :to="{ name: 'ChatIdEdit', params: { requestChatId: chatData.id } }"
-          class=" rounded-full h-14 w-14 flex items-center justify-center no-underline hover:no-underline text-white"
-          role="menuitem"
-          :class="[chatUtils.isUserIsAdmin(chatData, currentUser?.id) ? 'bg-blue-500' : 'pointer-events-none bg-gray-500']"
-        >
-          <i class="fas fa-pen"></i>
-        </router-link>
+      <router-link
+        :to="{ name: 'ChatIdEdit', params: { requestChatId: chatData.id } }"
+        class="rounded-full h-14 w-14 flex items-center justify-center no-underline hover:no-underline text-white"
+        role="menuitem"
+        :class="[chatUtils.isUserIsAdmin(chatData, currentUser?.id) ? 'bg-blue-500' : 'pointer-events-none bg-gray-500']"
+      >
+        <i class="fas fa-pen"></i>
+      </router-link>
       <ul class="group-hover:opacity-100 absolute bottom-12 left-0 right-0 opacity-0 duration-200">
         <li v-if="chatUtils.isUserIsOwner(chatData, currentUser?.id)" class="block mb-4 transform">
           <button @click="openModal" class="transform scale-50 group-hover:scale-100 group-hover:-translate-y-4 transition duration-200 m-auto bg-red-500 rounded-full h-10 w-10 flex items-center justify-center focus:outline-none text-white shadow">
             <i class="fas fa-trash-alt"></i>
+          </button>
+        </li>
+        <li v-else class="block mb-4 transform">
+          <button @click="openModal" class="transform scale-50 group-hover:scale-100 group-hover:-translate-y-4 transition duration-200 m-auto bg-orange-500 rounded-full h-10 w-10 flex items-center justify-center focus:outline-none text-white shadow">
+            <i class="fa-solid fa-person-running"></i>
           </button>
         </li>
       </ul>
@@ -194,6 +213,20 @@ export default defineComponent({
         });
     };
 
+    const leaveChannel = () => {
+      if (!currentUser.value || !chatData.value || chatUtils.isUserIsOwner(chatData.value, currentUser.value.id)) {
+        return;
+      }
+      const member = chatUtils.getMember(chatData.value, currentUser.value.id);
+      if (!member) {
+        return;
+      }
+      api.channels.deleteChannelMembersById(member.id)
+        .then(() => {
+          router.replace({ name: 'ChatList' });
+        });
+    };
+
     const isModalOpen = ref(false);
 
     const openModal = () => {
@@ -205,7 +238,11 @@ export default defineComponent({
       if (canceled) {
         return;
       }
-      deleteChannel();
+      if (chatUtils.isUserIsOwner(chatData.value, currentUser.value?.id)) {
+        deleteChannel();
+      } else {
+        leaveChannel();
+      }
     };
 
     // Get channel data methods

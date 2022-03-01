@@ -40,15 +40,23 @@ export class ChannelsService {
     private userService: UsersService,
   ) {}
 
-  findAll(include: string[] = []): Promise<ChannelEntity[]> {
+  async findAll(
+    user: UserEntity,
+    include: string[] = [],
+  ): Promise<ChannelEntity[]> {
     const relations: string[] = [];
     for (let index = 0; index < include.length; index++) {
       if (include[index] == 'owner') relations.push('owner');
       else if (include[index] == 'restrictions') relations.push('restrictions');
-      else if (include[index] == 'members') relations.push('members');
       else if (include[index] == 'messages') relations.push('messages');
     }
-    return this.channelsRepository.find({ relations });
+    relations.push('members');
+    const channels = await this.channelsRepository.find({ relations });
+    return channels.filter((channel) => {
+      if (!channel.isPrivate) return true;
+      if (!channel.members) return false;
+      return channel.members.some((member) => member.userId === user.id);
+    });
   }
 
   async findOne(
