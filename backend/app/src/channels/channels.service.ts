@@ -299,6 +299,17 @@ export class ChannelsService {
     } catch (err) {
       throw new NotFoundException();
     }
+    if (memberData.userId === undefined) {
+      if (memberData.username !== undefined && memberData.username !== null) {
+        try {
+          memberData.userId = (
+            await this.userService.findOne(memberData.username)
+          ).id;
+        } catch (err) {
+          throw err;
+        }
+      }
+    }
     if (!channel.members.some((member) => issuerId === member.userId)) {
       if (channel.isPrivate === true) {
         throw new BadRequestException({
