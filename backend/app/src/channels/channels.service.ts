@@ -26,7 +26,7 @@ import { memberDto } from './_dto/member.dto';
 import { messageDto } from './_dto/message.dto';
 import { restrictionDto } from './_dto/restriction.dto';
 import { updateChannelDto } from './_dto/update-channel.dto';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ChannelsService {

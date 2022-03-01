@@ -23,14 +23,14 @@ export class StorageService {
 
   async storeUserAvatar(avatar, user: UserEntity) {
     const storage = Storage.disk('local');
-    if (await storage.exists(user.imageUrl)) {
+    if (user.imageUrl !== undefined && user.imageUrl !== null && await storage.exists(user.imageUrl)) {
       await storage.delete(user.imageUrl);
     }
     const fileExtension = path.parse(avatar.originalname).ext;
     let filename = '';
     do {
       filename = `${uuidv4()}${fileExtension}`;
-    } while (await storage.exists(user.imageUrl));
+    } while (await storage.exists(filename));
 
     const filePath = path.join('usersAvatars', filename);
     await storage.put(filePath, avatar.buffer);
