@@ -3,6 +3,7 @@ import { configService } from '@/services/configService';
 import { ManagerOptions, SocketOptions } from 'socket.io-client';
 import UsersStatus from './usersStatus';
 import Chat from './chat';
+import Game from './game';
 
 const socketOptions: Partial<ManagerOptions & SocketOptions> = {
   autoConnect: false,
@@ -14,6 +15,7 @@ const socketOptions: Partial<ManagerOptions & SocketOptions> = {
 const repositories = {
   usersStatus: UsersStatus(configService.getWebSocketUrl(), socketOptions),
   chat: Chat(configService.getWebSocketUrl(), socketOptions),
+  game: Game(configService.getWebSocketUrl(), socketOptions),
 };
 
 export default repositories;

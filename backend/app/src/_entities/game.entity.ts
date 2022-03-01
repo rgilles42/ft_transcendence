@@ -6,7 +6,6 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
 
@@ -51,6 +50,6 @@ export class GameEntity {
   createdAt: Date;
 
   @ApiProperty({ type: () => Date })
-  @Column()
+  @Column({ nullable: true })
   endAt: Date;
 }

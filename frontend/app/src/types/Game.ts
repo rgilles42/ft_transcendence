@@ -13,7 +13,7 @@ export default interface Game {
   powerUps: string[];
   map: string;
   createdAt: Date;
-  endAt: Date;
+  endAt: Date | null;
 
   player1?: User;
   player2?: User;
@@ -21,7 +21,28 @@ export default interface Game {
   [propName: string]: any;
 };
 
-export const DEFAULT_USER_BLOCK: Game = {
+export interface GameObject {
+  leftGoUp: boolean;
+  leftGoDown: boolean;
+  rightGoUp: boolean;
+  rightGoDown: boolean;
+  racketLen: number;
+  leftRacketPos: number;
+  rightRacketPos: number;
+  ball: {
+    size: number;
+    xPos: number;
+    yPos: number;
+    xSpeed: number;
+    ySpeed: number;
+  };
+  entity?: Game;
+  player1Ready: boolean;
+  player2Ready: boolean;
+  state: number;
+}
+
+export const DEFAULT_GAME: Game = {
   id: -1,
   player1Id: -1,
   player2Id: -1,
@@ -30,5 +51,5 @@ export const DEFAULT_USER_BLOCK: Game = {
   powerUps: [],
   map: 'default',
   createdAt: new Date(),
-  endAt: new Date(),
+  endAt: null,
 }

@@ -11,7 +11,7 @@ import Chat from '../views/chat/index.vue';
 import ChatCreate from '../views/chat/create.vue';
 import ChatId from '../views/chat/_id/index.vue';
 import ChatIdEdit from '../views/chat/_id/edit.vue';
-import GameIndex from '../views/game/index.vue';
+import GameList from '../views/game/index.vue';
 import GamePlay from '../views/game/play.vue';
 import GameSpectator from '../views/game/spectator.vue';
 
@@ -96,24 +96,26 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/game',
-    name: 'GameIndex',
-    component: GameIndex,
+    name: 'GameList',
+    component: GameList,
     meta: {
       requiresAuth: true,
     },
   },
   {
-    path: '/game/play',
+    path: '/game/:requestGameId/play',
     name: 'GamePlay',
     component: GamePlay,
+    props: true,
     meta: {
       requiresAuth: true,
     },
   },
   {
-    path: '/game/spectator',
+    path: '/game/:requestGameId/spectator',
     name: 'GameSpectator',
     component: GameSpectator,
+    props: true,
     meta: {
       requiresAuth: true,
     },

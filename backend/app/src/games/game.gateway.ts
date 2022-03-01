@@ -53,7 +53,7 @@ class GameObject {
 }
 
 function normalise(x: number, y: number): { x: number; y: number } {
-  length = Math.sqrt(x * x + y * y);
+  const length = Math.sqrt(x * x + y * y);
   return { x: x / length, y: y / length };
 }
 
@@ -173,6 +173,27 @@ export class GameGateway
     this.launchGame(results[0], client, map, powerUps);
   }
 
+  equalsIgnoreOrder(a: any[], b: any[]) {
+    if (a.length !== b.length) return false;
+    const uniqueValues = new Set([...a, ...b]);
+    for (const v of uniqueValues) {
+      const aCount = a.filter((e) => e === v).length;
+      const bCount = b.filter((e) => e === v).length;
+      if (aCount !== bCount) return false;
+    }
+    return true;
+  }
+
+  evalGameParams(
+    requestedParams: { map: string; powerUps: string[] },
+    param: { map: string; powerUps: string[] },
+  ) {
+    if (requestedParams.map !== param.map) {
+      return false;
+    }
+    return this.equalsIgnoreOrder(requestedParams.powerUps, param.powerUps);
+  }
+
   @SubscribeMessage('joinMatchmaking')
   async joinMatchmaking(
     @ConnectedSocket() client: Socket,
@@ -184,9 +205,13 @@ export class GameGateway
     const waitingClients = await this.server.in('lobby').fetchSockets();
     const matches = waitingClients.filter(
       (socket) =>
-        socket.data.desiredGameParams === client.data.desiredGameParams,
+        socket.id !== client.id &&
+        this.evalGameParams(
+          socket.data.desiredGameParams,
+          client.data.desiredGameParams,
+        ),
     );
-    if (matches.length !== 0) {
+    if (matches.length > 0) {
       client.leave('lobby');
       matches[0].leave('lobby');
       this.launchGame(matches[0], client, map, powerUps);
@@ -230,7 +255,9 @@ export class GameGateway
     const game = this.games.find(
       (game) => game.entity.id === gameId && game.state === GameState.RUNNING,
     );
-    if (!game) throw new NotFoundException();
+    if (!game) {
+      return;
+    }
     if (client.data.user.id === game.entity.player1Id) {
       moveUp ? (game.leftGoUp = true) : (game.leftGoDown = true);
     } else if (client.data.user.id === game.entity.player2Id) {
@@ -247,15 +274,17 @@ export class GameGateway
     const game = this.games.find(
       (game) => game.entity.id === gameId && game.state === GameState.RUNNING,
     );
-    if (!game) throw new NotFoundException();
+    if (!game) {
+      return;
+    }
     if (client.data.user.id === game.entity.player1Id) {
       moveUp ? (game.leftGoUp = false) : (game.leftGoDown = false);
     } else if (client.data.user.id === game.entity.player2Id) {
-      moveUp ? (game.rightGoUp = false) : (game.rightGoUp = false);
+      moveUp ? (game.rightGoUp = false) : (game.rightGoDown = false);
     } else throw new ForbiddenException('Client is not a player.');
   }
 
-  gameLoop(game: GameObject) {
+  async gameLoop(game: GameObject) {
     if (game.state === GameState.STARTING) {
       if (game.player1Ready && game.player2Ready) {
         game.ball.size = 0.02;
@@ -272,10 +301,25 @@ export class GameGateway
     } else if (game.state === GameState.RUNNING) {
       game.ball.xPos += game.ball.xSpeed * 0.17;
       game.ball.yPos += game.ball.ySpeed * 0.17;
-      if (game.leftGoDown) game.leftRacketPos += 0.01;
-      if (game.leftGoUp) game.leftRacketPos -= 0.01;
-      if (game.rightGoDown) game.rightRacketPos += 0.01;
-      if (game.rightGoUp) game.rightRacketPos -= 0.01;
+
+      const racketSpeed = 0.01;
+
+      // Left movement
+      if (game.leftGoDown && game.leftRacketPos + racketSpeed <= 1) {
+        game.leftRacketPos += racketSpeed;
+      }
+      if (game.leftGoUp && game.leftRacketPos - racketSpeed >= 0) {
+        game.leftRacketPos -= racketSpeed;
+      }
+
+      // Right movement
+      if (game.rightGoDown && game.rightRacketPos + racketSpeed <= 1) {
+        game.rightRacketPos += racketSpeed;
+      }
+      if (game.rightGoUp && game.rightRacketPos - racketSpeed >= 0) {
+        game.rightRacketPos -= racketSpeed;
+      }
+
       if (game.ball.yPos + game.ball.size / 2 >= 1) {
         game.ball.yPos = 1 - game.ball.size / 2;
         game.ball.ySpeed = -game.ball.ySpeed;
@@ -341,8 +385,19 @@ export class GameGateway
         }
       }
       this.server.in(game.entity.id.toString()).emit('updateGame', game);
-      if (game.entity.player1Score == 11 || game.entity.player2Score == 11)
+      if (game.entity.player1Score == 11 || game.entity.player2Score == 11) {
         game.state = GameState.FINISHED;
+        await this.gamesService.updateScore(
+          game.entity.id,
+          game.entity.player1Score,
+          game.entity.player2Score,
+        );
+        const gameIndex = this.games.findIndex(
+          (find) => find.entity.id === game.entity.id,
+        );
+        if (gameIndex > -1) this.games.splice(gameIndex, 1);
+        this.server.in(game.entity.id.toString()).disconnectSockets(true);
+      }
     }
   }
 
@@ -383,20 +438,11 @@ export class GameGateway
     };
     this.gameLoop(gameObject);
     this.server.in(newGame.id.toString()).emit('gameStarted', gameObject);
+    this.server.emit('activeGames', this.games);
     this.games.push(gameObject);
     const interval = setInterval(() => {
       this.gameLoop(gameObject);
       if (gameObject.state === GameState.FINISHED) clearInterval(interval);
     }, 16);
-    await this.gamesService.updateScore(
-      newGame.id,
-      gameObject.entity.player1Score,
-      gameObject.entity.player2Score,
-    );
-    const gameIndex = this.games.findIndex(
-      (game) => game.entity.id === newGame.id,
-    );
-    if (gameIndex > -1) this.games.splice(gameIndex, 1);
-    this.server.in(newGame.id.toString()).disconnectSockets(true);
   }
 }

@@ -42,7 +42,7 @@
     <div v-else class="hidden md:flex w-full mx-6 my-3">
       <div class="w-1/3 mr-auto flex flex-row nav-links">
         <router-link :to="{ name: 'Home' }" class="nav-link">Accueil</router-link>
-        <router-link :to="{ name: 'GameIndex' }" class="nav-link">Pong!</router-link>
+        <router-link :to="{ name: 'GameList' }" class="nav-link">Pong!</router-link>
       </div>
 
       <div class="w-1/3 ml-auto flex flex-row-reverse nav-links">
