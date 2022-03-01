@@ -1,12 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty } from 'class-validator';
-import { gameType } from 'src/_entities/game.entity';
+import { IsInt, IsNotEmpty, IsString } from 'class-validator';
 
 export class createGameDto {
   @ApiProperty()
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  type: number;
+  map: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  powerUps: string[];
 
   @ApiProperty()
   @IsInt()

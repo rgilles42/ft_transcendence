@@ -25,7 +25,7 @@ import { StorageModule } from 'src/storage/storage.module';
     ]),
     FriendsModule,
     BlockedModule,
-    GamesModule,
+    forwardRef(() => GamesModule),
     forwardRef(() => AuthModule),
     StorageModule,
   ],

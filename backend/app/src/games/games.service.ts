@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GameEntity } from 'src/_entities/game.entity';
 import { UserEntity } from 'src/_entities/user.entity';
@@ -29,7 +33,8 @@ export class GamesService {
   }
   async create(createGameData: createGameDto): Promise<GameEntity> {
     const newGame = new GameEntity();
-    newGame.type = createGameData.type;
+    newGame.map = createGameData.map;
+    newGame.powerUps = createGameData.powerUps;
     newGame.player1 = await this.usersRepository.findOneOrFail(
       createGameData.player1Id,
     );
@@ -42,17 +47,33 @@ export class GamesService {
       newGame.player2Score = createGameData.player2Score;
     try {
       await this.gamesRepository.save(newGame);
-    } catch (err){
+    } catch (err) {
       throw new BadRequestException();
     }
     return newGame;
   }
 
+  async updateScore(
+    id: number,
+    player1score: number,
+    player2score: number,
+  ): Promise<void> {
+    try {
+      await this.gamesRepository.findOneOrFail(id);
+      await this.gamesRepository.update(id, {
+        player1score,
+        player2score,
+      });
+    } catch (err) {
+      throw new NotFoundException();
+    }
+  }
+
   async remove(id: number): Promise<GameEntity> {
     try {
-      const user = await this.gamesRepository.findOneOrFail(id);
+      const game = await this.gamesRepository.findOneOrFail(id);
       this.gamesRepository.delete(id);
-      return user;
+      return game;
     } catch (err) {
       throw new NotFoundException();
     }
