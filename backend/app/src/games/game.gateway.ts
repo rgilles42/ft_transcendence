@@ -168,8 +168,9 @@ export class GameGateway
     const results = (await this.server.fetchSockets()).filter(
       (socket) => socket.data.user.id === invitingPlayerId,
     );
-    if (results.length === 0)
+    if (results.length === 0) {
       throw new BadRequestException('Inviting user is disconnected');
+    }
     this.launchGame(results[0], client, map, powerUps);
   }
 
@@ -238,7 +239,9 @@ export class GameGateway
     const game = this.games.find(
       (game) => game.entity.id === gameId && game.state === GameState.STARTING,
     );
-    if (!game) throw new NotFoundException();
+    if (!game) {
+      throw new NotFoundException();
+    }
     if (client.data.user.id === game.entity.player1Id) {
       game.player1Ready = true;
     } else if (client.data.user.id === game.entity.player2Id) {
@@ -438,8 +441,8 @@ export class GameGateway
     };
     this.gameLoop(gameObject);
     this.server.in(newGame.id.toString()).emit('gameStarted', gameObject);
-    this.server.emit('activeGames', this.games);
     this.games.push(gameObject);
+    this.server.emit('activeGames', this.games);
     const interval = setInterval(() => {
       this.gameLoop(gameObject);
       if (gameObject.state === GameState.FINISHED) clearInterval(interval);

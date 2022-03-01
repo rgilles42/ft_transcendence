@@ -70,13 +70,7 @@ export default defineComponent({
         router.replace({ name: 'GameList' });
         return;
       }
-      websocketApi.game.emitAcceptInvit(+props.requestGameId, 'default', []);
-    };
-
-    const onGameStarted = (game: GameObject) => {
-      if (game.entity) {
-        websocketApi.game.emitConfirmReady(game.entity.id);
-      }
+      websocketApi.game.emitConfirmReady(+props.requestGameId);
     };
 
     const onUpdateGame = (game: GameObject) => {
@@ -109,7 +103,6 @@ export default defineComponent({
       websocketApi.game.offConnectionSuccess(onConnectionSuccess);
       websocketApi.game.offConnectionFailed(unsubscribeEvents);
       websocketApi.game.offDisconnected(unsubscribeEvents);
-      websocketApi.game.offGameStarted(onGameStarted);
       websocketApi.game.offUpdateGame(onUpdateGame);
       websocketApi.game.disconnect();
 
@@ -125,7 +118,6 @@ export default defineComponent({
       websocketApi.game.onConnectionSuccess(onConnectionSuccess);
       websocketApi.game.onConnectionFailed(unsubscribeEvents);
       websocketApi.game.onDisconnected(unsubscribeEvents);
-      websocketApi.game.onGameStarted(onGameStarted);
       websocketApi.game.onUpdateGame(onUpdateGame);
 
       window.addEventListener('keydown', onKeyDown);
