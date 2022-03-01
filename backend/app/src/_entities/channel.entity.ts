@@ -25,10 +25,9 @@ export class ChannelEntity {
   title: string;
 
   @ApiProperty()
-  @Column()
+  @Column({ nullable: false })
   isPrivate: boolean;
 
-  @ApiProperty()
   @Column({ nullable: true })
   password: string;
 
