@@ -13,14 +13,14 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtTwoFaAuthGuard } from 'src/auth/guards/jwt-2fa-auth.guard';
 import { GameEntity } from 'src/_entities/game.entity';
 import { GamesService } from './games.service';
 import { createGameDto } from './_dto/create-game.dto';
 
 @ApiTags('games')
 @ApiBearerAuth('access_token')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtTwoFaAuthGuard)
 @Controller('games')
 export class GamesController {
   constructor(private readonly gamesService: GamesService) {}

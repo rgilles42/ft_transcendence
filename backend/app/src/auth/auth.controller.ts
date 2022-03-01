@@ -1,4 +1,3 @@
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { FortyTwoAuthGuard } from './guards/forty-two-auth.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
@@ -31,12 +30,14 @@ export class AuthController {
       sameSite: configService.getJwtConfig().accessToken.sameSite,
     });
 
-    res.cookie('refresh_token', data.refresh_token, {
-      httpOnly: configService.getJwtConfig().refreshToken.httpOnly,
-      secure: configService.getJwtConfig().refreshToken.secure,
-      sameSite: configService.getJwtConfig().refreshToken.sameSite,
-      path: configService.getJwtConfig().refreshToken.path,
-    });
+    if (data.refresh_token) {
+      res.cookie('refresh_token', data.refresh_token, {
+        httpOnly: configService.getJwtConfig().refreshToken.httpOnly,
+        secure: configService.getJwtConfig().refreshToken.secure,
+        sameSite: configService.getJwtConfig().refreshToken.sameSite,
+        path: configService.getJwtConfig().refreshToken.path,
+      });
+    }
 
     if (data.isNewUser) {
       res.status(201);
@@ -49,6 +50,7 @@ export class AuthController {
       refresh_token: data.refresh_token,
       xsrf_token: data.xsrf_token,
       user: data.user,
+      isTwoFactorEnable: data.isTwoFactorEnable,
     };
   }
 
@@ -70,12 +72,14 @@ export class AuthController {
       sameSite: configService.getJwtConfig().accessToken.sameSite,
     });
 
-    res.cookie('refresh_token', data.refresh_token, {
-      httpOnly: configService.getJwtConfig().refreshToken.httpOnly,
-      secure: configService.getJwtConfig().refreshToken.secure,
-      sameSite: configService.getJwtConfig().refreshToken.sameSite,
-      path: configService.getJwtConfig().refreshToken.path,
-    });
+    if (data.refresh_token) {
+      res.cookie('refresh_token', data.refresh_token, {
+        httpOnly: configService.getJwtConfig().refreshToken.httpOnly,
+        secure: configService.getJwtConfig().refreshToken.secure,
+        sameSite: configService.getJwtConfig().refreshToken.sameSite,
+        path: configService.getJwtConfig().refreshToken.path,
+      });
+    }
 
     if (data.isNewUser) {
       res.status(201);
@@ -88,6 +92,7 @@ export class AuthController {
       refresh_token: data.refresh_token,
       xsrf_token: data.xsrf_token,
       user: data.user,
+      isTwoFactorEnable: data.isTwoFactorEnable,
     };
   }
 
@@ -130,11 +135,5 @@ export class AuthController {
       path: configService.getJwtConfig().refreshToken.path,
     });
     return 'Success';
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('test')
-  test() {
-    return 'test';
   }
 }

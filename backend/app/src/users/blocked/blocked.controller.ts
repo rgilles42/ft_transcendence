@@ -5,13 +5,13 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtTwoFaAuthGuard } from 'src/auth/guards/jwt-2fa-auth.guard';
 import { BlockshipEntity } from 'src/_entities/users_blockship.entity';
 import { BlockedService } from './blocked.service';
 
 @ApiTags('users_blocked')
 @ApiBearerAuth('access_token')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtTwoFaAuthGuard)
 @Controller('/users/blocked')
 export class BlockedController {
   constructor(private readonly blockedService: BlockedService) {}

@@ -5,13 +5,13 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtTwoFaAuthGuard } from 'src/auth/guards/jwt-2fa-auth.guard';
 import { MessageEntity as MessageEntity } from 'src/_entities/channel-message.entity';
 import { MessagesService } from './messages.service';
 
 @ApiTags('channel_messages')
 @ApiBearerAuth('access_token')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtTwoFaAuthGuard)
 @Controller('channels/messages')
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}

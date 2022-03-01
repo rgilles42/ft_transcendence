@@ -17,10 +17,11 @@ export class AuthService {
     private usersService: UsersService,
   ) {}
 
-  public createTokens(user: UserEntity) {
+  public createTokens(user: UserEntity, isTwoFaAuthenticated = false) {
     const xsrfToken = randomBytes(64).toString('hex');
 
     const payload = {
+      isTwoFaAuthenticated,
       id: user.id,
       login: user.login,
       username: user.username,
@@ -45,13 +46,14 @@ export class AuthService {
   }
 
   public async refreshTokens(refreshToken: string) {
-    const decodedToken = this.jwtService.decode(refreshToken);
+    let decodedToken;
+    try {
+      decodedToken = this.jwtService.verify(refreshToken);
+    } catch {
+      throw new UnauthorizedException('Refresh is expired');
+    }
     if (!decodedToken || isStringObject(decodedToken)) {
       throw new UnauthorizedException('Invalid payload');
-    }
-
-    if (Date.now() < decodedToken.exp) {
-      throw new UnauthorizedException('Refresh is expired');
     }
 
     const user = await this.usersService.findOne(decodedToken.id);
@@ -79,10 +81,21 @@ export class AuthService {
       });
     }
     const tokens = this.createTokens(user);
+    if (user.isTwoFactorEnable) {
+      return {
+        access_token: tokens.access_token,
+        refresh_token: undefined,
+        xsrf_token: undefined,
+        user: undefined,
+        isNewUser: undefined,
+        isTwoFactorEnable: user.isTwoFactorEnable,
+      };
+    }
     return {
       ...tokens,
       user,
       isNewUser,
+      isTwoFactorEnable: user.isTwoFactorEnable,
     };
   }
 
@@ -104,10 +117,21 @@ export class AuthService {
       });
     }
     const tokens = this.createTokens(user);
+    if (user.isTwoFactorEnable) {
+      return {
+        access_token: tokens.access_token,
+        refresh_token: undefined,
+        xsrf_token: undefined,
+        user: undefined,
+        isNewUser: undefined,
+        isTwoFactorEnable: user.isTwoFactorEnable,
+      };
+    }
     return {
       ...tokens,
       user,
       isNewUser,
+      isTwoFactorEnable: user.isTwoFactorEnable,
     };
   }
 

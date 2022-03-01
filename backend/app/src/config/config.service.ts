@@ -21,6 +21,10 @@ class ConfigService {
     return this;
   }
 
+  public getAppName() {
+    return this.getValue('APP_NAME', false);
+  }
+
   public getAppEnv() {
     return this.getValue('APP_ENV', false);
   }

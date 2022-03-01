@@ -54,6 +54,10 @@
                   <i class="fa-solid fa-user-gear mr-2"></i>
                   Modifier le profil
                 </Tab>
+                <Tab v-if="userUtils.isSameUser(currentUser, user)" :isActive="activeTab === '2fa'" @click="clickTab('2fa')">
+                  <i class="fa-solid fa-user-shield mr-2"></i>
+                  2Fa
+                </Tab>
               </div>
             </template>
 
@@ -79,6 +83,29 @@
                     <div class="flex">
                       <button class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none w-full p-2 text-xs rounded-full uppercase font-bold tracking-wider">
                         Modifier mon profil
+                      </button>
+                    </div>
+                  </form>
+                </template>
+                <template v-if="userUtils.isSameUser(currentUser, user) && activeTab === '2fa'">
+                  <form v-if="user.isTwoFactorEnable === true" @submit.prevent="twoFactorDisable(twoFaCodeRef)">
+                    <div class="mb-6">
+                      <FormInput title="Code" placeholder="Code" name="code" v-model.trim="twoFaCodeRef" :errors="disable2FaErrors" required />
+                    </div>
+                    <div class="flex">
+                      <button class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none w-full p-2 text-xs rounded-full uppercase font-bold tracking-wider">
+                        Supprimer le 2FA
+                      </button>
+                    </div>
+                  </form>
+                  <form v-else @submit.prevent="twoFactorEnable(twoFaCodeRef)">
+                    <div class="mb-6">
+                      <button type="button" @click="generateNewQrCode">Générer un QR Code</button>
+                      <FormInput title="Code" placeholder="Code" name="code" v-model.trim="twoFaCodeRef" :errors="enable2FaErrors" required />
+                    </div>
+                    <div class="flex">
+                      <button class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none w-full p-2 text-xs rounded-full uppercase font-bold tracking-wider">
+                        ajouter le 2FA
                       </button>
                     </div>
                   </form>
@@ -196,6 +223,7 @@ import Tabs from '@/components/tab/Tabs.vue';
 import Tab from '@/components/tab/Tab.vue';
 import UserBlock from '@/types/UserBlock';
 import FormInput from '@/components/form/FormInput.vue';
+import { configService } from '@/services/configService';
 
 export default defineComponent({
   name: 'Profile',
@@ -383,7 +411,7 @@ export default defineComponent({
           })
           .finally(() => {
             if (!user.value) {
-              router.replace('/');
+              router.replace({ name: 'Home' });
             }
           });
       },
@@ -391,6 +419,64 @@ export default defineComponent({
       // already being observed
       { immediate: true },
     );
+
+    const twoFaCodeRef = ref('');
+    const disable2FaErrors = ref<any>({});
+
+    const enable2FaErrors = ref<any>({});
+
+    const qrCodeWindow = ref<Window | null>(null);
+
+    const generateNewQrCode = () => {
+      if (qrCodeWindow.value) {
+        qrCodeWindow.value.close();
+      }
+      qrCodeWindow.value = window.open(`${configService.getApiUrl()}/auth/2fa/generate`, 'qrcode2fa', 'width=200,height=200');
+    };
+
+    const twoFactorEnable = (login: string) => {
+      disable2FaErrors.value = {};
+
+      twoFaCodeRef.value = '';
+
+      if (qrCodeWindow.value) {
+        qrCodeWindow.value.close();
+      }
+
+      api.auth.twoFactorEnable(login)
+        .then(() => {
+          if (user.value) {
+            user.value.isTwoFactorEnable = true;
+          }
+        })
+        .catch((error) => {
+          if (error.response.status === 400) {
+            disable2FaErrors.value = error.response.data.errors || {};
+          } else {
+            console.warn(error.response.data.message);
+          }
+        });
+    };
+
+    const twoFactorDisable = (login: string) => {
+      disable2FaErrors.value = {};
+
+      twoFaCodeRef.value = '';
+
+      api.auth.twoFactorDisable(login)
+        .then(() => {
+          if (user.value) {
+            user.value.isTwoFactorEnable = false;
+          }
+        })
+        .catch((error) => {
+          if (error.response.status === 400) {
+            disable2FaErrors.value = error.response.data.errors || {};
+          } else {
+            console.warn(error.response.data.message);
+          }
+        });
+    };
 
     return {
       user,
@@ -412,6 +498,13 @@ export default defineComponent({
       newAvatarInput,
       // Game
       gameUtils,
+      // 2fa
+      twoFaCodeRef,
+      disable2FaErrors,
+      twoFactorDisable,
+      generateNewQrCode,
+      enable2FaErrors,
+      twoFactorEnable,
     };
   },
 });

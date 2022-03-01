@@ -28,11 +28,11 @@ import { messageDto } from './_dto/message.dto';
 import { restrictionDto } from './_dto/restriction.dto';
 import { MemberEntity } from 'src/_entities/channel-member.entity';
 import { memberDto } from './_dto/member.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtTwoFaAuthGuard } from 'src/auth/guards/jwt-2fa-auth.guard';
 
 @ApiTags('channels')
 @Controller('channels')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtTwoFaAuthGuard)
 @ApiBearerAuth('access_token')
 export class ChannelsController {
   constructor(private readonly channelsService: ChannelsService) {}

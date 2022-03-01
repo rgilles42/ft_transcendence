@@ -9,13 +9,13 @@ import {
 import { ApiTags, ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
 import * as path from 'path';
 import { Observable } from 'rxjs';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtTwoFaAuthGuard } from 'src/auth/guards/jwt-2fa-auth.guard';
 import { StorageService } from './storage.service';
 
 @ApiTags('storage')
 @Controller('storage')
 @ApiBearerAuth('access_token')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtTwoFaAuthGuard)
 export class StorageController {
   constructor(private readonly storageService: StorageService) {}
 

@@ -5,13 +5,13 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtTwoFaAuthGuard } from 'src/auth/guards/jwt-2fa-auth.guard';
 import { RestrictionEntity } from 'src/_entities/channel-restriction.entity';
 import { RestrictionsService } from './restrictions.service';
 
 @ApiTags('channel_restrictions')
 @ApiBearerAuth('access_token')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtTwoFaAuthGuard)
 @Controller('channels/restrictions')
 export class RestrictionsController {
   constructor(private readonly restrictionsService: RestrictionsService) {}

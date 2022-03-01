@@ -3,6 +3,7 @@ import { configService } from '@/services/configService';
 import { useStore } from '../store/index';
 import Home from '../views/Home.vue';
 import Login from '../views/auth/Login.vue';
+import Login2fa from '../views/auth/2fa.vue';
 import Logout from '../views/auth/Logout.vue';
 import FortyTwo from '../views/auth/FortyTwo.vue';
 import Profile from '../views/Profile.vue';
@@ -24,6 +25,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/auth/login',
     name: 'Login',
     component: Login,
+  },
+  {
+    path: '/auth/2fa',
+    name: 'Login2fa',
+    component: Login2fa,
   },
   {
     path: '/auth/42/callback',

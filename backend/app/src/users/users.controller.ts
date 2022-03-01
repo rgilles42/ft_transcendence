@@ -29,13 +29,13 @@ import { BlockshipEntity } from 'src/_entities/users_blockship.entity';
 import { sendIdDto } from './_dto/send-id.dto';
 import { ChannelEntity } from 'src/_entities/channel.entity';
 import { GameEntity } from 'src/_entities/game.entity';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtTwoFaAuthGuard } from 'src/auth/guards/jwt-2fa-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('users')
 @Controller('users')
 @ApiBearerAuth('access_token')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtTwoFaAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

@@ -54,9 +54,11 @@ export class UserEntity {
   channels: ChannelEntity[];
   games: GameEntity[];
 
-  // @ApiProperty()
-  // @Column()
-  // 2fa: ???;
+  @Column({ nullable: true })
+  twoFactorAuthSecret?: string;
+
+  @Column({ default: false })
+  public isTwoFactorEnable: boolean;
 
   @ApiProperty()
   @CreateDateColumn()

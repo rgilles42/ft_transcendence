@@ -9,7 +9,7 @@
       </span>
     </slot>
     <slot name="input" v-bind="{ getErrors, type, currentValue, required }">
-      <input :id="id" :name="name" :type="type" v-model="currentValue" class="mt-0" :class="[getErrors.length > 0 ? 'border-red-500 border' : '']" :step="step" :required="required" :disabled="disabled" :readonly="readonly"/>
+      <input :id="id" :name="name" :type="type" v-model="currentValue" class="mt-0" :class="[getErrors.length > 0 ? 'border-red-500 border' : '']" :step="step" :placeholder="placeholder" :required="required" :disabled="disabled" :readonly="readonly"/>
     </slot>
   </div>
 </template>
@@ -24,6 +24,7 @@ export default defineComponent({
   props: {
     title: String,
     name: String,
+    placeholder: String,
     id: String,
     step: String,
     modelValue: null,

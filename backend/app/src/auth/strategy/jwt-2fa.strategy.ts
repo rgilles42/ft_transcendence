@@ -7,7 +7,7 @@ import { Strategy, ExtractJwt } from 'passport-jwt';
 import { Request } from 'express';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class JwtTwoFaStrategy extends PassportStrategy(Strategy, 'jwt-2fa') {
   constructor(
     private authServe: AuthService,
     private usersService: UsersService,
@@ -43,6 +43,12 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
-    return user;
+
+    if (!user.isTwoFactorEnable) {
+      return user;
+    }
+    if (payload.isTwoFaAuthenticated) {
+      return user;
+    }
   }
 }

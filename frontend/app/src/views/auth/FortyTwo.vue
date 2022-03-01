@@ -17,7 +17,7 @@ export default defineComponent({
     const route = useRoute();
     const store = useStore();
     if (store.getUser || !route.query.code) {
-      router.replace('/');
+      router.replace({ name: 'Home' });
       return;
     }
     const loginFortyTwo = (code: string) => {
@@ -25,10 +25,13 @@ export default defineComponent({
         store.setTokens(response.data.access_token, response.data.refresh_token);
         store.setXsrfToken(response.data.xsrf_token);
         store.setUser(response.data.user);
-        if (response.status === 201) {
-          router.replace('/profile/me');
+
+        if (response.data.isTwoFactorEnable === true) {
+          router.push({ name: 'Login2fa' });
+        } else if (response.status === 201) {
+          router.push({ name: 'MyProfile' });
         } else {
-          router.replace('/');
+          router.push({ name: 'Home' });
         }
       });
     };

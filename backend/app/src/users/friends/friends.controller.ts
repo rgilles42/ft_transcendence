@@ -12,13 +12,13 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtTwoFaAuthGuard } from 'src/auth/guards/jwt-2fa-auth.guard';
 import { FriendshipEntity } from 'src/_entities/users_friendship.entity';
 import { FriendsService } from './friends.service';
 
 @ApiTags('users_friends')
 @ApiBearerAuth('access_token')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtTwoFaAuthGuard)
 @Controller('/users/friends')
 export class FriendsController {
   constructor(private readonly friendsService: FriendsService) {}

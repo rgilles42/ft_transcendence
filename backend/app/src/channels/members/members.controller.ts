@@ -14,13 +14,13 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtTwoFaAuthGuard } from 'src/auth/guards/jwt-2fa-auth.guard';
 import { MemberEntity } from 'src/_entities/channel-member.entity';
 import { MembersService } from './members.service';
 
 @ApiTags('channel_members')
 @ApiBearerAuth('access_token')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtTwoFaAuthGuard)
 @Controller('channels/members')
 export class MembersController {
   constructor(private readonly membersService: MembersService) {}

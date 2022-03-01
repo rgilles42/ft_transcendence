@@ -14,7 +14,8 @@ export default interface User {
   imageUrl?: string;
   createdAt?: Date;
   updatedAt?: Date;
-  fa?: string;
+  twoFactorAuthSecret?: string;
+  isTwoFactorEnable: boolean;
   status: number;
   activity?: string;
 
@@ -31,4 +32,5 @@ export const DEFAULT_USER: User = {
   login: '',
   username: '',
   status: 0,
+  isTwoFactorEnable: false,
 }

@@ -21,4 +21,16 @@ export default ($axios: AxiosInstance) => ({
     return $axios.post(`${AUTH_BASE}/refresh`, { refreshToken });
   },
 
+  twoFactorLogin(code: string) {
+    return $axios.post(`${AUTH_BASE}/2fa/authenticate`, { code });
+  },
+
+  twoFactorEnable(code: string) {
+    return $axios.post(`${AUTH_BASE}/2fa/enable`, { code });
+  },
+
+  twoFactorDisable(code: string) {
+    return $axios.delete(`${AUTH_BASE}/2fa/disable`, { params: { code } });
+  },
+
 });

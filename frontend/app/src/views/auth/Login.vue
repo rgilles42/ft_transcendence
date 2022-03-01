@@ -8,14 +8,16 @@
             </div>
 
             <div v-if="!isProduction" class="bg-grey-lightest px-10 py-5">
-              <div class="mb-6">
-                <input name="login" v-model.trim="loginRef" @keyup.enter="localLogin(loginRef)" type="text" placeholder="Login 42" class="block w-full py-2 m-0 pl-4 rounded-full focus:outline-none">
-              </div>
-              <div class="flex">
-                <button @click="localLogin(loginRef)" class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none w-full p-4 text-sm rounded-full uppercase font-bold tracking-wider">
-                  Se connecter
-                </button>
-              </div>
+              <form @submit.prevent="localLogin(loginRef)">
+                <div class="mb-6">
+                  <FormInput title="Login 42" name="login" v-model.trim="loginRef" placeholder="Login 42" required />
+                </div>
+                <div class="flex">
+                  <button class="bg-green-900 hover:bg-green-800 transition duration-100 ease-in-out text-white focus:outline-none w-full p-4 text-sm rounded-full uppercase font-bold tracking-wider">
+                    Se connecter
+                  </button>
+                </div>
+              </form>
             </div>
 
             <div class="border-t px-10 py-6">
@@ -37,6 +39,7 @@ import { defineComponent, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '@/api';
 import { configService } from '@/services/configService';
+import FormInput from '@/components/form/FormInput.vue';
 
 export default defineComponent({
   name: 'Login',
@@ -44,7 +47,7 @@ export default defineComponent({
     const router = useRouter();
     const store = useStore();
     if (store.getUser) {
-      router.replace('/');
+      router.replace({ name: 'Home' });
     }
     const loginRef = ref('');
     const goToFortyTwo = () => {
@@ -56,23 +59,22 @@ export default defineComponent({
       const url = 'https://api.intra.42.fr/oauth/authorize';
       const queryString = new URLSearchParams(query).toString();
       const newUrl = `${url}${queryString.length > 0 ? `?${queryString}` : ''}`;
-
       window.location.href = newUrl;
     };
-
     const localLogin = (login: string) => {
       api.auth.localLogin(login).then((response) => {
         store.setTokens(response.data.access_token, response.data.refresh_token);
         store.setXsrfToken(response.data.xsrf_token);
         store.setUser(response.data.user);
-        if (response.status === 201) {
-          router.replace('/profile/me');
+        if (response.data.isTwoFactorEnable === true) {
+          router.push({ name: 'Login2fa' });
+        } else if (response.status === 201) {
+          router.push({ name: 'MyProfile' });
         } else {
-          router.replace('/');
+          router.push({ name: 'Home' });
         }
       });
     };
-
     return {
       loginRef,
       isProduction: configService.isProduction(),
@@ -80,5 +82,6 @@ export default defineComponent({
       goToFortyTwo,
     };
   },
+  components: { FormInput },
 });
 </script>

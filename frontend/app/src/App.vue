@@ -36,7 +36,7 @@ export default defineComponent({
       } catch (err) {
         store.logoutUser();
         if (route.meta.requiresAuth) {
-          router.replace('/auth/login');
+          router.replace({ name: 'Login' });
         }
         throw (err);
       }

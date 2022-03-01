@@ -16,12 +16,12 @@ export default defineComponent({
     const router = useRouter();
     const store = useStore();
     if (!store.getUser) {
-      router.replace('/');
+      router.replace({ name: 'Home' });
     }
     const logout = () => {
       api.auth.logout().then(() => {
         store.logoutUser();
-        router.replace('/');
+        router.push({ name: 'Home' });
       });
     };
     logout();

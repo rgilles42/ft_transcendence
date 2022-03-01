@@ -18,7 +18,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(accessToken: string, refreshToken: string, profile: any) {
-    if (!profile) throw new UnauthorizedException();
+    if (!profile) throw new UnauthorizedException('Profile not found');
     const user = {
       login: profile.username,
       imageUrl: profile.photos[0].value,
