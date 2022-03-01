@@ -32,6 +32,10 @@ enum GameState {
 }
 
 class GameObject {
+  leftGoUp: boolean;
+  leftGoDown: boolean;
+  rightGoUp: boolean;
+  rightGoDown: boolean;
   racketLen: number;
   leftRacketPos: number;
   rightRacketPos: number;
@@ -108,10 +112,31 @@ export class GameGateway
 
   async handleConnection(@ConnectedSocket() client: Socket) {
     console.log(`Client Connected: ${client.id}`);
+    const activeGame = this.games.find(
+      (games) =>
+        games.entity.player1Id === client.data.user.id ||
+        games.entity.player2Id === client.data.user.id,
+    );
+    if (activeGame) {
+      client.join(activeGame.entity.id.toString());
+      client.emit('gameStarted', activeGame);
+    }
   }
 
   async handleDisconnect(@ConnectedSocket() client: Socket) {
     console.log(`Client Disconnected: ${client.id}`);
+    const activeGame = this.games.find(
+      (games) =>
+        games.entity.player1Id === client.data.user.id ||
+        games.entity.player2Id === client.data.user.id,
+    );
+    if (activeGame) {
+      if (client.data.user.id === activeGame.entity.player1Id) {
+        activeGame.leftGoDown = activeGame.leftGoUp = false;
+      } else {
+        activeGame.rightGoDown = activeGame.rightGoUp = false;
+      }
+    }
   }
 
   @SubscribeMessage('getGames')
@@ -148,8 +173,8 @@ export class GameGateway
     this.launchGame(results[0], client, map, powerUps);
   }
 
-  @SubscribeMessage('joinParty')
-  async joinParty(
+  @SubscribeMessage('joinMatchmaking')
+  async joinMatchmaking(
     @ConnectedSocket() client: Socket,
     @MessageBody('map') map: string,
     @MessageBody('powerUps') powerUps: string[],
@@ -180,35 +205,6 @@ export class GameGateway
   // important values:
   // racketLen = 0.06
 
-  @SubscribeMessage('moveRacket')
-  moveRacket(
-    @ConnectedSocket() client: Socket,
-    @MessageBody('gameId') gameId: number,
-    @MessageBody('moveUp') moveUp: boolean,
-  ) {
-    const game = this.games.find(
-      (game) => game.entity.id === gameId && game.state === GameState.RUNNING,
-    );
-    if (!game) throw new NotFoundException();
-    if (client.data.user.id === game.entity.player1Id) {
-      game.leftRacketPos += moveUp
-        ? game.leftRacketPos < 1 - game.racketLen / 2
-          ? 0.01
-          : 0
-        : game.leftRacketPos > game.racketLen / 2
-        ? -0.01
-        : 0;
-    } else if (client.data.user.id === game.entity.player2Id) {
-      game.rightRacketPos += moveUp
-        ? game.rightRacketPos < 1 - game.racketLen / 2
-          ? 0.01
-          : 0
-        : game.rightRacketPos > game.racketLen / 2
-        ? -0.01
-        : 0;
-    } else throw new ForbiddenException('Client is not a player.');
-  }
-
   @SubscribeMessage('confirmReady')
   confirmReady(
     @ConnectedSocket() client: Socket,
@@ -223,6 +219,40 @@ export class GameGateway
     } else if (client.data.user.id === game.entity.player2Id) {
       game.player2Ready = true;
     }
+  }
+
+  @SubscribeMessage('keyDown')
+  keyDown(
+    @ConnectedSocket() client: Socket,
+    @MessageBody('gameId') gameId: number,
+    @MessageBody('direction') moveUp: 1,
+  ) {
+    const game = this.games.find(
+      (game) => game.entity.id === gameId && game.state === GameState.RUNNING,
+    );
+    if (!game) throw new NotFoundException();
+    if (client.data.user.id === game.entity.player1Id) {
+      moveUp ? (game.leftGoUp = true) : (game.leftGoDown = true);
+    } else if (client.data.user.id === game.entity.player2Id) {
+      moveUp ? (game.rightGoUp = true) : (game.rightGoDown = true);
+    } else throw new ForbiddenException('Client is not a player.');
+  }
+
+  @SubscribeMessage('keyUp')
+  keyUp(
+    @ConnectedSocket() client: Socket,
+    @MessageBody('gameId') gameId: number,
+    @MessageBody('direction') moveUp: 1,
+  ) {
+    const game = this.games.find(
+      (game) => game.entity.id === gameId && game.state === GameState.RUNNING,
+    );
+    if (!game) throw new NotFoundException();
+    if (client.data.user.id === game.entity.player1Id) {
+      moveUp ? (game.leftGoUp = false) : (game.leftGoDown = false);
+    } else if (client.data.user.id === game.entity.player2Id) {
+      moveUp ? (game.rightGoUp = false) : (game.rightGoUp = false);
+    } else throw new ForbiddenException('Client is not a player.');
   }
 
   gameLoop(game: GameObject) {
@@ -242,6 +272,10 @@ export class GameGateway
     } else if (game.state === GameState.RUNNING) {
       game.ball.xPos += game.ball.xSpeed * 0.17;
       game.ball.yPos += game.ball.ySpeed * 0.17;
+      if (game.leftGoDown) game.leftRacketPos += 0.01;
+      if (game.leftGoUp) game.leftRacketPos -= 0.01;
+      if (game.rightGoDown) game.rightRacketPos += 0.01;
+      if (game.rightGoUp) game.rightRacketPos -= 0.01;
       if (game.ball.yPos + game.ball.size / 2 >= 1) {
         game.ball.yPos = 1 - game.ball.size / 2;
         game.ball.ySpeed = -game.ball.ySpeed;
@@ -335,6 +369,10 @@ export class GameGateway
     player2.join(newGame.id.toString());
     const gameObject: GameObject = {
       entity: newGame,
+      leftGoDown: false,
+      leftGoUp: false,
+      rightGoDown: false,
+      rightGoUp: false,
       player1Ready: false,
       player2Ready: false,
       state: GameState.STARTING,
@@ -355,6 +393,10 @@ export class GameGateway
       gameObject.entity.player1Score,
       gameObject.entity.player2Score,
     );
+    const gameIndex = this.games.findIndex(
+      (game) => game.entity.id === newGame.id,
+    );
+    if (gameIndex > -1) this.games.splice(gameIndex, 1);
     this.server.in(newGame.id.toString()).disconnectSockets(true);
   }
 }
