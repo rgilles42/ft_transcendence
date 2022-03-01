@@ -1,3 +1,4 @@
+import User from '@/types/User';
 import {
   io, ManagerOptions, Socket, SocketOptions,
 } from 'socket.io-client';
@@ -61,4 +62,9 @@ export default (baseUrl: string, options: Partial<ManagerOptions & SocketOptions
   offUsersStatusUpdate() {
     return this.getInstance.off('usersStatusUpdate');
   },
+
+  emitNewStatus(newStatus: User['status']) {
+    return this.getInstance.emit('changeStatus', { newStatus });
+  },
+
 });

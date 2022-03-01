@@ -2,6 +2,7 @@ import { configService } from 'src/config/config.service';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import {
   ConnectedSocket,
+  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   OnGatewayInit,
@@ -50,7 +51,7 @@ export class StatusGateway
     - an array of a single UserStatus object describing him will be sent to his currently online friends in a usersStatusUpdate message:
           connected friends expect this: [{arrivingUserId, 1}]
 
-  On every changeGameStatus message of any payload from an user:
+  On every changeStatus message of any payload from an user:
     - an array of a single UserStatus object describing him will be sent to his currently online friends in a usersStatusUpdate message:
           connected friends expect this: [{statusChangingUserId, (1 or 2)}]
 
@@ -145,10 +146,13 @@ export class StatusGateway
     await this.sendMyStatusToFriend(client);
   }
 
-  @SubscribeMessage('changeGameStatus')
-  async changeGameStatus(@ConnectedSocket() client: Socket) {
+  @SubscribeMessage('changeStatus')
+  async changeStatus(
+    @ConnectedSocket() client: Socket,
+    @MessageBody('newStatus') newStatus: number,
+  ) {
     console.log(`Client Change Status: ${client.id}`);
-    client.data.user.status = client.data.user.status === 2 ? 1 : 2;
+    client.data.user.status = newStatus;
     await this.sendMyStatusToFriend(client);
   }
 }
