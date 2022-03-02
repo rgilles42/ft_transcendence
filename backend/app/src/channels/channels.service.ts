@@ -27,6 +27,7 @@ import { messageDto } from './_dto/message.dto';
 import { restrictionDto } from './_dto/restriction.dto';
 import { updateChannelDto } from './_dto/update-channel.dto';
 import * as bcrypt from 'bcrypt';
+import { compareAscDateFns, parseDate } from 'src/config/formater';
 
 @Injectable()
 export class ChannelsService {
@@ -190,6 +191,49 @@ export class ChannelsService {
     return channel.members.some((member) => member.userId === userId);
   }
 
+  isRestricted(userId: number, channel: ChannelEntity): boolean {
+    const currentDate = new Date();
+    return channel.restrictions.some((restr) => {
+      if (restr.userId !== userId) {
+        return false;
+      }
+      if (restr.endAt === null) {
+        return true;
+      }
+      return (compareAscDateFns(currentDate, parseDate(restr.endAt)) <= 0);
+    });
+  }
+
+  isMuted(userId: number, channel: ChannelEntity): boolean {
+    return channel.restrictions.some((restr) => {
+      if (restr.userId !== userId) {
+        return false;
+      }
+      if (restr.type !== restrictionType.MUTE) {
+        return false;
+      }
+      if (restr.endAt === null) {
+        return true;
+      }
+      return (compareAscDateFns(new Date(), parseDate(restr.endAt)) <= 0);
+    });
+  }
+
+  isBanned(userId: number, channel: ChannelEntity): boolean {
+    return channel.restrictions.some((restr) => {
+      if (restr.userId !== userId) {
+        return false;
+      }
+      if (restr.type !== restrictionType.BAN) {
+        return false;
+      }
+      if (restr.endAt === null) {
+        return true;
+      }
+      return (compareAscDateFns(new Date(), parseDate(restr.endAt)) <= 0);
+    });
+  }
+
   async update(
     id: number,
     userId: number,
@@ -264,14 +308,10 @@ export class ChannelsService {
     } catch (err) {
       throw new NotFoundException();
     }
-    if (
-      channel.members.some((member) => member.userId === userId) &&
-      (!channel.restrictions.some((restr) => restr.userId === userId) ||
-        channel.restrictions.find((restr) => restr.userId === userId).type ===
-          restrictionType.MUTE)
-    )
+    if (this.isMember(userId, channel) && !this.isBanned(userId, channel)) {
       return channel.messages;
-    else throw new ForbiddenException();
+    }
+    throw new ForbiddenException();
   }
 
   async send_message(
@@ -287,20 +327,18 @@ export class ChannelsService {
     } catch (err) {
       throw new NotFoundException();
     }
-    if (
-      channel.members.some((member) => member.userId === userId) &&
-      !channel.restrictions.some((restr) => restr.userId === userId)
-    ) {
-      try {
-        return await this.messagesService.create(
-          channelId,
-          userId,
-          messageData,
-        );
-      } catch (err) {
-        throw err;
-      }
-    } else throw new ForbiddenException();
+    if (!this.isMember(userId, channel) || this.isRestricted(userId, channel)) {
+      throw new ForbiddenException();
+    }
+    try {
+      return await this.messagesService.create(
+        channelId,
+        userId,
+        messageData,
+      );
+    } catch (err) {
+      throw err;
+    }
   }
 
   async get_restrictions(id: number): Promise<RestrictionEntity[]> {
@@ -388,6 +426,11 @@ export class ChannelsService {
           errors: { password: ['Mot de passe incorrect!'] },
         });
       }
+    }
+    if (this.isMember(memberData.userId, channel) && !this.isOwner(memberData.userId, channel)) {
+      throw new BadRequestException({
+        errors: { username: ['Cet utilisateur est déjà membre!'] },
+      });
     }
     let allowSetMemberPerms = false;
     if (this.isAdmin(issuerId, channel) && memberData.isAdmin !== undefined)

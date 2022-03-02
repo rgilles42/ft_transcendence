@@ -4,7 +4,6 @@ import {
   Injectable,
   ImATeapotException,
   BadRequestException,
-  InternalServerErrorException,
   ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -117,7 +116,7 @@ export class UsersService {
     try {
       await this.usersRepository.update(id, updateUserData);
     } catch (err) {
-      throw new InternalServerErrorException();
+      throw new BadRequestException();
     }
     user = await this.usersRepository.findOne(id);
     delete user.twoFactorAuthSecret;

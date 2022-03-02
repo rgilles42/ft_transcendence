@@ -2,6 +2,7 @@ import {
   ForbiddenException,
   forwardRef,
   Inject,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import {
@@ -22,10 +23,7 @@ import { parse } from 'cookie';
 import { ChannelsService } from './channels.service';
 import { MessageEntity } from 'src/_entities/channel-message.entity';
 import { MemberEntity } from 'src/_entities/channel-member.entity';
-import {
-  restrictionType,
-  RestrictionEntity,
-} from 'src/_entities/channel-restriction.entity';
+import { RestrictionEntity } from 'src/_entities/channel-restriction.entity';
 
 @WebSocketGateway({
   namespace: 'chat',
@@ -116,22 +114,18 @@ export class ChatGateway
     @MessageBody('channelId') channelId: number,
   ) {
     console.log(`onJoinChannel: ${client.id}`);
-    const userChannels = await this.usersService.get_channels(
-      client.data.user.id,
-    );
-    if (
-      userChannels.some((channel) => channel.id === channelId) &&
-      !(
-        await this.channelsService.findOne(client.data.user.id, channelId, [
-          'restrictions',
-        ])
-      ).restrictions.find(
-        (restriction) =>
-          restriction.userId === client.data.user.id &&
-          restriction.type === restrictionType.BAN,
-      )
-    )
-      client.join(channelId.toString());
+    let channel;
+    try {
+      channel = await this.channelsService.findOne(client.data.user.id, channelId, [
+        'members', 'restrictions',
+        ]);
+    } catch {
+      throw new NotFoundException();
+    }
+    if (!this.channelsService.isMember(client.data.user.id, channel) || this.channelsService.isBanned(client.data.user.id, channel)) {
+      throw new ForbiddenException();
+    }
+    client.join(channelId.toString());
   }
   @SubscribeMessage('leaveChannel')
   async onLeaveChannel(client: Socket, channelId: number) {
