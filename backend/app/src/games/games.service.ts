@@ -62,6 +62,7 @@ export class GamesService {
       await this.gamesRepository.update(id, {
         player1Score,
         player2Score,
+        endAt: new Date(),
       });
     } catch (err) {
       throw new NotFoundException();

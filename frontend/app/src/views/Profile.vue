@@ -176,7 +176,7 @@
                             {{ game.player1Score }} - {{ game.player2Score }}
                           </td>
                           <td class="py-4 px-6 text-sm whitespace-nowrap">
-                            {{ formater.formatDistance(game.endAt, game.createdAt) }}
+                            {{ game.endAt ? formater.formatDistance(game.endAt, game.createdAt) : 'En cours' }}
                           </td>
                           <td class="py-4 px-6 text-sm whitespace-nowrap">
                             {{ game.map ? game.map : 'Pong Original' }}
