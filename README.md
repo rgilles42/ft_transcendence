@@ -1,35 +1,34 @@
 # ft_transcendence
 
-Pour start en mode dev vous avez 2 possibilités
+To deploy the prod app, run
+```sh
+docker-compose up --build
+```
 
-- Ouvrir un shell pour le front et pour le back et les lancer en direct dans les dossier app
+There are two ways to run in dev mode.
 
-- Lancer le tout avec docker et bosser dans les dossier app (sachant qu'il faut restart les containers etc..). Brf c'est plus simple de garder juste la DB et PGadmin sur docker le rest en local pour debug et bosser
-
-Pour lancer sur full docker:
-
-`
-docker-compose -f docker-compose.dev.yml up (-d pour detach du shell) --build (service particulier ou vide pour tout lancer)
-`
-
-Pour lancer independament
-
-`
-Front (frontend/app):
+1) Opening front and back separately in two shells and launch them directly in their `/app` subfolder, and let the DB be dockerized. This is recommended if you intend to work on the app.
+- Front (frontend/app):
+```sh
 npm install
 npm run serve
-
-Back (backend/app):
+```
+- Back (backend/app):
+```sh
 npm install
-(migrations à venir)
 npm run start:dev
-
-DB (racine):
+```
+- DB (project root folder):
+```sh
 docker-compose -f docker-compose.dev.yml up --build postgres
-
-PGadmin (racine | optionnel, perso j'utilise heidiSQL sur windows)
+```
+- PGadmin (project root folder; optional, native alternatives exist, such as HeidiSQL on windows or DBeaver on UNIXes)
+```sh
 docker-compose -f docker-compose.dev.yml up --build pgadmin
-`
+```
 
-j'ai surrement oublier des choses..
-Sorry d'avance
+
+2) Deploy everything in Docker and still work on the `/app` subfolders (but the containers will have to be rebuilt at any change).
+```sh
+docker-compose -f docker-compose.dev.yml up (-d to detach shell) --build <service|leave empty to deploy everything>
+```
